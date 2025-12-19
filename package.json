@@ -1,0 +1,41 @@
+{
+  "name": "mansi-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@babylonjs/core": "^6.40.0",
+    "@babylonjs/gui": "^6.40.0",
+    "@heroicons/react": "^2.2.0",
+    "@next/mdx": "13.0.0",
+    "autoprefixer": "10.4.14",
+    "clsx": "1.2.1",
+    "file-saver": "^2.0.5",
+    "framer-motion": "^12.23.24",
+    "gray-matter": "^2.0.1",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.4",
+    "lucide-react": "^0.555.0",
+    "next": "^16.0.3",
+    "next-mdx-remote": "4.2.0",
+    "postcss": "^8.5.6",
+    "prettier": "^2.8.8",
+    "qrcode": "^1.5.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "^5.5.0",
+    "react-syntax-highlighter": "^16.1.0",
+    "remark": "14.0.2",
+    "remark-html": "15.0.1",
+    "shadcn-ui": "^0.9.5",
+    "tailwindcss": "3.4.0"
+  },
+  "devDependencies": {
+    "eslint": "8.45.0"
+  }
+}

@@ -1,0 +1,277 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --font-family: 'Inter', ui-sans-serif, system-ui, -apple-system;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+  --color-accent: #2EC4B6;
+  --color-accent-light: rgba(46, 196, 182, 0.1);
+  --color-accent-rgba-025: rgba(46, 196, 182, 0.25);
+  --color-accent-rgba-016: rgba(46, 196, 182, 0.16);
+  --color-accent-rgba-010: rgba(46, 196, 182, 0.10);
+  --color-accent-rgba-008: rgba(46, 196, 182, 0.08);
+  --color-accent-rgba-006: rgba(46, 196, 182, 0.06);
+  --color-accent-rgba-004: rgba(46, 196, 182, 0.04);
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-card: #ffffff;
+  --color-bg-card-hover: #f1f5f9;
+  --color-bg-card-dark: rgba(30, 41, 59, 0.4);
+  --color-bg-card-hover-dark: rgba(30, 41, 59, 0.6);
+  --color-border-card: #e2e8f0;
+  --color-border-card-dark: rgba(255, 255, 255, 0.1);
+  --color-text-card: #1e293b;
+  --color-text-card-dark: #e2e8f0;
+  --color-text-muted: #64748b;
+  --color-text-muted-dark: #94a3b8;
+  --color-bg-avatar: #f1f5f9;
+  --color-bg-avatar-dark: #334155;
+  --color-text-avatar: #1e293b;
+  --color-text-avatar-dark: #ffffff;
+  --color-bg-skeleton: #f1f5f9;
+  --color-bg-skeleton-dark: #0f172a;
+  --color-bg-button-secondary: #f1f5f9;
+  --color-bg-button-secondary-hover: #e2e8f0;
+  --color-bg-button-secondary-dark: #334155;
+  --color-bg-button-secondary-hover-dark: #475569;
+  --color-border-button: #cbd5e1;
+  --color-border-button-dark: #475569;
+  --color-bg-button-hover: #f1f5f9;
+  --color-bg-button-hover-dark: #0f172a;
+  --color-text-nav: #475569;
+  --color-text-nav-dark: #cbd5e1;
+  --color-text-dropdown: #374151;
+  --color-text-dropdown-dark: #cbd5e1;
+  --color-bg-dropdown: rgba(255, 255, 255, 0.9);
+  --color-bg-dropdown-dark: rgba(11, 11, 11, 0.95);
+  --color-border-dropdown: rgba(14, 165, 164, 0.2);
+  --color-bg-dropdown-hover: rgba(14, 165, 164, 0.1);
+  --color-text-logo-main: #0f172a;
+  --color-text-logo-main-dark: #f1f5f9;
+  --color-text-logo-sub: #64748b;
+  --color-text-logo-sub-dark: #94a3b8;
+  --color-bg-footer: rgba(236, 254, 252, 1); /* very soft teal */
+  --dropdown-bg: rgba(255, 255, 255, 0.92);
+  --dropdown-border: rgba(15, 23, 42, 0.08);
+  --dropdown-hover: rgba(46, 196, 182, 0.08);
+  --dropdown-text: #0f172a;
+  --color-bg-footer-dark: rgba(0, 0, 0, 0.1);
+  --color-border-footer: rgba(14, 165, 164, 0.3);
+  --color-border-footer-dark: rgba(14, 165, 164, 0.2);
+  --color-text-footer: #374151;
+  --color-text-footer-dark: #cbd5e1;
+  --color-text-footer-sub: #64748b;
+  --color-text-footer-sub-dark: #94a3b8;
+  --color-text-footer-heading: #0f172a;
+  --color-text-footer-heading-dark: #f1f5f9;
+  --color-bg-footer-divider: rgba(203, 213, 225, 0.4);
+  --color-bg-footer-divider-dark: rgba(71, 85, 105, 0.4);
+  --color-border-footer-bottom: rgba(203, 213, 225, 0.2);
+  --color-border-footer-grey: rgba(148, 163, 184, 0.2);
+  --color-border-footer-grey-dark: transparent;
+  --color-bg-footer-divider-subtle: rgba(51, 65, 85, 0.15);
+  --color-bg-code: #f8fafc;
+  --color-bg-code-dark: linear-gradient(to bottom right, #1e293b, #0f172a);
+  --color-border-code: #e2e8f0;
+  --color-border-code-dark: rgba(255, 255, 255, 0.06);
+  --color-text-code: #1e293b;
+  --color-text-code-dark: #e2e8f0;
+  --color-bg-timeline-rail: rgba(148,163,184,0.08);
+}
+
+.dark {
+  --color-bg-card: rgba(30, 41, 59, 0.4);
+  --color-bg-card-hover: rgba(30, 41, 59, 0.6);
+  --color-border-card: rgba(255, 255, 255, 0.1);
+  --color-text-card: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-bg-avatar: #334155;
+  --color-text-avatar: #ffffff;
+  --color-bg-skeleton: #0f172a;
+  --color-bg-button-secondary: #334155;
+  --color-bg-button-secondary-hover: #475569;
+  --color-border-button: #475569;
+  --color-bg-button-hover: #0f172a;
+  --color-text-nav: #cbd5e1;
+  --color-text-dropdown: #cbd5e1;
+    --dropdown-bg: rgba(15, 23, 42, 0.92);
+  --dropdown-border: rgba(148, 163, 184, 0.18);
+  --dropdown-hover: rgba(46, 196, 182, 0.14);
+  --dropdown-text: #e5e7eb;
+  --color-bg-dropdown: rgba(11, 11, 11, 0.95);
+  --color-border-dropdown: rgba(14, 165, 164, 0.2);
+  --color-bg-dropdown-hover: rgba(14, 165, 164, 0.1);
+  --color-text-logo-main: #f1f5f9;
+  --color-text-logo-sub: #94a3b8;
+  --color-bg-footer: rgba(5, 5, 5, 0.6);
+  --color-border-footer: rgba(14, 165, 164, 0.2);
+  --color-text-footer: #cbd5e1;
+  --color-text-footer-sub: #94a3b8;
+  --color-text-footer-heading: #f1f5f9;
+  --color-bg-footer-divider: rgba(71, 85, 105, 0.4);
+  --color-border-footer-bottom: rgba(30, 41, 59, 0.3);
+  --color-border-footer-grey: transparent;
+  --color-bg-footer-divider-subtle: rgba(71, 85, 105, 0.45);
+  --color-bg-code: linear-gradient(to bottom right, #1e293b, #0f172a);
+  --color-border-code: rgba(255, 255, 255, 0.06);
+  --color-text-code: #e2e8f0;
+}
+
+html {
+  font-family: var(--font-family);
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.prose img { border-radius: 0.5rem; }
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.animate-fadeUp {
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.logo-bg {
+  background: linear-gradient(to bottom right, var(--color-accent), #22d3ee);
+}
+
+.code-bg {
+  background: var(--color-bg-code);
+}
+
+.sine-aura {
+  pointer-events: none;
+  border-radius: 50%;
+  animation: sineWave 1.6s ease-in-out infinite;
+}
+
+@keyframes sineWave {
+  0% {
+    box-shadow:
+      0 0 0 0 var(--color-accent-rgba-025),
+      0 0 0 0 var(--color-accent-rgba-010);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 5px var(--color-accent-rgba-008),
+      0 0 0 10px var(--color-accent-rgba-004);
+    transform: scale(1.15);
+  }
+
+  100% {
+    box-shadow:
+      0 0 0 0 var(--color-accent-rgba-025),
+      0 0 0 0 var(--color-accent-rgba-010);
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+
+/* .outcome {
+  @apply card card-compact text-center;
+}
+
+.outcome .value {
+  @apply text-2xl font-bold;
+  color: var(--color-accent);
+}
+
+.outcome .label {
+  @apply mt-1 text-sm;
+  color: var(--muted-color);
+} */
+
+/* PDF export helpers */
+[data-exporting="true"] .no-export,
+[data-exporting="true"] .no-print {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* remove heavy shadows/gradients when exporting */
+[data-exporting="true"] .tw-card-inner,
+[data-exporting="true"] .fw-card-inner,
+[data-exporting="true"] .tw-card,
+[data-exporting="true"] .fw-card {
+  box-shadow: none !important;
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.06) !important;
+}
+
+/* remove masks used for the marquee edges */
+[data-exporting="true"] .mask-left,
+[data-exporting="true"] .mask-right,
+[data-exporting="true"] .fw-mask-left,
+[data-exporting="true"] .fw-mask-right {
+  display: none !important;
+}
+
+/* if you have floating arrows / export button, mark them with .no-export in JSX */
+.no-export { /* default no-op, used as marker */ }
+
+
+/* pinned style: gentle gradient left bar (behind content) */
+.reveal-card--pinned {
+  position: relative;
+  overflow: visible;
+}
+
+/* the accent bar sits behind content */
+.reveal-card--pinned::before {
+  content: "";
+  position: absolute;
+  left: 8px;         /* small inset so bar doesn't cut flush to edge */
+  top: 8px;
+  bottom: 8px;
+  width: 8px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--color-accent-rgba-016), var(--color-accent-rgba-006));
+  z-index: 0;        /* ensure it's _behind_ the content */
+  pointer-events: none;
+}
+
+/* make sure the content sits above the bar and has breathing room */
+.reveal-card--pinned .pinned-content {
+  position: relative;
+  z-index: 1;
+  padding-left: 8px;
+  gap: 12px;
+}
+
+/* keep previous hover/focus behaviours */
+.reveal-card--pinned:hover,
+.reveal-card--pinned:focus {
+  transform: translateY(-6px) scale(1.01);
+}
