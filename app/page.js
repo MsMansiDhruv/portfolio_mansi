@@ -364,7 +364,8 @@ export default function Home() {
                 <TerminalIntro text="Mansi Dhruv" />
 
                 {/* Headline + CTA (CTA stacks under headline for small screens) */}
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+
                   <div className="md:flex-1">
                     <h1
                       className="font-extrabold"
@@ -412,7 +413,7 @@ export default function Home() {
                           }}
                         >
                           <i>
-                            Hi There! <br />
+                            Hello! <br />
                             I design modern data platforms with a focus on clean architecture, automated workflows, and reliability at scale. I enjoy turning complex requirements into straightforward, maintainable systems.
                           </i>
                         </p>
