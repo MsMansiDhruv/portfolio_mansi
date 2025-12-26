@@ -287,3 +287,9 @@ html, body {
 .animate-slide-in-right {
   animation: slide-in-right 0.25s ease-out;
 }
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

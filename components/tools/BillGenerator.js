@@ -11,6 +11,7 @@ import Breadcrumbs from "../common/Breadcrumbs";
 
 /* ---------------- Main Component ---------------- */
 
+
 export default function BillGenerator() {
   /* ---------- QR ---------- */
   const [includeQR, setIncludeQR] = useState(false);
@@ -79,6 +80,36 @@ export default function BillGenerator() {
   const cardClass =
     "p-4 rounded-lg border bg-white dark:bg-[#1e293b80] border-gray-200 dark:border-gray-700";
 
+  /* ---------- Export to PDF ---------- */
+    const exportToPDF = async () => {
+    if (!invoiceRef.current) return;
+
+    const invoice = invoiceRef.current;
+
+    // Temporarily force light background for clean PDF
+    const originalBg = invoice.style.background;
+    invoice.style.background = "#ffffff";
+
+    const canvas = await html2canvas(invoice, {
+      scale: 2, // sharp PDF
+      useCORS: true,
+      backgroundColor: "#ffffff",
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`${invoiceNumber}.pdf`);
+
+    // Restore background
+    invoice.style.background = originalBg;
+  };
+
+
   /* ---------- Render ---------- */
   return (
     <div className="max-w-6xl mx-auto p-4">
@@ -94,7 +125,7 @@ export default function BillGenerator() {
       </h1>
 
       {/* ---------------- Layout ---------------- */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 no-print">
         {/* ---------------- Form ---------------- */}
         <div className="md:col-span-2 space-y-3">
           {/* Company */}
@@ -203,6 +234,19 @@ export default function BillGenerator() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="flex justify-end mb-3">
+        <button
+          onClick={exportToPDF}
+          className="
+            px-4 py-2 rounded-md text-sm font-medium
+            bg-[var(--site-accent)] text-black
+            hover:opacity-90 transition
+          "
+        >
+          Download Invoice (PDF)
+        </button>
       </div>
 
       {/* ---------------- Invoice ---------------- */}
