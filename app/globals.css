@@ -273,10 +273,10 @@ html, body {
 }
 
 /* keep previous hover/focus behaviours */
-.reveal-card--pinned:hover,
+/* .reveal-card--pinned:hover,
 .reveal-card--pinned:focus {
   transform: translateY(-6px) scale(1.01);
-}
+} */
 
 
 @keyframes slide-in-right {

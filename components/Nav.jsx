@@ -24,8 +24,6 @@ export default function Nav() {
     <>
       {/* HEADER */}
       <header className="sticky top-0 z-50 w-full bg-white dark:bg-[#050505] border-b border-primary/40">
-        
-        {/* INNER WRAPPER — NO CLAMP, NO TRICKS */}
         <div
           className="
             grid grid-cols-[auto,1fr,auto]
@@ -43,16 +41,13 @@ export default function Nav() {
             </div>
 
             <div className="leading-snug">
-              <div className="font-semibold text-logo-main">
-                Mansi Dhruv
-              </div>
+              <div className="font-semibold text-logo-main">Mansi Dhruv</div>
               <div className="text-xs text-logo-sub">
                 Lead Data Engineer · Solution Architect
               </div>
             </div>
           </Link>
 
-          {/* CENTER SPACER */}
           <div />
 
           {/* DESKTOP NAV */}
@@ -62,10 +57,16 @@ export default function Nav() {
             <NavLink href="/blog" active={isActive("/blog")}>Blog</NavLink>
             <NavLink href="/credentials" active={isActive("/credentials")}>Credentials</NavLink>
 
+            {/* TOOLKIT DROPDOWN */}
             <div className="relative group">
               <div
-                className={`flex items-center gap-1 cursor-pointer
-                  ${isActive("/tools") ? "text-primary font-semibold" : "text-nav hover:text-primary"}
+                className={`
+                  flex items-center gap-1 cursor-pointer transition
+                  ${
+                    isActive("/tools")
+                      ? "text-[var(--color-accent)] font-semibold"
+                      : "text-nav hover:text-[var(--color-accent)]"
+                  }
                 `}
               >
                 Toolkit
@@ -86,10 +87,18 @@ export default function Nav() {
                   border: "1px solid var(--dropdown-border)",
                 }}
               >
-                <NavItem href="/tools" active={isActive("/tools")}>All Tools</NavItem>
-                <NavItem href="/tools/bill" active={isActive("/tools/bill")}>Bill Generator</NavItem>
-                <NavItem href="/tools/json" active={isActive("/tools/json")}>JSON Analyser</NavItem>
-                <NavItem href="/tools/qr" active={isActive("/tools/qr")}>QR Code Generator</NavItem>
+                <NavItem href="/tools" active={isActive("/tools")}>
+                  All Tools
+                </NavItem>
+                <NavItem href="/tools/bill" active={isActive("/tools/bill")}>
+                  Bill Generator
+                </NavItem>
+                <NavItem href="/tools/json" active={isActive("/tools/json")}>
+                  JSON Analyser
+                </NavItem>
+                <NavItem href="/tools/qr" active={isActive("/tools/qr")}>
+                  QR Code Generator
+                </NavItem>
               </div>
             </div>
 
@@ -97,7 +106,7 @@ export default function Nav() {
             <ThemeToggle />
           </nav>
 
-          {/* MOBILE MENU */}
+          {/* MOBILE MENU BUTTON */}
           <button
             onClick={() => setOpen(true)}
             className="md:hidden justify-self-end"
@@ -148,7 +157,9 @@ function NavLink({ href, active, children }) {
   return (
     <Link
       href={href}
-      className={`nav-link ${active ? "text-primary font-semibold" : ""}`}
+      className={`nav-link ${
+        active ? "text-[var(--color-accent)] font-semibold" : ""
+      }`}
     >
       {children}
     </Link>
@@ -159,7 +170,14 @@ function NavItem({ href, active, children }) {
   return (
     <Link
       href={href}
-      className={`block px-4 py-2 text-sm ${active ? "font-semibold" : ""}`}
+      className={`
+        block px-4 py-2 text-sm rounded-md transition
+        ${
+          active
+            ? "text-[var(--color-accent)] bg-[var(--color-accent-rgba-008)] font-medium"
+            : "text-slate-700 dark:text-slate-300 hover:text-[var(--color-accent)] hover:bg-[var(--color-accent-rgba-006)]"
+        }
+      `}
     >
       {children}
     </Link>
