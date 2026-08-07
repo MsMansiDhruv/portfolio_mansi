@@ -6,12 +6,6 @@ import { Reveal, HoverLift } from "@/components/portfolio/motion";
 
 const TOOLS = [
   {
-    id: "ai-lab",
-    title: "AI Engineering Lab",
-    description: "Portfolio-aware assistants for architecture, SQL, interviews, and platform questions.",
-    href: "/tools/ai-lab",
-  },
-  {
     id: "bill",
     title: "Bill / invoice generator",
     description: "Create, preview, and export invoices (PDF and share flows).",

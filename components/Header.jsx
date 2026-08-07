@@ -17,7 +17,6 @@ const navItems = [
 
 const toolItems = [
   { label: "All Tools", href: "/tools" },
-  { label: "AI Engineering Lab", href: "/tools/ai-lab" },
   { label: "Bill Generator", href: "/tools/bill" },
   { label: "JSON Analyser", href: "/tools/json" },
   { label: "QR Code Generator", href: "/tools/qr" },
@@ -61,6 +60,15 @@ export default function Header({ onCommandOpen }) {
     return pathname === href || pathname.startsWith(href + "/");
   };
 
+  const isToolkitActive =
+    pathname === "/tools" ||
+    (pathname?.startsWith("/tools/") && !pathname.startsWith("/tools/ai-lab"));
+
+  const isToolItemActive = (href) => {
+    if (href === "/tools") return pathname === "/tools";
+    return isActive(href);
+  };
+
   const toggleTheme = () => {
     setTheme(isDark ? "light" : "dark");
   };
@@ -99,7 +107,7 @@ export default function Header({ onCommandOpen }) {
                   onClick={() => setDropdownOpen((state) => !state)}
                   className={cn(
                     "flex items-center gap-1 text-sm font-medium transition-colors pb-1 border-b-2",
-                    isActive("/tools")
+                    isToolkitActive
                       ? "text-slate-900 dark:text-white border-teal-600 dark:border-teal-400"
                       : "text-slate-600 dark:text-slate-300 border-transparent hover:text-slate-900 dark:hover:text-white"
                   )}
@@ -123,7 +131,7 @@ export default function Header({ onCommandOpen }) {
                         "block px-4 py-2 text-sm transition-colors",
                         i === 0 && "rounded-t-2xl",
                         i === toolItems.length - 1 && "rounded-b-2xl",
-                        isActive(item.href)
+                        isToolItemActive(item.href)
                           ? "bg-teal-50 font-medium text-teal-800 dark:bg-teal-950/50 dark:text-teal-300"
                           : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
                       )}
@@ -205,7 +213,9 @@ export default function Header({ onCommandOpen }) {
                     "block min-h-[44px] rounded-xl px-4 py-3 text-sm font-medium transition",
                     isActive(item.href)
                       ? "bg-teal-50 text-teal-800 dark:bg-teal-950/50 dark:text-teal-300"
-                      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
+                      : item.highlight
+                        ? "text-teal-600 dark:text-teal-300 hover:bg-teal-50/80 dark:hover:bg-teal-950/30"
+                        : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
                   )}
                 >
                   {item.label}
@@ -221,7 +231,7 @@ export default function Header({ onCommandOpen }) {
                       onClick={() => setMobileOpen(false)}
                       className={cn(
                         "block min-h-[44px] rounded-xl px-4 py-3 text-sm transition",
-                        isActive(item.href)
+                        isToolItemActive(item.href)
                           ? "bg-teal-50 font-medium text-teal-800 dark:bg-teal-950/50 dark:text-teal-300"
                           : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
                       )}
@@ -268,7 +278,7 @@ function NavLink({ href, active, highlight, children }) {
         active
           ? "text-slate-900 dark:text-white border-teal-700 dark:border-teal-400"
           : highlight
-            ? "text-teal-900/90 dark:text-teal-300 border-transparent hover:border-teal-600/40"
+            ? "border-transparent text-teal-600 hover:text-teal-700 dark:text-teal-300 dark:hover:text-teal-200"
             : "text-slate-600 dark:text-slate-300 border-transparent hover:text-slate-900 dark:hover:text-white"
       )}
     >

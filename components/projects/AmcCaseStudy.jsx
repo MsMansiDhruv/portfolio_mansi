@@ -25,6 +25,31 @@ function MetaRow({ label, value }) {
   );
 }
 
+function LegacyModernRow({ legacy, modern, index }) {
+  return (
+    <Reveal delay={0.04 + index * 0.04}>
+      <li className="min-w-0 rounded-2xl border border-slate-200/90 bg-white px-4 py-4 dark:border-slate-800 dark:bg-slate-950/80 sm:px-5 sm:py-4">
+        <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Legacy</p>
+            <p className="mt-1 text-sm font-medium leading-snug text-slate-800 dark:text-slate-200">{legacy}</p>
+          </div>
+          <div
+            className="flex shrink-0 items-center justify-center text-teal-700 dark:text-teal-400 md:w-10 motion-safe:transition-transform motion-reduce:transition-none"
+            aria-hidden
+          >
+            <ArrowRight className="h-5 w-5 rotate-90 md:rotate-0" />
+          </div>
+          <div className="min-w-0 flex-1 md:text-right">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-teal-800 dark:text-teal-400">Modern</p>
+            <p className="mt-1 text-sm font-medium leading-snug text-slate-950 dark:text-white">{modern}</p>
+          </div>
+        </div>
+      </li>
+    </Reveal>
+  );
+}
+
 export default function AmcCaseStudy() {
   const [notesOpen, setNotesOpen] = useState(false);
 
@@ -44,6 +69,9 @@ export default function AmcCaseStudy() {
           <Eyebrow>{C.eyebrow}</Eyebrow>
           <h1 className="mt-4 text-[clamp(1.75rem,5.5vw,2.75rem)] font-semibold leading-[1.12] tracking-tight text-slate-950 dark:text-white">
             {C.title}
+            <span className="block text-[clamp(1.125rem,3.5vw,1.5rem)] font-medium text-slate-600 dark:text-slate-400">
+              for a Leading AMC
+            </span>
           </h1>
           <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-400 sm:text-lg">{C.subtitle}</p>
 
@@ -136,6 +164,20 @@ export default function AmcCaseStudy() {
         </section>
       </Reveal>
 
+      <section className="mt-14 border-t border-slate-200 pt-12 dark:border-slate-800" aria-labelledby="amc-legacy-modern">
+        <Reveal delay={0.075}>
+          <h2 id="amc-legacy-modern" className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+            {C.legacyToModern.heading}
+          </h2>
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">{C.legacyToModern.intro}</p>
+        </Reveal>
+        <ul className="mt-6 flex flex-col gap-3">
+          {C.legacyToModern.pairs.map((pair, i) => (
+            <LegacyModernRow key={pair.legacy} legacy={pair.legacy} modern={pair.modern} index={i} />
+          ))}
+        </ul>
+      </section>
+
       <Reveal delay={0.08}>
         <section className="mt-14 border-t border-slate-200 pt-12 dark:border-slate-800" aria-labelledby="amc-decisions">
           <h2 id="amc-decisions" className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
@@ -167,23 +209,57 @@ export default function AmcCaseStudy() {
           <h2 id="amc-tech" className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
             Technology stack
           </h2>
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {C.techGroups.map((group) => (
-              <div key={group.group}>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{group.group}</p>
-                <ul className="mt-2 flex flex-wrap gap-2">
-                  {group.items.map((t) => (
-                    <li
-                      key={t}
-                      className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-700 transition hover:border-teal-600/30 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
-                    >
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <ul className="mt-6 flex flex-wrap gap-2.5">
+            {C.techPrimary.map((t) => (
+              <li
+                key={t}
+                className="rounded-xl border border-teal-700/25 bg-teal-50/60 px-3.5 py-2 text-sm font-semibold text-slate-900 dark:border-teal-500/30 dark:bg-teal-950/30 dark:text-slate-100"
+              >
+                {t}
+              </li>
             ))}
+          </ul>
+          <div className="mt-8 border-t border-slate-200/80 pt-6 dark:border-slate-800">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-500">
+              Supporting infrastructure
+            </p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {C.techSupporting.map((t) => (
+                <li
+                  key={t}
+                  className="rounded-full border border-slate-200/90 bg-slate-50/80 px-2.5 py-1 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/40 dark:text-slate-400"
+                >
+                  {t}
+                </li>
+              ))}
+            </ul>
           </div>
+        </section>
+      </Reveal>
+
+      <Reveal delay={0.095}>
+        <section className="mt-10" aria-label="Technical notes">
+          <button
+            type="button"
+            onClick={() => setNotesOpen((o) => !o)}
+            className="flex min-h-[44px] w-full items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-left text-sm font-medium text-slate-800 transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-100 dark:hover:bg-slate-900"
+            aria-expanded={notesOpen}
+          >
+            Technical notes
+            <ChevronDown className={cn("h-4 w-4 shrink-0 transition", notesOpen && "rotate-180")} />
+          </button>
+          {notesOpen ? (
+            <div className="mt-4 rounded-2xl border border-slate-200/80 px-4 py-4 dark:border-slate-800">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Source systems</p>
+              <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">{C.technicalNotes.sources.join(" · ")}</p>
+              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">Program objectives (summary)</p>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-600 dark:text-slate-400">
+                {C.technicalNotes.objectives.map((o) => (
+                  <li key={o}>{o}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </section>
       </Reveal>
 
@@ -223,93 +299,53 @@ export default function AmcCaseStudy() {
       </Reveal>
 
       <Reveal delay={0.12}>
-        <section className="mt-14 border-t border-slate-200 pt-12 dark:border-slate-800" aria-labelledby="amc-contrib">
-          <h2 id="amc-contrib" className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-            Areas of engineering contribution
-          </h2>
-          <p className="mt-3 max-w-2xl text-sm text-slate-600 dark:text-slate-400">{C.contributionsIntro}</p>
-          <ul className="mt-5 grid gap-2 sm:grid-cols-2">
-            {C.contributions.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600 dark:bg-teal-400" aria-hidden />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+        <section
+          className="mt-14 border-t border-slate-200 pt-12 dark:border-slate-800"
+          aria-labelledby="amc-contrib"
+        >
+          <div className="rounded-2xl border border-teal-700/20 bg-gradient-to-br from-white via-white to-teal-50/50 p-6 sm:p-8 dark:border-teal-500/25 dark:from-slate-950 dark:via-slate-950 dark:to-teal-950/25">
+            <h2 id="amc-contrib" className="text-base font-semibold tracking-tight text-slate-950 dark:text-white sm:text-lg">
+              Engineering contribution
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">{C.contributionsIntro}</p>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+              {C.contributions.map((item) => (
+                <li key={item} className="flex min-w-0 items-start gap-2.5 text-sm text-slate-800 dark:text-slate-200">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600 dark:bg-teal-400" aria-hidden />
+                  <span className="min-w-0 break-words">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
       </Reveal>
 
       <Reveal delay={0.13}>
-        <section className="mt-14 border-t border-slate-200 pt-12 dark:border-slate-800" aria-labelledby="amc-timeline">
-          <h2 id="amc-timeline" className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-            Delivery timeline
-          </h2>
-          <ol className="mt-6 flex flex-col gap-0 border-l border-slate-200 pl-4 dark:border-slate-800 md:hidden">
-            {C.timeline.map((step) => (
-              <li key={step.range} className="relative pb-6 last:pb-0">
-                <span className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-teal-600 dark:bg-teal-400" aria-hidden />
-                <p className="text-xs font-semibold text-teal-800 dark:text-teal-400">{step.range}</p>
-                <p className="mt-1 text-sm font-medium text-slate-900 dark:text-white">{step.label}</p>
-              </li>
-            ))}
-          </ol>
-          <ol className="mt-6 hidden min-w-0 gap-3 md:grid md:grid-cols-5">
-            {C.timeline.map((step, i) => (
-              <li key={step.range} className="relative min-w-0 rounded-xl border border-slate-200/80 px-3 py-3 dark:border-slate-800">
-                {i < C.timeline.length - 1 ? (
-                  <span className="absolute -right-2 top-1/2 hidden h-px w-4 bg-slate-200 lg:block dark:bg-slate-700" aria-hidden />
-                ) : null}
-                <p className="text-xs font-semibold text-teal-800 dark:text-teal-400">{step.range}</p>
-                <p className="mt-1 text-sm font-medium leading-snug text-slate-900 dark:text-white">{step.label}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-      </Reveal>
-
-      <Reveal delay={0.14}>
-        <section className="mt-14 border-t border-slate-200 pt-12 dark:border-slate-800">
-          <button
-            type="button"
-            onClick={() => setNotesOpen((o) => !o)}
-            className="flex min-h-[44px] w-full items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-left text-sm font-medium text-slate-800 transition hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-100 dark:hover:bg-slate-900"
-            aria-expanded={notesOpen}
+        <footer className="mt-16 border-t border-slate-200 pt-12 pb-4 dark:border-slate-800">
+          <blockquote className="max-w-2xl border-l-2 border-teal-700/40 pl-4 text-base leading-relaxed text-slate-700 dark:border-teal-500/50 dark:text-slate-300">
+            {C.takeaway}
+          </blockquote>
+          <nav
+            className="mt-10 flex flex-col gap-4 border-t border-slate-200/80 pt-8 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800"
+            aria-label="Case study navigation"
           >
-            Technical notes
-            <ChevronDown className={cn("h-4 w-4 shrink-0 transition", notesOpen && "rotate-180")} />
-          </button>
-          {notesOpen ? (
-            <div className="mt-4 rounded-2xl border border-slate-200/80 px-4 py-4 dark:border-slate-800">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Source systems</p>
-              <p className="mt-2 text-sm text-slate-700 dark:text-slate-300">{C.technicalNotes.sources.join(" · ")}</p>
-              <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">Program objectives (summary)</p>
-              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-600 dark:text-slate-400">
-                {C.technicalNotes.objectives.map((o) => (
-                  <li key={o}>{o}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </section>
-      </Reveal>
-
-      <Reveal delay={0.15}>
-        <footer className="mt-14 border-t border-slate-200 pt-10 dark:border-slate-800">
-          <p className="max-w-2xl text-base leading-relaxed text-slate-700 dark:text-slate-300">{C.takeaway}</p>
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <Link href="/projects" className="text-sm font-medium text-teal-700 hover:underline dark:text-teal-400">
-              ← Back to projects
+            <Link
+              href="/projects"
+              className="inline-flex min-h-[44px] items-center text-sm font-medium text-teal-800 transition hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-300"
+            >
+              ← Back to Projects
             </Link>
             {C.nextProject ? (
               <Link
                 href={`/projects/${C.nextProject.slug}`}
-                className="inline-flex items-center gap-1 text-sm font-medium text-slate-700 hover:text-teal-800 dark:text-slate-300 dark:hover:text-teal-400"
+                className="inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-slate-700 transition hover:text-teal-800 dark:text-slate-300 dark:hover:text-teal-400"
               >
-                Next project: {C.nextProject.title}
-                <ArrowRight className="h-4 w-4" />
+                Next project
+                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
+                <span className="text-teal-800 dark:text-teal-400">{C.nextProject.title}</span>
               </Link>
             ) : null}
-          </div>
+          </nav>
         </footer>
       </Reveal>
     </article>
