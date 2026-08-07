@@ -5,7 +5,8 @@
 
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/lib/cn';
 
 export const Modal = React.forwardRef(function Modal(
@@ -25,12 +26,19 @@ export const Modal = React.forwardRef(function Modal(
 ) {
   const modalRef = useRef(null);
   const lastFocusRef = useRef(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Focus trap and keyboard handling
   useEffect(() => {
     if (!isOpen) return;
 
     lastFocusRef.current = document.activeElement;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
     function handleKeyDown(e) {
       if (e.key === 'Escape' && onClose) {
@@ -39,10 +47,13 @@ export const Modal = React.forwardRef(function Modal(
     }
 
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const sizeClasses = {
     sm: 'max-w-sm',
@@ -52,12 +63,12 @@ export const Modal = React.forwardRef(function Modal(
     '2xl': 'max-w-2xl',
   };
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop */}
       {backdrop && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 transition-opacity"
+          className="fixed inset-0 z-[100] bg-black/50 transition-opacity"
           onClick={onClose}
           aria-hidden="true"
         />
@@ -69,7 +80,7 @@ export const Modal = React.forwardRef(function Modal(
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 z-[101] flex items-center justify-center p-4"
       >
         <div
           className={cn(
@@ -81,6 +92,7 @@ export const Modal = React.forwardRef(function Modal(
             sizeClasses[size] || sizeClasses.md,
             className
           )}
+          onClick={(e) => e.stopPropagation()}
           {...props}
         >
           {/* Header */}
@@ -103,6 +115,7 @@ export const Modal = React.forwardRef(function Modal(
               </div>
               {closeButton && (
                 <button
+                  type="button"
                   onClick={onClose}
                   className="ml-4 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
                   aria-label="Close modal"
@@ -114,12 +127,11 @@ export const Modal = React.forwardRef(function Modal(
           )}
 
           {/* Content */}
-          <div className="ds-modal-content p-6">
-            {children}
-          </div>
+          <div className="ds-modal-content p-6">{children}</div>
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 });
 

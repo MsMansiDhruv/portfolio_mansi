@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { ArchitectureFlow, DecisionList, TradeoffPanel } from "@/components/portfolio/storytelling";
 import { SupportingProjectCard } from "@/components/portfolio/featured-work";
+import AmcCaseStudy from "@/components/projects/AmcCaseStudy";
 import { getRelatedProjects } from "@/lib/data/project-meta";
 import { cn } from "@/lib/cn";
 
@@ -46,6 +47,9 @@ function ArchitecturePanel({ layers, notes, className }) {
 
 export default function ProjectDetails({ project }) {
   const p = project;
+  if (p.slug === "project-amc-datalake-solution" || p.caseStudy === "amc") {
+    return <AmcCaseStudy />;
+  }
   const related = getRelatedProjects(p.slug);
   const hasArchitecture = Boolean(p.architectureLayers?.length);
 

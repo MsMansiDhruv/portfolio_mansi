@@ -1,10 +1,35 @@
 import ProjectDetails from "./ProjectDetails";
 import { PROJECT_META, getProjectMeta, resolveProjectSlug } from "@/lib/data/project-meta";
+import { AMC_CASE_STUDY_SLUG } from "@/lib/data/amc-case-study";
 
 export async function generateStaticParams() {
   const slugs = Object.keys(PROJECT_META);
   if (!slugs.includes("amc")) slugs.push("amc");
   return slugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata(props) {
+  const params = props?.params ? await props.params : null;
+  const rawSlug = params?.slug ? (Array.isArray(params.slug) ? params.slug[0] : params.slug) : null;
+  const slug = rawSlug ? resolveProjectSlug(rawSlug) : null;
+
+  if (slug === AMC_CASE_STUDY_SLUG) {
+    return {
+      title: "Legacy Data Modernization & ETL | Case Study",
+      description:
+        "Engineering case study: AWS data lake, Glue ETL, Redshift, and analytics modernization for a leading Indian AMC — architecture, decisions, and outcomes.",
+    };
+  }
+
+  const project = slug ? getProjectMeta(slug) : null;
+  if (project) {
+    return {
+      title: `${project.title} | Projects`,
+      description: project.summary || project.desc,
+    };
+  }
+
+  return { title: "Project" };
 }
 
 export default async function Page(props) {
