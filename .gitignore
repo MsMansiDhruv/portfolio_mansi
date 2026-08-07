@@ -50,3 +50,5 @@ Thumbs.db
 .eslintcache
 .cache/
 .turbo/
+build.log
+vercel-build-test.log
