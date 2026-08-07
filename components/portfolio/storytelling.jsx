@@ -28,7 +28,7 @@ export function ArchitectureFlow({ layers, className, compact = false }) {
               compact ? "px-3 py-2 text-xs" : "px-4 py-3 text-sm"
             )}
           >
-            <span className="font-medium text-slate-800 dark:text-slate-200">{label}</span>
+            <span className="break-words font-medium text-slate-800 dark:text-slate-200">{label}</span>
           </div>
           {index < layers.length - 1 ? (
             <span className="my-0.5 text-slate-400 dark:text-slate-600" aria-hidden>

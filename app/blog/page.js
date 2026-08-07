@@ -45,11 +45,11 @@ export default function BlogPage() {
   const rest = posts.slice(1);
 
   return (
-    <div className="space-y-12">
+    <div className="min-w-0 space-y-10 sm:space-y-12">
       <Reveal>
         <header className="max-w-2xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-teal-800/80 dark:text-teal-400">Publication</p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 dark:text-white">Writing</h1>
+          <h1 className="mt-4 text-[clamp(1.75rem,5vw,2.25rem)] font-semibold tracking-tight text-slate-950 dark:text-white">Writing</h1>
           <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">Engineering notes on data platforms, cloud, and delivery.</p>
         </header>
       </Reveal>
@@ -59,9 +59,9 @@ export default function BlogPage() {
 
       {!loading && !error && featured ? (
         <Reveal delay={0.05}>
-          <article className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-950" onClick={() => openArticle(featured.url)}>
+          <article className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950 sm:p-8" onClick={() => openArticle(featured.url)}>
             <p className="text-xs font-medium uppercase tracking-widest text-slate-500">Featured</p>
-            <h2 className="mt-3 text-2xl font-semibold text-slate-950 group-hover:text-teal-800 dark:text-white dark:group-hover:text-teal-400">
+            <h2 className="mt-3 break-words text-xl font-semibold text-slate-950 group-hover:text-teal-800 dark:text-white dark:group-hover:text-teal-400 sm:text-2xl">
               {featured.title}
             </h2>
             <p className="mt-3 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">{featured.subtitle}</p>
@@ -86,9 +86,9 @@ export default function BlogPage() {
                   onClick={() => openArticle(p.url)}
                   className="group w-full py-5 text-left"
                 >
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-                    <div>
-                      <h3 className="text-base font-semibold text-slate-950 group-hover:text-teal-800 dark:text-white dark:group-hover:text-teal-400">
+                  <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+                    <div className="min-w-0">
+                      <h3 className="break-words text-base font-semibold text-slate-950 group-hover:text-teal-800 dark:text-white dark:group-hover:text-teal-400">
                         {p.title}
                       </h3>
                       {p.subtitle ? <p className="mt-1 line-clamp-1 text-sm text-slate-600 dark:text-slate-400">{p.subtitle}</p> : null}

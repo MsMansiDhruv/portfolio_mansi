@@ -19,7 +19,7 @@ export default function ToolLayout({
   const labelMap = { tools: "Toolkit", ...breadcrumbMap };
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <Reveal>
         <div className="max-w-2xl">
           <Link
@@ -39,7 +39,7 @@ export default function ToolLayout({
               <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-teal-800/80 dark:text-teal-400">
                 Toolkit
               </p>
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
+              <h1 className="mt-3 break-words text-[clamp(1.65rem,5vw,2.25rem)] font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
                 {title}
               </h1>
             </>
@@ -55,8 +55,8 @@ export default function ToolLayout({
         <div
           className={
             wide
-              ? "rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:p-6"
-              : "rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950"
+              ? "min-w-0 overflow-x-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950 sm:p-6"
+              : "min-w-0 overflow-x-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950"
           }
         >
           {children}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
@@ -37,6 +37,7 @@ const MODES = [
   {
     id: "architecture",
     label: "Architecture Expert",
+    shortLabel: "Architecture",
     icon: ServerCog,
     accent: "teal",
     welcome: "Designing scalable data platforms, one decision at a time.",
@@ -46,6 +47,7 @@ const MODES = [
   {
     id: "pipeline",
     label: "Pipeline Reviewer",
+    shortLabel: "Pipeline",
     icon: GitBranch,
     accent: "slate",
     welcome: "Paste the architecture and I’ll review reliability, scale, and cost.",
@@ -55,6 +57,7 @@ const MODES = [
   {
     id: "sql",
     label: "SQL Optimizer",
+    shortLabel: "SQL",
     icon: TerminalSquare,
     accent: "emerald",
     welcome: "I’ll optimize SQL for readability, performance, and execution cost.",
@@ -64,6 +67,7 @@ const MODES = [
   {
     id: "interview",
     label: "Interview Coach",
+    shortLabel: "Interview",
     icon: Mic,
     accent: "violet",
     welcome: "Practice system design, leadership, and behavioral answers with targeted feedback.",
@@ -73,6 +77,7 @@ const MODES = [
   {
     id: "ask",
     label: "Ask Mansi",
+    shortLabel: "Mansi",
     icon: MessageSquareText,
     accent: "amber",
     welcome: "Ask about my work, philosophy, and the kinds of systems I like to build.",
@@ -82,6 +87,7 @@ const MODES = [
   {
     id: "cloud",
     label: "Cloud Cost Advisor",
+    shortLabel: "Cost",
     icon: Cloud,
     accent: "sky",
     welcome: "Estimate the drivers behind cloud cost and identify practical savings.",
@@ -135,35 +141,31 @@ const ARCHITECTURE_STEPS = [
   "Power BI",
 ];
 
-function SourcesPanel({ sources }) {
-  if (!sources) return null;
-  const groups = [
-    { key: "generalEngineering", label: "General engineering context" },
-    { key: "technologiesDiscussed", label: "Technologies discussed" },
-    { key: "relatedProjects", label: "Potentially relevant experience" },
-    { key: "personalExperience", label: "Personal experience" },
-  ].filter((group) => Array.isArray(sources[group.key]) && sources[group.key].length);
-
-  if (!groups.length) return null;
-
+function MobileCollapsible({ title, defaultOpen = false, children }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950">
-      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Relevant context</p>
-      <div className="mt-3 space-y-3">
-        {groups.map((group) => (
-          <div key={group.key}>
-            <p className="text-xs font-medium text-slate-700 dark:text-slate-300">{group.label}</p>
-            <ul className="mt-1 space-y-1 text-sm text-slate-600 dark:text-slate-400">
-              {sources[group.key].map((item) => (
-                <li key={`${group.key}-${item}`} className="flex gap-2">
-                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-teal-500" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+    <div className="rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <button
+        type="button"
+        onClick={() => setOpen((state) => !state)}
+        className="flex min-h-[44px] w-full items-center justify-between gap-2 px-4 py-3 text-left text-sm font-medium text-slate-800 dark:text-slate-100"
+      >
+        <span>{title}</span>
+        <ChevronDown className={cn("h-4 w-4 shrink-0 text-slate-500 transition", open && "rotate-180")} />
+      </button>
+      <AnimatePresence initial={false}>
+        {open ? (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden border-t border-slate-200 px-4 py-3 dark:border-slate-800"
+          >
+            {children}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }
@@ -235,9 +237,9 @@ function CodeBlock({ code, language = "text", collapsed = false }) {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="overflow-hidden p-4 text-sm leading-6"
+            className="overflow-x-auto overflow-y-hidden p-4 text-sm leading-6"
           >
-            <code className="whitespace-pre-wrap">{code}</code>
+            <code className="whitespace-pre">{code}</code>
           </motion.pre>
         ) : null}
       </AnimatePresence>
@@ -253,7 +255,7 @@ function ConversationMessage({ role, children, streaming = false }) {
           <Bot className="h-4 w-4" />
         </div>
       ) : null}
-      <div className={cn("max-w-[92%] rounded-3xl border px-4 py-3 sm:max-w-[80%]", role === "user" ? "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900" : "border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900")}>
+      <div className={cn("min-w-0 max-w-full rounded-3xl border px-4 py-3 sm:max-w-[80%]", role === "user" ? "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900" : "border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900")}>
         {children}
         {streaming ? <span className="ml-1 inline-block h-4 w-1 animate-pulse rounded bg-current align-middle" /> : null}
       </div>
@@ -287,9 +289,7 @@ function ArchitectureDiagram({ active = 0 }) {
 export default function AiLabPage() {
   const reducedMotion = useReducedMotion();
   const [mode, setMode] = useState(MODES[0].id);
-  const [messages, setMessages] = useState(() => [
-    { id: "welcome", role: "assistant", type: "text", content: "Choose a mode to start exploring engineering decisions." },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingText, setStreamingText] = useState("");
@@ -302,23 +302,13 @@ export default function AiLabPage() {
   const currentMode = MODES.find((item) => item.id === mode) ?? MODES[0];
   const inspector = INSPECTOR[mode];
   const samples = PROMPT_TEMPLATES[mode];
-  const stats = useMemo(
-    () => [
-      { label: "AI modes", value: "6 specialized agents", icon: <Cpu className="h-4 w-4" /> },
-      { label: "Responses", value: "Context-aware", icon: <Sparkles className="h-4 w-4" /> },
-      { label: "Engine", value: "Knowledge-grounded", icon: <Gauge className="h-4 w-4" /> },
-    ],
-    []
-  );
 
   const latestAssistantMessage = [...messages].reverse().find((message) => message.role === "assistant");
   const animatedStreaming = useStreaming(streamingText, isStreaming && !reducedMotion);
   const streamingPreview = isStreaming ? animatedStreaming : latestAssistantMessage?.content;
 
   useEffect(() => {
-    setMessages([
-      { id: "welcome", role: "assistant", type: "text", content: currentMode.welcome },
-    ]);
+    setMessages([]);
     setInput("");
     setSelectedPrompt(null);
     setModePromptIndex(0);
@@ -326,8 +316,8 @@ export default function AiLabPage() {
 
   useEffect(() => {
     if (!history.length) return undefined;
-    const last = history[history.length - 1];
-    setSelectedPrompt(last);
+    const last = history[0];
+    setSelectedPrompt(last.prompt);
   }, [history]);
 
   const conversationRef = useRef({ recentQuestions: [], recentSubjects: [], currentEntities: [] });
@@ -352,30 +342,57 @@ export default function AiLabPage() {
     ]);
     setHistory((current) => [{ id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, prompt }, ...current].slice(0, 8));
     setIsStreaming(true);
-    setStreamingText(JSON.stringify(assistantMessage, null, 2));
-    window.setTimeout(() => setIsStreaming(false), 900);
+    setStreamingText(assistantMessage.summary || "Thinking through this…");
+    window.setTimeout(() => setIsStreaming(false), 650);
     setInput("");
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-white">
-      <div className="mx-auto flex min-h-screen w-full max-w-[90rem] flex-col px-4 py-4 sm:px-6 lg:px-8">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div>
+    <main className="min-h-screen min-w-0 overflow-x-hidden bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-white">
+      <div className="mx-auto flex min-h-screen w-full max-w-[90rem] min-w-0 flex-col px-5 py-4 sm:px-6 lg:px-8">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <div className="min-w-0">
             <Link href="/" className="text-xs font-medium text-teal-700 hover:underline dark:text-teal-400">
               ← Portfolio
             </Link>
             <p className="mt-2 text-xs uppercase tracking-[0.32em] text-slate-500 dark:text-slate-400">AI Engineering Lab</p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight">Engineering workspace</h1>
+            <h1 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">Engineering workspace</h1>
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+              6 agents · Context-aware · Knowledge-grounded
+            </p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+          <div className="hidden shrink-0 items-center gap-2 text-sm text-slate-500 dark:text-slate-400 md:flex">
             <span className="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
             Knowledge-grounded reasoning
           </div>
         </div>
 
-        <div className="grid flex-1 gap-4 lg:grid-cols-[240px_minmax(0,1fr)_280px]">
-          <aside className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="-mx-1 overflow-x-auto pb-2 lg:hidden">
+          <div className="flex min-w-min gap-2 px-1">
+            {MODES.map((item) => {
+              const selected = item.id === mode;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setMode(item.id)}
+                  className={cn(
+                    "inline-flex min-h-[44px] shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition",
+                    selected
+                      ? "border-teal-600 bg-teal-600 text-white dark:border-teal-500 dark:bg-teal-600"
+                      : "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                  )}
+                >
+                  <ModeIcon mode={item} />
+                  {item.shortLabel}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="grid min-w-0 flex-1 grid-cols-1 gap-4 lg:grid-cols-[minmax(200px,240px)_minmax(0,1fr)_minmax(220px,260px)]">
+          <aside className="hidden min-w-0 lg:block lg:max-h-[calc(100dvh-9rem)] lg:overflow-y-auto rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Modes</p>
@@ -430,55 +447,58 @@ export default function AiLabPage() {
                         : "border-transparent bg-white hover:border-slate-200 dark:bg-slate-900 dark:hover:border-slate-800"
                     )}
                   >
-                    <Zap className="mt-0.5 h-4 w-4 text-teal-500" />
-                    <span>{sample}</span>
+                    <Zap className="mt-0.5 h-4 w-4 shrink-0 text-teal-500" />
+                    <span className="min-w-0 break-words">{sample}</span>
                   </button>
                 ))}
               </div>
             </div>
           </aside>
 
-          <section className="flex min-h-0 flex-col rounded-[2rem] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <div className="border-b border-slate-200 px-5 py-4 dark:border-slate-800">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{currentMode.label}</p>
-                  <h2 className="mt-2 text-2xl font-semibold tracking-tight">{currentMode.welcome}</h2>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex rounded-full border border-slate-200 bg-slate-50 p-0.5 text-xs dark:border-slate-800 dark:bg-slate-950">
+          <div className="flex min-h-0 min-w-0 flex-col gap-4">
+          <section className="flex min-h-[min(640px,calc(100dvh-11rem))] min-w-0 w-full flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:min-h-[min(720px,calc(100dvh-10rem))]">
+            <div className="shrink-0 border-b border-slate-200 px-4 py-4 dark:border-slate-800 sm:px-5">
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-xs font-medium uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
+                    {currentMode.label}
+                  </p>
+                  <div className="inline-flex shrink-0 rounded-full border border-slate-200 bg-slate-50 p-0.5 text-xs dark:border-slate-800 dark:bg-slate-950">
                     <button
                       type="button"
                       onClick={() => setDetailLevel("concise")}
-                      className={cn("rounded-full px-3 py-1", detailLevel === "concise" ? "bg-white shadow-sm dark:bg-slate-900" : "text-slate-500")}
+                      className={cn(
+                        "min-h-[36px] rounded-full px-3 py-1",
+                        detailLevel === "concise" ? "bg-white shadow-sm dark:bg-slate-900" : "text-slate-500"
+                      )}
                     >
                       Concise
                     </button>
                     <button
                       type="button"
                       onClick={() => setDetailLevel("detailed")}
-                      className={cn("rounded-full px-3 py-1", detailLevel === "detailed" ? "bg-white shadow-sm dark:bg-slate-900" : "text-slate-500")}
+                      className={cn(
+                        "min-h-[36px] rounded-full px-3 py-1",
+                        detailLevel === "detailed" ? "bg-white shadow-sm dark:bg-slate-900" : "text-slate-500"
+                      )}
                     >
                       Detailed
                     </button>
                   </div>
-                  {stats.map((stat) => (
-                    <div key={stat.label} className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-950">
-                      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
-                        {stat.icon}
-                        {stat.label}
-                      </div>
-                      <div className="mt-1 text-lg font-semibold">{typeof stat.value === "number" && stat.unit ? `${stat.value}${stat.unit}` : stat.value}</div>
-                    </div>
-                  ))}
                 </div>
+                <p className="max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                  {currentMode.welcome}
+                </p>
               </div>
             </div>
 
-            <div ref={viewportRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6">
-              <div className="mx-auto w-full max-w-3xl">
+            <div ref={viewportRef} className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-4 sm:px-6">
+              <div className="w-full min-w-0">
               <AnimatePresence initial={false}>
                 {messages.map((message) => {
+                  const isLatestAssistant = message.role === "assistant" && latestAssistantMessage?.id === message.id;
+                  const showThinking = isStreaming && isLatestAssistant;
+
                   if (message.role === "assistant" && message.type === "structured") {
                     return (
                       <motion.div
@@ -487,10 +507,14 @@ export default function AiLabPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="mb-4"
+                        className="mb-4 min-w-0"
                       >
-                        <ConversationMessage role="assistant" streaming={isStreaming && latestAssistantMessage?.id === message.id}>
-                          <StructuredResponse mode={mode} data={message.content} onFollowUp={(item) => submitPrompt(item.label || item, item)} />
+                        <ConversationMessage role="assistant" streaming={showThinking}>
+                          {showThinking ? (
+                            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">{streamingPreview}</p>
+                          ) : (
+                            <StructuredResponse mode={mode} data={message.content} onFollowUp={(item) => submitPrompt(item.label || item, item)} />
+                          )}
                         </ConversationMessage>
                       </motion.div>
                     );
@@ -503,7 +527,7 @@ export default function AiLabPage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="mb-4"
+                      className="mb-4 min-w-0"
                     >
                       <ConversationMessage role={message.role}>{message.content}</ConversationMessage>
                     </motion.div>
@@ -511,22 +535,14 @@ export default function AiLabPage() {
                 })}
               </AnimatePresence>
 
-              <AnimatePresence initial={false}>
-                {isStreaming ? (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="mb-4">
-                    <ConversationMessage role="assistant" streaming>
-                      <pre className="whitespace-pre-wrap text-sm leading-6 text-slate-700 dark:text-slate-200">{streamingPreview}</pre>
-                    </ConversationMessage>
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
-
-              {messages.length === 1 ? <EmptyState currentMode={currentMode} onUseSample={(sample) => setInput(sample)} /> : null}
+              {messages.length === 0 ? (
+                <EmptyState currentMode={currentMode} onUseSample={(sample) => setInput(sample)} onRunSample={submitPrompt} />
+              ) : null}
               </div>
             </div>
 
-            <div className="border-t border-slate-200 p-4 dark:border-slate-800">
-              <div className="mb-3 flex flex-wrap gap-2">
+            <div className="shrink-0 border-t border-slate-200 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] dark:border-slate-800">
+              <div className="mb-3 hidden flex-wrap gap-2 sm:flex">
                 {history.slice(0, 3).map((item) => (
                   <button
                     key={item.id}
@@ -543,9 +559,9 @@ export default function AiLabPage() {
                   event.preventDefault();
                   submitPrompt(input);
                 }}
-                className="flex items-end gap-3"
+                className="flex flex-col gap-3 sm:flex-row sm:items-end"
               >
-                <div className="flex-1 rounded-3xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+                <div className="min-w-0 flex-1 rounded-3xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950">
                   <textarea
                     value={input}
                     onChange={(event) => setInput(event.target.value)}
@@ -561,7 +577,7 @@ export default function AiLabPage() {
                 <button
                   type="submit"
                   disabled={!input.trim()}
-                  className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
+                  className="inline-flex min-h-[44px] w-full shrink-0 items-center justify-center gap-2 rounded-full bg-teal-700 px-5 py-3 text-sm font-medium text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto dark:bg-teal-600 dark:hover:bg-teal-500"
                 >
                   Send
                   <ArrowRight className="h-4 w-4" />
@@ -570,7 +586,53 @@ export default function AiLabPage() {
             </div>
           </section>
 
-          <aside className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="space-y-3 lg:hidden">
+            <MobileCollapsible title="Try an example">
+              <div className="space-y-2">
+                {samples.map((sample) => (
+                  <button
+                    key={sample}
+                    type="button"
+                    onClick={() => submitPrompt(sample)}
+                    className="flex min-h-[44px] w-full items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
+                  >
+                    <span className="min-w-0 break-words">{sample}</span>
+                    <Play className="h-4 w-4 shrink-0 text-teal-600 dark:text-teal-400" />
+                  </button>
+                ))}
+              </div>
+            </MobileCollapsible>
+            <MobileCollapsible title="History">
+              {history.length ? (
+                <div className="space-y-2">
+                  {history.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setInput(item.prompt)}
+                      className="block w-full rounded-xl bg-slate-50 px-3 py-2 text-left text-sm text-slate-700 dark:bg-slate-950 dark:text-slate-300"
+                    >
+                      {item.prompt}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500 dark:text-slate-400">Prompt history will appear here.</p>
+              )}
+            </MobileCollapsible>
+            <MobileCollapsible title={inspector.title}>
+              <div className="space-y-2">
+                {inspector.bullets.map((item) => (
+                  <div key={item} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300">
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </MobileCollapsible>
+          </div>
+          </div>
+
+          <aside className="hidden min-w-0 lg:block lg:max-h-[calc(100dvh-9rem)] lg:overflow-y-auto rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">{inspector.title}</p>
             <div className="mt-4 space-y-2">
               {inspector.bullets.map((item) => (
@@ -584,9 +646,14 @@ export default function AiLabPage() {
               <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Helpful examples</p>
               <div className="mt-3 space-y-2">
                 {samples.map((sample) => (
-                  <button key={sample} type="button" onClick={() => submitPrompt(sample)} className="flex w-full items-center justify-between rounded-2xl border border-transparent bg-white px-3 py-2 text-left text-sm transition hover:border-slate-200 dark:bg-slate-900 dark:hover:border-slate-800">
-                    <span className="truncate">{sample}</span>
-                    <Play className="h-4 w-4 text-teal-500" />
+                  <button
+                    key={sample}
+                    type="button"
+                    onClick={() => submitPrompt(sample)}
+                    className="flex w-full items-center justify-between gap-2 rounded-2xl border border-transparent bg-white px-3 py-2 text-left text-sm transition hover:border-slate-200 dark:bg-slate-900 dark:hover:border-slate-800"
+                  >
+                    <span className="min-w-0 flex-1 break-words">{sample}</span>
+                    <Play className="h-4 w-4 shrink-0 text-teal-500" />
                   </button>
                 ))}
               </div>
@@ -595,11 +662,20 @@ export default function AiLabPage() {
             <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
               <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">History</p>
               <div className="mt-3 space-y-2">
-                {history.length ? history.map((item) => (
-                  <div key={item.id} className="rounded-2xl bg-white px-3 py-2 text-sm text-slate-700 dark:bg-slate-900 dark:text-slate-300">
-                    {item.prompt}
-                  </div>
-                )) : <p className="text-sm text-slate-500 dark:text-slate-400">Prompt history will appear here.</p>}
+                {history.length ? (
+                  history.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setInput(item.prompt)}
+                      className="block w-full rounded-2xl bg-white px-3 py-2 text-left text-sm text-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                    >
+                      {item.prompt}
+                    </button>
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Prompt history will appear here.</p>
+                )}
               </div>
             </div>
           </aside>
@@ -631,7 +707,7 @@ function StructuredResponse({ mode, data, onFollowUp }) {
   const compact = (data.sections || []).length <= 4;
 
   return (
-    <div className="space-y-3">
+    <div className="min-w-0 space-y-3 break-words">
       <div className="text-base font-semibold text-slate-950 dark:text-white">{data.title}</div>
       {data.summary ? <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{data.summary}</p> : null}
       {data.code ? <CodeBlock language="sql" code={data.code} /> : null}
@@ -649,7 +725,6 @@ function StructuredResponse({ mode, data, onFollowUp }) {
           Show deeper analysis ({detail.length} sections)
         </button>
       ) : null}
-      <SourcesPanel sources={data.sources} />
       {data.followUps?.length ? (
         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950">
           <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Would you like</p>
@@ -676,54 +751,72 @@ function StructuredResponse({ mode, data, onFollowUp }) {
 }
 
 function SectionBlock({ section, compact }) {
+  const [open, setOpen] = useState(section.tier !== "detail");
+  const collapsible = section.tier === "detail";
+
   if (compact && !section.bullets?.length && section.body) {
-    return <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{section.body}</p>;
+    return <p className="break-words text-sm leading-relaxed text-slate-700 dark:text-slate-300">{section.body}</p>;
   }
-  return (
-    <div className="rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2.5 dark:border-slate-800 dark:bg-slate-950/80">
-      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{section.heading}</p>
-      {section.body ? <p className="mt-1 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{section.body}</p> : null}
+
+  const body = (
+    <>
+      {section.body ? <p className="mt-1 break-words text-sm leading-relaxed text-slate-700 dark:text-slate-300">{section.body}</p> : null}
       {section.bullets?.length ? (
         <ul className="mt-1.5 space-y-1.5 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
           {section.bullets.map((bullet, bulletIndex) => (
             <li key={`${section.heading}-${bulletIndex}`} className="flex gap-2">
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500" />
-              <span>{bullet}</span>
+              <span className="min-w-0 break-words">{bullet}</span>
             </li>
           ))}
         </ul>
       ) : null}
+    </>
+  );
+
+  if (collapsible) {
+    return (
+      <div className="rounded-xl border border-slate-200/80 bg-white/80 dark:border-slate-800 dark:bg-slate-950/80">
+        <button
+          type="button"
+          onClick={() => setOpen((state) => !state)}
+          className="flex min-h-[44px] w-full items-center justify-between gap-2 px-3 py-2.5 text-left"
+        >
+          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{section.heading}</p>
+          <ChevronDown className={cn("h-4 w-4 shrink-0 text-slate-400 transition", open && "rotate-180")} />
+        </button>
+        {open ? <div className="border-t border-slate-200/80 px-3 pb-2.5 dark:border-slate-800">{body}</div> : null}
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2.5 dark:border-slate-800 dark:bg-slate-950/80">
+      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{section.heading}</p>
+      {body}
     </div>
   );
 }
 
-function EmptyState({ currentMode, onUseSample }) {
+function EmptyState({ currentMode, onUseSample, onRunSample }) {
   return (
-    <div className="mt-6 rounded-[2rem] border border-dashed border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-950">
-      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <div>
-          <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Welcome</p>
-          <h3 className="mt-2 text-2xl font-semibold tracking-tight">{currentMode.welcome}</h3>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-400">
-            Select a mode, try an example prompt, and watch the response build in a way that mirrors a future API-backed assistant.
-          </p>
-        </div>
-        <div className="rounded-3xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-          <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Example prompts</p>
-          <div className="mt-3 space-y-2">
-            {currentMode.examples.map((example) => (
-              <button
-                key={example}
-                type="button"
-                onClick={() => onUseSample(example)}
-                className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-left text-sm text-slate-700 transition hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
-              >
-                <span>{example}</span>
-                <ChevronRight className="h-4 w-4 text-slate-400" />
-              </button>
-            ))}
-          </div>
-        </div>
+    <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-950/80 sm:p-5">
+      <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Try an example</p>
+      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        Pick a starter prompt or type your own below.
+      </p>
+      <div className="mt-4 space-y-2">
+        {currentMode.examples.slice(0, 4).map((example) => (
+          <button
+            key={example}
+            type="button"
+            onClick={() => (onRunSample ? onRunSample(example) : onUseSample(example))}
+            className="flex min-h-[44px] w-full items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-left text-sm text-slate-700 transition hover:border-teal-200 hover:bg-teal-50/50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-teal-900 dark:hover:bg-teal-950/30"
+          >
+            <span className="min-w-0 flex-1 break-words">{example}</span>
+            <ChevronRight className="h-4 w-4 shrink-0 text-teal-600 dark:text-teal-400" />
+          </button>
+        ))}
       </div>
     </div>
   );

@@ -22,14 +22,15 @@ export default function AppShell({ children }) {
 
   return (
     <DSv2ThemeProvider defaultTheme="system" storageKey="theme">
-      <div className="flex flex-col min-h-screen bg-[#faf9f6] dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+      <div className="flex min-h-screen min-w-0 flex-col overflow-x-hidden bg-[#faf9f6] dark:bg-slate-950 text-slate-900 dark:text-slate-100">
         <Header onCommandOpen={() => setCommandOpen(true)} />
 
-        <main className="flex-grow w-full">
+        <main className="min-w-0 flex-grow w-full">
           <div
             className={cn(
-              isAiLab ? "max-w-none px-0 py-0" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
-              !isAiLab && (isHome ? "py-8 sm:py-10 lg:py-12" : "py-10 sm:py-12 lg:py-14")
+              "min-w-0",
+              isAiLab ? "max-w-none px-0 py-0" : "mx-auto max-w-7xl px-5 sm:px-6 lg:px-8",
+              !isAiLab && (isHome ? "py-8 sm:py-10 lg:py-12" : "py-8 sm:py-10 lg:py-14")
             )}
           >
             <PageTransition>{children}</PageTransition>

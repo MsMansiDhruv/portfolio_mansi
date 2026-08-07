@@ -20,6 +20,12 @@ function SectionLabel({ children }) {
   );
 }
 
+function formatTechLabel(label, max = 4) {
+  const parts = (label || "").split(" · ").filter(Boolean);
+  if (parts.length <= max) return parts.join(" · ");
+  return parts.slice(0, max).join(" · ");
+}
+
 function CaseStudyRow({ study, featured = false }) {
   return (
     <HoverLift>
@@ -39,7 +45,7 @@ function CaseStudyRow({ study, featured = false }) {
             >
               {study.title}
             </h3>
-            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{study.techLabel}</p>
+            <p className="mt-2 break-words text-xs text-slate-500 dark:text-slate-400">{formatTechLabel(study.techLabel)}</p>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">{study.outcome}</p>
           </div>
           <span className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-teal-800 transition group-hover:gap-2 dark:text-teal-400">
@@ -57,18 +63,18 @@ export default function HomePage() {
   const [primary, ...rest] = HOME_CASE_STUDIES;
 
   return (
-    <div className="space-y-20 pb-8 sm:space-y-24">
+    <div className="space-y-14 pb-8 sm:space-y-20 lg:space-y-24">
       <Reveal>
-        <section className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-[#faf9f6] via-white to-teal-50/30 px-6 py-10 dark:border-slate-800 dark:from-slate-950 dark:via-slate-950 dark:to-teal-950/20 sm:px-10 sm:py-12">
+        <section className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-[#faf9f6] via-white to-teal-50/30 px-5 py-8 dark:border-slate-800 dark:from-slate-950 dark:via-slate-950 dark:to-teal-950/20 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
           <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-teal-400/10 blur-3xl" aria-hidden />
           <SectionLabel>Data engineering · Cloud · AI</SectionLabel>
-          <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-slate-950 dark:text-white sm:text-5xl lg:text-[3.25rem]">
+          <h1 className="mt-4 max-w-3xl text-[clamp(1.75rem,6.5vw,3.25rem)] font-semibold leading-[1.1] tracking-tight text-slate-950 dark:text-white">
             I build reliable data platforms that turn complex systems into something teams can actually operate.
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400 sm:text-lg">
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400 sm:text-lg">
             Lead Data Engineer and Solution Architect working across data platforms, cloud architecture, distributed systems, and applied AI.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
             <Button href={`/projects/${FEATURED_PROJECT_SLUG}`} size="lg" className="rounded-full">
               Explore featured work
               <ArrowRight className="h-4 w-4" />
@@ -108,7 +114,7 @@ export default function HomePage() {
       <Reveal delay={0.08}>
         <section>
           <SectionLabel>How I think about engineering</SectionLabel>
-          <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
             {ENGINEERING_PRINCIPLES.map((item) => (
               <li key={item.title} className="border-l-2 border-teal-600/40 pl-4 dark:border-teal-500/50">
                 <p className="text-sm font-semibold text-slate-950 dark:text-white">{item.title}</p>
@@ -120,7 +126,7 @@ export default function HomePage() {
       </Reveal>
 
       <Reveal delay={0.1}>
-        <section className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-[#faf9f6] to-teal-50/50 px-6 py-8 dark:border-slate-800 dark:from-slate-950 dark:via-slate-950 dark:to-teal-950/25 sm:px-8">
+        <section className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-[#faf9f6] to-teal-50/50 px-5 py-7 dark:border-slate-800 dark:from-slate-950 dark:via-slate-950 dark:to-teal-950/25 sm:px-8 sm:py-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-md">
               <SectionLabel>Product</SectionLabel>

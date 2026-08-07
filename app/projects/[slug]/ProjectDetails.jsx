@@ -21,7 +21,7 @@ export default function ProjectDetails({ project }) {
   const related = getRelatedProjects(p.slug);
 
   return (
-    <div className="w-full max-w-4xl animate-fadeIn">
+    <div className="min-w-0 w-full max-w-4xl animate-fadeIn">
       <nav className="mb-6 text-sm" aria-label="Breadcrumb">
         <ol className="flex flex-wrap items-center gap-2 text-slate-500 dark:text-slate-400">
           <li>
@@ -42,7 +42,7 @@ export default function ProjectDetails({ project }) {
 
       <header>
         <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-teal-700 dark:text-teal-400">{p.category}</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">{p.title}</h1>
+        <h1 className="mt-3 break-words text-[clamp(1.65rem,5vw,2.25rem)] font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">{p.title}</h1>
         {p.purpose ? <p className="mt-2 text-base text-slate-600 dark:text-slate-400">{p.purpose}</p> : null}
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
           {[p.role, p.timeline].filter(Boolean).join(" · ")}
@@ -55,7 +55,7 @@ export default function ProjectDetails({ project }) {
       </Section>
 
       <Section title="Architecture">
-        <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-2 lg:items-start">
           <ArchitectureFlow layers={p.architectureLayers} />
           {p.architectureNotes?.length ? (
             <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">

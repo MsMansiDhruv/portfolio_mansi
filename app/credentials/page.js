@@ -522,7 +522,7 @@ export default function CredentialsPage() {
                       </motion.div>
 
                       <motion.div className="flex flex-col items-center justify-center rounded-md p-3 bg-white/0" variants={statVariant} initial="hidden" animate="show" whileHover={prefersReduced ? {} : "hover"} style={{ cursor: "default" }}>
-                        <div className="w-10 h-10 rounded-md flex items-center justify-center mb-2" style={{ background: "linear-gradient(180deg, rgba(96,165,250,0.08), rgba(96,165,250,0.03))" }} aria-hidden>
+                        <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-md" style={{ background: "linear-gradient(180deg, rgba(46,196,182,0.08), rgba(46,196,182,0.03))" }} aria-hidden>
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
                             <path d="M21 15a2 2 0 01-2 2H8l-5 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill={ACCENT} />
                           </svg>

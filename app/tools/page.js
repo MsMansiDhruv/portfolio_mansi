@@ -33,13 +33,13 @@ const TOOLS = [
 
 export default function ToolsPage() {
   return (
-    <div className="space-y-12">
+    <div className="min-w-0 space-y-10 sm:space-y-12">
       <Reveal>
         <header className="max-w-2xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-teal-800/80 dark:text-teal-400">
             Utilities
           </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 dark:text-white">
+          <h1 className="mt-4 text-[clamp(1.75rem,5vw,2.25rem)] font-semibold tracking-tight text-slate-950 dark:text-white">
             Toolkit
           </h1>
           <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
@@ -48,7 +48,7 @@ export default function ToolsPage() {
         </header>
       </Reveal>
 
-      <ul className="grid gap-4 sm:grid-cols-2">
+      <ul className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
         {TOOLS.map((t, i) => (
           <Reveal key={t.id} delay={0.04 * i}>
             <HoverLift>

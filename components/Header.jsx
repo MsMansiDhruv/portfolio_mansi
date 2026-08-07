@@ -69,15 +69,15 @@ export default function Header({ onCommandOpen }) {
     <>
       <header
         className={cn(
-          "sticky top-0 z-50 w-full transition-all duration-300",
+          "sticky top-0 z-50 w-full transition-all duration-300 pt-[env(safe-area-inset-top)]",
           scrolled
             ? "bg-[#faf9f6]/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-800/70 shadow-sm"
             : "bg-transparent"
         )}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-full">
+            <Link href="/" className="flex items-center gap-3 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2">
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm">
                 MD
               </div>
@@ -124,7 +124,7 @@ export default function Header({ onCommandOpen }) {
                         i === 0 && "rounded-t-2xl",
                         i === toolItems.length - 1 && "rounded-b-2xl",
                         isActive(item.href)
-                          ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium"
+                          ? "bg-teal-50 font-medium text-teal-800 dark:bg-teal-950/50 dark:text-teal-300"
                           : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
                       )}
                     >
@@ -170,7 +170,7 @@ export default function Header({ onCommandOpen }) {
               <button
                 type="button"
                 onClick={() => setMobileOpen(true)}
-                className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                className="md:hidden inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                 aria-label="Open mobile menu"
               >
                 <Menu size={20} />
@@ -183,13 +183,13 @@ export default function Header({ onCommandOpen }) {
       {mobileOpen && (
         <>
           <div className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <aside className="fixed inset-y-0 right-0 z-50 w-11/12 max-w-xs bg-white dark:bg-slate-950 shadow-2xl border-l border-slate-200 dark:border-slate-800 overflow-y-auto">
+          <aside className="fixed inset-y-0 right-0 z-50 w-11/12 max-w-xs overflow-y-auto border-l border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-950 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
             <div className="flex items-center justify-between px-4 h-16 border-b border-slate-200 dark:border-slate-800">
               <span className="text-sm font-semibold text-slate-900 dark:text-white">Menu</span>
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="p-2 rounded-full text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full p-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
                 aria-label="Close menu"
               >
                 <X size={20} />
@@ -202,9 +202,9 @@ export default function Header({ onCommandOpen }) {
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
-                    "block rounded-2xl px-4 py-3 text-sm font-medium transition",
+                    "block min-h-[44px] rounded-xl px-4 py-3 text-sm font-medium transition",
                     isActive(item.href)
-                      ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                      ? "bg-teal-50 text-teal-800 dark:bg-teal-950/50 dark:text-teal-300"
                       : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
                   )}
                 >
@@ -222,7 +222,7 @@ export default function Header({ onCommandOpen }) {
                       className={cn(
                         "block rounded-2xl px-4 py-3 text-sm transition",
                         isActive(item.href)
-                          ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                          ? "bg-teal-50 font-medium text-teal-800 dark:bg-teal-950/50 dark:text-teal-300"
                           : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
                       )}
                     >

@@ -219,7 +219,7 @@ export default function CommandPalette({ isOpen, onOpen, onClose }) {
                       className={cn(
                         "w-full px-4 py-3 flex items-center gap-3 transition-colors text-left",
                         isSelected
-                          ? "bg-blue-600 dark:bg-blue-700 text-white"
+                          ? "bg-teal-600 text-white dark:bg-teal-600"
                           : "hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-900 dark:text-slate-100"
                       )}
                     >
