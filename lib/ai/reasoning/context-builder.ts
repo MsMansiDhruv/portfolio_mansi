@@ -24,14 +24,11 @@ const BLOCKED_BY_QUESTION_TYPE: Partial<Record<QuestionType, string[]>> = {
 };
 
 const PREFERRED_BY_QUESTION_TYPE: Partial<Record<QuestionType, string[]>> = {
-  ARCHITECTURE_PLACEMENT: ["architecture", "technology"],
-  COMPONENT_PLACEMENT: ["architecture", "technology"],
+  ARCHITECTURE_PLACEMENT: ["architecture", "technology", "project"],
+  COMPONENT_PLACEMENT: ["architecture", "technology", "project"],
   INGESTION_RECOMMENDATION: ["architecture", "technology", "story"],
   ARCHITECTURE_REVIEW: ["architecture", "technology", "story", "project"],
   EXPLANATION: ["technology", "architecture", "project"],
-  ARCHITECTURE_PLACEMENT: ["technology", "architecture", "project"],
-  COMPONENT_PLACEMENT: ["technology", "architecture", "project"],
-  INGESTION_RECOMMENDATION: ["architecture", "technology"],
   COMPARISON: ["technology", "architecture"],
   PROJECT_QUESTION: ["project", "technology", "story"],
   PERSONAL_EXPERIENCE: ["philosophy", "leadership", "resume", "project", "story"],

@@ -1,5 +1,5 @@
 import type { ComposedResponse, KnowledgeDocument, KnowledgeSearchCache } from "../types";
-import type { QuestionType } from "./input-analyzer";
+import type { QuestionType, UserInputAnalysis } from "./input-analyzer";
 
 export type KnowledgeTier = "user" | "general" | "personal";
 
