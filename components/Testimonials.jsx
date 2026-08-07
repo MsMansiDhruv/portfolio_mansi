@@ -42,7 +42,7 @@ function computeEffectiveThemeFromStorageOrHtml() {
 }
 
 /* tweak this constant if you want cards narrower/wider */
-const CARD_WIDTH = "min(72vw,620px)";
+const CARD_WIDTH = "min(88vw, 620px)";
 
 function Card({ t, onEnter, onLeave, onTouchStart, onTouchEnd }) {
   return (
@@ -58,7 +58,7 @@ function Card({ t, onEnter, onLeave, onTouchStart, onTouchEnd }) {
         flex: "0 0 auto",
         width: CARD_WIDTH,
         maxWidth: 620,
-        minWidth: 300,
+        minWidth: 0,
         boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
@@ -219,7 +219,7 @@ export default function FullWidthTestimonialsMarquee({ initial = null, speed = B
       --card-border: rgba(46,196,182,0.12);
       --card-shadow: 0 10px 30px rgba(2,6,23,0.18);
       --badge-bg: rgba(148,163,184,0.06);
-      --badge-fg: #dbeafe;
+      --badge-fg: #e2e8f0;
       --mask-start: rgba(46,196,182,0.12);
       --mask-end: rgba(46,196,182,0);
     }
@@ -261,7 +261,7 @@ export default function FullWidthTestimonialsMarquee({ initial = null, speed = B
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold" style={{ color: ACCENT }}>What people say</h2>
+            <h2 className="text-xl font-semibold sm:text-2xl md:text-3xl" style={{ color: ACCENT }}>What people say</h2>
             <p className="text-sm text-slate-700 dark:text-slate-400 mt-1 max-w-2xl">Recommendations from colleagues & mentors.</p>
           </div>
           <div className="hidden sm:flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
@@ -271,7 +271,7 @@ export default function FullWidthTestimonialsMarquee({ initial = null, speed = B
         </div>
       </div>
 
-      <div ref={wrapRef} className="mx-auto max-w-6xl px-4 relative" style={{ overflow: "hidden" }}>
+      <div ref={wrapRef} className="relative mx-auto max-w-6xl min-w-0 overflow-hidden px-4">
         <div
           ref={scrollerRef}
           tabIndex={0}

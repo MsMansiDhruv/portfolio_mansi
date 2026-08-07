@@ -6,30 +6,18 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   Bot,
-  CheckCircle2,
   ChevronDown,
   ChevronRight,
   Cloud,
-  Code2,
-  Copy,
-  Cpu,
-  Database,
-  Gauge,
   GitBranch,
-  Lock,
   MessageSquareText,
   Mic,
   MoonStar,
   Play,
-  Search,
   ServerCog,
-  Sparkles,
   TerminalSquare,
-  Users,
-  X,
   Zap,
 } from "lucide-react";
-import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Metric, MetricGrid, Pipeline } from "@/components/design-system-v2";
 import { cn } from "@/lib/cn";
 import { formatResponseSections, generateResponse } from "./engine";
 
@@ -132,15 +120,6 @@ const PROMPT_TEMPLATES = {
   cloud: ["My AWS bill is high in SageMaker.", "Optimize SageMaker costs.", "Reduce Databricks spend."],
 };
 
-const ARCHITECTURE_STEPS = [
-  "Sources",
-  "Kafka",
-  "Databricks",
-  "Delta",
-  "Gold Layer",
-  "Power BI",
-];
-
 function MobileCollapsible({ title, defaultOpen = false, children }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -168,22 +147,6 @@ function MobileCollapsible({ title, defaultOpen = false, children }) {
       </AnimatePresence>
     </div>
   );
-}
-
-function useCountUp(target, duration = 1100, decimals = 0) {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    let frame;
-    const start = performance.now();
-    const tick = (time) => {
-      const progress = Math.min((time - start) / duration, 1);
-      setValue(Number((target * (1 - Math.pow(1 - progress, 3))).toFixed(decimals)));
-      if (progress < 1) frame = window.requestAnimationFrame(tick);
-    };
-    frame = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frame);
-  }, [target, duration, decimals]);
-  return value;
 }
 
 function useStreaming(message, active) {
@@ -260,28 +223,6 @@ function ConversationMessage({ role, children, streaming = false }) {
         {streaming ? <span className="ml-1 inline-block h-4 w-1 animate-pulse rounded bg-current align-middle" /> : null}
       </div>
       {role === "user" ? <div className="h-9 w-9 rounded-full bg-slate-200 dark:bg-slate-800" /> : null}
-    </div>
-  );
-}
-
-function ArchitectureDiagram({ active = 0 }) {
-  return (
-    <div className="space-y-3">
-      {ARCHITECTURE_STEPS.map((step, index) => (
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: index * 0.04 }}
-          className={cn(
-            "rounded-2xl border px-4 py-3 text-sm",
-            index <= active ? "border-teal-200 bg-teal-50 text-slate-950 dark:border-teal-900 dark:bg-teal-950/40 dark:text-white" : "border-slate-200 bg-white text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400"
-          )}
-        >
-          {step}
-          {index < ARCHITECTURE_STEPS.length - 1 ? <div className="mt-2 text-center text-slate-400">↓</div> : null}
-        </motion.div>
-      ))}
     </div>
   );
 }

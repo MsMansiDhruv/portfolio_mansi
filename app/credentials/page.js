@@ -364,7 +364,7 @@ export default function CredentialsPage() {
 
   return (
     <motion.main
-      className="w-full pt-2 pb-10"
+      className="min-w-0 w-full overflow-x-hidden pt-2 pb-10"
       initial="hidden"
       animate="show"
       variants={pageContainer}
@@ -438,7 +438,7 @@ export default function CredentialsPage() {
                         <div className="flex items-start gap-3">
                           <div className="min-w-0">
                             <div className="text-xs text-slate-500 dark:text-slate-300 truncate">{c.org}</div>
-                            <h3 className="mt-1 text-sm font-semibold text-slate-900 dark:text-white truncate">{c.title}</h3>
+                            <h3 className="mt-1 break-words text-sm font-semibold text-slate-900 dark:text-white">{c.title}</h3>
                             {c.description && <div className="mt-2 text-sm text-slate-600 dark:text-slate-300 line-clamp-2">{c.description}</div>}
                           </div>
 

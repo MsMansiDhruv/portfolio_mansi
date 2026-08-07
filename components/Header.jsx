@@ -152,7 +152,7 @@ export default function Header({ onCommandOpen }) {
                 type="button"
                 onClick={toggleTheme}
                 aria-label="Toggle theme"
-                className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2"
               >
                 {isDark ? <Sun size={18} /> : <Moon size={18} />}
               </button>
@@ -183,7 +183,7 @@ export default function Header({ onCommandOpen }) {
       {mobileOpen && (
         <>
           <div className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <aside className="fixed inset-y-0 right-0 z-50 w-11/12 max-w-xs overflow-y-auto border-l border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-950 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+          <aside className="fixed inset-y-0 right-0 z-50 w-11/12 max-w-xs overflow-y-auto border-l border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-950 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]" role="dialog" aria-modal="true" aria-label="Site menu">
             <div className="flex items-center justify-between px-4 h-16 border-b border-slate-200 dark:border-slate-800">
               <span className="text-sm font-semibold text-slate-900 dark:text-white">Menu</span>
               <button
@@ -220,7 +220,7 @@ export default function Header({ onCommandOpen }) {
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
                       className={cn(
-                        "block rounded-2xl px-4 py-3 text-sm transition",
+                        "block min-h-[44px] rounded-xl px-4 py-3 text-sm transition",
                         isActive(item.href)
                           ? "bg-teal-50 font-medium text-teal-800 dark:bg-teal-950/50 dark:text-teal-300"
                           : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900"
@@ -264,7 +264,7 @@ function NavLink({ href, active, highlight, children }) {
     <Link
       href={href}
       className={cn(
-        "text-sm font-medium transition-colors pb-1 border-b-2",
+        "rounded-sm text-sm font-medium transition-colors pb-1 border-b-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2",
         active
           ? "text-slate-900 dark:text-white border-teal-700 dark:border-teal-400"
           : highlight
