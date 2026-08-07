@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import QRCodeGenerator from "./QRCodeGenerator";
-import Breadcrumbs from "../common/Breadcrumbs";
 
 /* ---------------- Main Component ---------------- */
 
@@ -112,16 +111,7 @@ export default function BillGenerator() {
 
   /* ---------- Render ---------- */
   return (
-    <div className="max-w-[1400px] mx-auto p-4">
-      <Breadcrumbs labelMap={{ tools: "Community Tools", bill: "Bill Generator" }} />
-
-      <h1
-        className="text-4xl font-bold mb-6"
-        style={{ color: "var(--color-accent)" }}
-      >
-        Bill Generator
-      </h1>
-
+    <div className="max-w-[1400px] mx-auto">
       {/* ================= FORM + SIDEBAR ================= */}
       <div className="grid grid-cols-1 xl:grid-cols-[3fr_1fr] gap-6 mb-8 no-print">
         {/* -------- Left Form -------- */}

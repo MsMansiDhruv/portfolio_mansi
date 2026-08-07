@@ -1,23 +1,20 @@
-// app/tools/json/page.jsx
-// (server component — no dynamic/ssr flags required)
-
-import React from "react";
 import JsonFormatter from "../../../components/tools/JsonFormatter";
-import Breadcrumbs from "../../../components/common/Breadcrumbs";
-import GPUSparks from "../../../components/GpuSparks";
+import ToolLayout from "../../../components/tools/ToolLayout";
+
+export const metadata = {
+  title: "JSON analyser · Toolkit",
+  description: "Format, validate, and inspect JSON in the browser.",
+};
 
 export default function Page() {
   return (
-    <main className="w-full max-w-6xl mx-auto px-6 py-8">
-      <GPUSparks />
-      <Breadcrumbs
-        labelMap={{
-          tools: "Community Tools",
-          json: "JSON Analyser",
-        }}
-      />
-
+    <ToolLayout
+      title="JSON analyser"
+      description="Paste JSON to format, highlight errors, explore a tree view, and infer a simple schema — all client-side."
+      breadcrumbMap={{ json: "JSON analyser" }}
+      wide
+    >
       <JsonFormatter />
-    </main>
+    </ToolLayout>
   );
 }

@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
-const ACCENT = "var(--color-accent)";
 const LINE_HEIGHT = 24;
 
 /* ===================== SYNTAX HIGHLIGHT ===================== */
@@ -231,12 +230,7 @@ export default function JsonFormatter() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-6xl mx-auto"
     >
-      <h1 className="text-2xl font-semibold mb-4" style={{ color: ACCENT }}>
-        JSON Analyser
-      </h1>
-
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4">
         {/* INPUT */}
         <section

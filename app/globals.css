@@ -129,6 +129,75 @@ html, body {
   font-family: var(--font-family);
   max-width: 100%;
   overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Smooth scrolling and selection colors */
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(51, 65, 85) rgb(226, 232, 240);
+}
+
+html.dark {
+  scrollbar-color: rgb(51, 65, 85) rgb(15, 23, 42);
+}
+
+/* Webkit scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(226, 232, 240);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(100, 116, 139);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(71, 85, 105);
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: rgb(15, 23, 42);
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgb(51, 65, 85);
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgb(71, 85, 105);
+}
+
+/* Text selection */
+::selection {
+  background-color: rgb(37, 99, 235);
+  color: white;
+}
+
+html.dark ::selection {
+  background-color: rgb(59, 130, 246);
+  color: white;
+}
+
+/* Links */
+a {
+  transition: color 0.2s ease;
+}
+
+/* Focus visible for better accessibility */
+:focus-visible {
+  outline: 2px solid rgb(37, 99, 235);
+  outline-offset: 2px;
+}
+
+html.dark :focus-visible {
+  outline-color: rgb(59, 130, 246);
 }
 
 @tailwind base;

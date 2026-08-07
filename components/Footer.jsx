@@ -1,127 +1,59 @@
 "use client";
 
 import Link from "next/link";
+import { Mail, Github, Linkedin, ExternalLink } from "lucide-react";
 
 export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer
-      className="
-        w-full
-        bg-footer
-        backdrop-blur-sm
-        text-footer
-        border-t border-primary/30
-      "
-    >
-      {/* MAIN */}
-      <div
-        className="w-full py-10"
-        style={{
-          paddingLeft: "clamp(24px, 6vw, 120px)",
-          paddingRight: "clamp(24px, 6vw, 120px)",
-        }}
-      >
-        <div className="flex flex-col lg:flex-row gap-12">
-
-          {/* LEFT — BRANDING */}
-          <div className="lg:w-[320px] shrink-0">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-md flex items-center justify-center font-bold logo-bg text-black dark:text-white">
-                MD
-              </div>
-
-              <div>
-                <div className="text-sm font-semibold text-footer-heading">
-                  Mansi Dhruv
-                </div>
-                <div className="mt-1 text-xs text-footer-sub">
-                  Lead Data Engineer · Solution Architect
-                </div>
-                <div className="mt-1 text-xs text-footer-sub">
-                  Cloud · Data Platforms · ML Infrastructure
-                </div>
-              </div>
-            </div>
+    <footer className="mt-auto w-full border-t border-slate-200/90 bg-[#faf9f6] dark:border-slate-800 dark:bg-slate-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-base font-semibold text-slate-950 dark:text-white">Mansi Dhruv</p>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Lead Data Engineer · Solution Architect</p>
           </div>
-
-          {/* RIGHT — LINKS */}
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-10">
-
-            {/* Navigation */}
-            <div>
-              <div className="text-sm font-medium text-footer-heading mb-2">
-                Navigation
-              </div>
-              <ul className="space-y-1 text-xs text-footer-sub">
-                <li><Link href="/">Home</Link></li>
-                <li><Link href="/projects">Projects</Link></li>
-                <li><Link href="/blog">Blog</Link></li>
-                <li><Link href="/tools">Community Tools</Link></li>
-              </ul>
-            </div>
-
-            {/* Writing */}
-            <div>
-              <div className="text-sm font-medium text-footer-heading mb-2">
-                Writing
-              </div>
-              <ul className="space-y-1 text-xs text-footer-sub">
-                <li><Link href="/blog">Blog</Link></li>
-                <li><Link href="/notebook">Notebook</Link></li>
-                <li>
-                  <a href="https://medium.com/@mansi.p.dhruv">Medium</a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Community */}
-            <div>
-              <div className="text-sm font-medium text-footer-heading mb-2">
-                Community
-              </div>
-              <ul className="space-y-1 text-xs text-footer-sub">
-                <li><Link href="/tools">Tools</Link></li>
-                <li>
-                  <a href="https://github.com/MsMansiDhruv">GitHub</a>
-                </li>
-                <li>
-                  <a href="https://www.linkedin.com/in/mansidhruv/">LinkedIn</a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Contact */}
-            <div>
-              <div className="text-sm font-medium text-footer-heading mb-2">
-                Contact
-              </div>
-              <ul className="space-y-1 text-xs text-footer-sub">
-                <li>
-                  <a href="mailto:mansi.p.dhruv@gmail.com">Email</a>
-                </li>
-                <li>India · Canada</li>
-                <li>
-                  <a href="/resume.pdf">Resume</a>
-                </li>
-              </ul>
-            </div>
-
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600 dark:text-slate-400">
+            <Link href="/projects" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+              Projects
+            </Link>
+            <Link href="/blog" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+              Writing
+            </Link>
+            <Link href="/credentials" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+              About
+            </Link>
+            <Link href="/tools/ai-lab" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+              AI Lab
+            </Link>
+            <Link href="/contact" className="hover:text-slate-950 dark:hover:text-white transition-colors">
+              Contact
+            </Link>
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 hover:text-slate-950 dark:hover:text-white transition-colors"
+            >
+              Resume <ExternalLink size={12} />
+            </a>
+          </nav>
+          <div className="flex items-center gap-2">
+            <a href="https://github.com/MsMansiDhruv" target="_blank" rel="noopener noreferrer" className="rounded-lg p-2 text-slate-600 hover:bg-slate-200/60 dark:text-slate-400 dark:hover:bg-slate-900" aria-label="GitHub">
+              <Github size={18} />
+            </a>
+            <a href="https://www.linkedin.com/in/mansidhruv/" target="_blank" rel="noopener noreferrer" className="rounded-lg p-2 text-slate-600 hover:bg-slate-200/60 dark:text-slate-400 dark:hover:bg-slate-900" aria-label="LinkedIn">
+              <Linkedin size={18} />
+            </a>
+            <a href="mailto:mansi.p.dhruv@gmail.com" className="rounded-lg p-2 text-slate-600 hover:bg-slate-200/60 dark:text-slate-400 dark:hover:bg-slate-900" aria-label="Email">
+              <Mail size={18} />
+            </a>
           </div>
         </div>
       </div>
-
-      {/* BOTTOM */}
-      <div
-        className="w-full py-4 text-xs text-footer-sub flex flex-col sm:flex-row justify-between gap-2"
-        style={{
-          paddingLeft: "clamp(24px, 6vw, 120px)",
-          paddingRight: "clamp(24px, 6vw, 120px)",
-        }}
-      >
-        <span>© {year} Mansi Dhruv</span>
-        <span>Built with care · All rights reserved</span>
+      <div className="border-t border-slate-200/80 dark:border-slate-800">
+        <p className="max-w-7xl mx-auto px-4 py-4 text-xs text-slate-500 sm:px-6 lg:px-8">© {year} Mansi Dhruv</p>
       </div>
     </footer>
   );

@@ -1,0 +1,304 @@
+/**
+ * Premium Design System — Tokens
+ * Inspired by Linear, Vercel, Stripe, Raycast, OpenAI
+ *
+ * Namespace: --ds-* (does not override legacy site tokens)
+ */
+
+/* ─── Light theme (default) ─── */
+:root,
+[data-ds-theme="light"] {
+  /* Backgrounds */
+  --ds-bg: #ffffff;
+  --ds-bg-subtle: #fafafa;
+  --ds-bg-muted: #f4f4f5;
+  --ds-bg-elevated: #ffffff;
+  --ds-bg-overlay: rgba(0, 0, 0, 0.45);
+  --ds-bg-inverse: #09090b;
+
+  /* Surfaces */
+  --ds-surface: #ffffff;
+  --ds-surface-hover: #fafafa;
+  --ds-surface-active: #f4f4f5;
+  --ds-surface-glass: rgba(255, 255, 255, 0.72);
+
+  /* Borders */
+  --ds-border: rgba(0, 0, 0, 0.08);
+  --ds-border-strong: rgba(0, 0, 0, 0.14);
+  --ds-border-subtle: rgba(0, 0, 0, 0.04);
+  --ds-border-focus: rgba(99, 102, 241, 0.55);
+
+  /* Text */
+  --ds-text: #09090b;
+  --ds-text-secondary: #52525b;
+  --ds-text-muted: #71717a;
+  --ds-text-disabled: #a1a1aa;
+  --ds-text-inverse: #fafafa;
+  --ds-text-link: #6366f1;
+
+  /* Brand / Accent */
+  --ds-accent: #6366f1;
+  --ds-accent-hover: #4f46e5;
+  --ds-accent-muted: rgba(99, 102, 241, 0.12);
+  --ds-accent-subtle: rgba(99, 102, 241, 0.06);
+
+  /* Semantic */
+  --ds-success: #10b981;
+  --ds-success-muted: rgba(16, 185, 129, 0.12);
+  --ds-warning: #f59e0b;
+  --ds-warning-muted: rgba(245, 158, 11, 0.12);
+  --ds-error: #ef4444;
+  --ds-error-muted: rgba(239, 68, 68, 0.12);
+  --ds-info: #3b82f6;
+  --ds-info-muted: rgba(59, 130, 246, 0.12);
+
+  /* Data / Pipeline */
+  --ds-data: #06b6d4;
+  --ds-data-muted: rgba(6, 182, 212, 0.12);
+  --ds-pipeline: #8b5cf6;
+  --ds-pipeline-muted: rgba(139, 92, 246, 0.12);
+
+  /* Code */
+  --ds-code-bg: #f4f4f5;
+  --ds-code-border: rgba(0, 0, 0, 0.06);
+  --ds-code-text: #18181b;
+
+  /* Shadows */
+  --ds-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --ds-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --ds-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --ds-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --ds-shadow-glow: 0 0 0 1px rgba(99, 102, 241, 0.15), 0 8px 32px rgba(99, 102, 241, 0.12);
+
+  /* Chart palette */
+  --ds-chart-1: #6366f1;
+  --ds-chart-2: #06b6d4;
+  --ds-chart-3: #8b5cf6;
+  --ds-chart-4: #10b981;
+  --ds-chart-5: #f59e0b;
+  --ds-chart-grid: rgba(0, 0, 0, 0.06);
+}
+
+/* ─── Dark theme ─── */
+.dark,
+[data-ds-theme="dark"] {
+  --ds-bg: #09090b;
+  --ds-bg-subtle: #0c0c0e;
+  --ds-bg-muted: #18181b;
+  --ds-bg-elevated: #111113;
+  --ds-bg-overlay: rgba(0, 0, 0, 0.65);
+  --ds-bg-inverse: #fafafa;
+
+  --ds-surface: #111113;
+  --ds-surface-hover: #18181b;
+  --ds-surface-active: #27272a;
+  --ds-surface-glass: rgba(17, 17, 19, 0.78);
+
+  --ds-border: rgba(255, 255, 255, 0.08);
+  --ds-border-strong: rgba(255, 255, 255, 0.14);
+  --ds-border-subtle: rgba(255, 255, 255, 0.04);
+  --ds-border-focus: rgba(129, 140, 248, 0.55);
+
+  --ds-text: #fafafa;
+  --ds-text-secondary: #a1a1aa;
+  --ds-text-muted: #71717a;
+  --ds-text-disabled: #52525b;
+  --ds-text-inverse: #09090b;
+  --ds-text-link: #818cf8;
+
+  --ds-accent: #818cf8;
+  --ds-accent-hover: #a5b4fc;
+  --ds-accent-muted: rgba(129, 140, 248, 0.15);
+  --ds-accent-subtle: rgba(129, 140, 248, 0.08);
+
+  --ds-success: #34d399;
+  --ds-success-muted: rgba(52, 211, 153, 0.14);
+  --ds-warning: #fbbf24;
+  --ds-warning-muted: rgba(251, 191, 36, 0.14);
+  --ds-error: #f87171;
+  --ds-error-muted: rgba(248, 113, 113, 0.14);
+  --ds-info: #60a5fa;
+  --ds-info-muted: rgba(96, 165, 250, 0.14);
+
+  --ds-data: #22d3ee;
+  --ds-data-muted: rgba(34, 211, 238, 0.14);
+  --ds-pipeline: #a78bfa;
+  --ds-pipeline-muted: rgba(167, 139, 250, 0.14);
+
+  --ds-code-bg: #18181b;
+  --ds-code-border: rgba(255, 255, 255, 0.06);
+  --ds-code-text: #e4e4e7;
+
+  --ds-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.24);
+  --ds-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.32);
+  --ds-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --ds-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --ds-shadow-glow: 0 0 0 1px rgba(129, 140, 248, 0.2), 0 8px 32px rgba(99, 102, 241, 0.18);
+
+  --ds-chart-1: #818cf8;
+  --ds-chart-2: #22d3ee;
+  --ds-chart-3: #a78bfa;
+  --ds-chart-4: #34d399;
+  --ds-chart-5: #fbbf24;
+  --ds-chart-grid: rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Typography scale ─── */
+:root {
+  --ds-font-sans: var(--font-inter, "Inter"), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --ds-font-mono: var(--font-mono, "JetBrains Mono"), ui-monospace, "Cascadia Code", monospace;
+
+  --ds-text-xs: 0.75rem;
+  --ds-text-sm: 0.8125rem;
+  --ds-text-base: 0.9375rem;
+  --ds-text-md: 1rem;
+  --ds-text-lg: 1.125rem;
+  --ds-text-xl: 1.25rem;
+  --ds-text-2xl: 1.5rem;
+  --ds-text-3xl: 1.875rem;
+  --ds-text-4xl: 2.25rem;
+  --ds-text-5xl: 3rem;
+  --ds-text-6xl: 3.75rem;
+
+  --ds-leading-tight: 1.15;
+  --ds-leading-snug: 1.35;
+  --ds-leading-normal: 1.5;
+  --ds-leading-relaxed: 1.65;
+
+  --ds-tracking-tighter: -0.04em;
+  --ds-tracking-tight: -0.025em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide: 0.025em;
+  --ds-tracking-wider: 0.05em;
+
+  --ds-weight-normal: 400;
+  --ds-weight-medium: 500;
+  --ds-weight-semibold: 600;
+  --ds-weight-bold: 700;
+
+  /* ─── Spacing scale (4px base) ─── */
+  --ds-space-0: 0;
+  --ds-space-px: 1px;
+  --ds-space-0-5: 0.125rem;
+  --ds-space-1: 0.25rem;
+  --ds-space-1-5: 0.375rem;
+  --ds-space-2: 0.5rem;
+  --ds-space-2-5: 0.625rem;
+  --ds-space-3: 0.75rem;
+  --ds-space-3-5: 0.875rem;
+  --ds-space-4: 1rem;
+  --ds-space-5: 1.25rem;
+  --ds-space-6: 1.5rem;
+  --ds-space-7: 1.75rem;
+  --ds-space-8: 2rem;
+  --ds-space-9: 2.25rem;
+  --ds-space-10: 2.5rem;
+  --ds-space-11: 2.75rem;
+  --ds-space-12: 3rem;
+  --ds-space-14: 3.5rem;
+  --ds-space-16: 4rem;
+  --ds-space-20: 5rem;
+  --ds-space-24: 6rem;
+  --ds-space-32: 8rem;
+
+  /* ─── Radius ─── */
+  --ds-radius-sm: 0.375rem;
+  --ds-radius-md: 0.5rem;
+  --ds-radius-lg: 0.75rem;
+  --ds-radius-xl: 1rem;
+  --ds-radius-2xl: 1.25rem;
+  --ds-radius-full: 9999px;
+
+  /* ─── Motion ─── */
+  --ds-duration-instant: 0ms;
+  --ds-duration-fast: 120ms;
+  --ds-duration-normal: 200ms;
+  --ds-duration-slow: 320ms;
+  --ds-duration-slower: 480ms;
+
+  --ds-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ds-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ds-ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* ─── Z-index ─── */
+  --ds-z-base: 0;
+  --ds-z-dropdown: 50;
+  --ds-z-sticky: 60;
+  --ds-z-modal: 100;
+  --ds-z-toast: 110;
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ds-duration-fast: 0ms;
+    --ds-duration-normal: 0ms;
+    --ds-duration-slow: 0ms;
+    --ds-duration-slower: 0ms;
+  }
+}
+
+/* ─── Base typography utilities ─── */
+.ds-font-sans { font-family: var(--ds-font-sans); }
+.ds-font-mono { font-family: var(--ds-font-mono); }
+
+.ds-text-display {
+  font-family: var(--ds-font-sans);
+  font-size: var(--ds-text-5xl);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-tracking-tighter);
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text);
+}
+
+.ds-text-headline {
+  font-family: var(--ds-font-sans);
+  font-size: var(--ds-text-3xl);
+  font-weight: var(--ds-weight-semibold);
+  letter-spacing: var(--ds-tracking-tight);
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text);
+}
+
+.ds-text-title {
+  font-family: var(--ds-font-sans);
+  font-size: var(--ds-text-xl);
+  font-weight: var(--ds-weight-semibold);
+  letter-spacing: var(--ds-tracking-tight);
+  line-height: var(--ds-leading-snug);
+  color: var(--ds-text);
+}
+
+.ds-text-body {
+  font-family: var(--ds-font-sans);
+  font-size: var(--ds-text-base);
+  font-weight: var(--ds-weight-normal);
+  line-height: var(--ds-leading-normal);
+  color: var(--ds-text-secondary);
+}
+
+.ds-text-caption {
+  font-family: var(--ds-font-sans);
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-weight-normal);
+  line-height: var(--ds-leading-normal);
+  color: var(--ds-text-muted);
+}
+
+.ds-text-overline {
+  font-family: var(--ds-font-sans);
+  font-size: var(--ds-text-xs);
+  font-weight: var(--ds-weight-medium);
+  letter-spacing: var(--ds-tracking-wider);
+  text-transform: uppercase;
+  line-height: var(--ds-leading-normal);
+  color: var(--ds-text-muted);
+}
+
+/* ─── Focus ring (shared) ─── */
+.ds-focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ds-bg), 0 0 0 4px var(--ds-border-focus);
+}

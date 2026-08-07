@@ -4,8 +4,10 @@
 import React, { useEffect, useState } from "react";
 import Testimonials from "../../components/Testimonials";
 import AwardsList from "../../components/AwardsList";
-import GpuSparks from "../../components/GpuSparks";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { CAREER_TIMELINE, ABOUT_INTRO } from "@/lib/data/career";
+import { TOOLKIT } from "@/lib/data/toolkit";
+import { PageHeader, ToolkitGrid } from "@/components/portfolio/primitives";
 
 const ACCENT = "var(--color-accent)";
 
@@ -73,38 +75,7 @@ const INITIAL_AWARDS = [
 ];
 
 // Sidebar data
-const timeline = [
-  {
-    id: 't1',
-    year: '2025',
-    title: 'Lead Data Engineer',
-    desc: 'Led a cross-functional data team, owning architecture decisions and mentoring four engineers across delivery and design.'
-  },
-  {
-    id: 't2',
-    year: '2023',
-    title: 'Senior Data Engineer',
-    desc: 'Drove end-to-end data initiatives, collaborating with product and analytics while guiding junior engineers.'
-  },
-  {
-    id: 't3',
-    year: '2021',
-    title: 'Data Engineer',
-    desc: 'Transitioned into data engineering, building scalable pipelines using Databricks, PySpark, and cloud data platforms.'
-  },
-  {
-    id: 't4',
-    year: '2019',
-    title: 'Software Engineer',
-    desc: 'Developed web and backend systems with a focus on high-reliability payment gateway integrations.'
-  },
-  {
-    id: 't5',
-    year: '2018',
-    title: 'Intern',
-    desc: 'Built iOS and web applications for Bemrr and Gujarat Police, gaining hands-on experience in production systems.'
-  }
-];
+const timeline = CAREER_TIMELINE;
 
 const skills = {
   "System Design": 3,
@@ -393,37 +364,49 @@ export default function CredentialsPage() {
 
   return (
     <motion.main
-      className="w-full px-6 md:px-12 lg:px-20 xl:px-28 pt-4 pb-10"
+      className="w-full pt-2 pb-10"
       initial="hidden"
       animate="show"
       variants={pageContainer}
     >
-      <GpuSparks />
+      <PageHeader
+        eyebrow="Profile"
+        title="About & experience"
+        description="Who I am, how my work has evolved, and the credentials behind it—without turning the page into a certificate wall."
+        className="mb-8"
+      />
 
-      <motion.header className="mb-8" variants={sectionFade}>
-        <h1 className="text-4xl font-bold" style={{ color: ACCENT }}>
-          Credentials
-        </h1>
-        <p className="mt-2 text-slate-700 dark:text-slate-300 max-w-2xl">
-          Certifications, Awards, and Recommendations.
+      <motion.section className="mb-12 max-w-2xl" variants={sectionFade}>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Who I am</h2>
+        <p className="mt-3 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{ABOUT_INTRO}</p>
+        <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+          I enjoy platforms where architecture, incremental delivery, and operability meet—lakehouse patterns, governed pipelines, and analytics surfaces teams can trust.
         </p>
-      </motion.header>
+      </motion.section>
+
+      <motion.section className="mb-10 lg:hidden" variants={sectionFade}>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Experience</h2>
+        <div className="mt-4 space-y-4">
+          {timeline.map((ev) => (
+            <TimelineRow key={ev.id} ev={ev} />
+          ))}
+        </div>
+      </motion.section>
 
       <motion.div className="space-y-10" variants={pageContainer}>
         <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-10">
           <div>
             <motion.section className="mb-6" variants={sectionFade}>
+              <h2 className="mb-4 text-2xl font-semibold text-slate-900 dark:text-white">Recognition</h2>
+              <AwardsList initialAwards={INITIAL_AWARDS} />
+            </motion.section>
+
+            <div className="w-full my-10 h-px bg-slate-200 dark:bg-slate-800" />
+
+            <motion.section className="mb-6" variants={sectionFade}>
               <div className="mb-4">
                 <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Certifications</h2>
-                <div className="flex items-center justify-between mt-1">
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    My journey of verified credentials & professional badges.
-                  </p>
-
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
-                    {DEFAULT_CERTS.length} total
-                  </span>
-                </div>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Verified credentials from the portfolio record.</p>
               </div>
 
               <motion.div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3" initial="hidden" animate="show" variants={pageContainer}>
@@ -479,12 +462,6 @@ export default function CredentialsPage() {
                   ))}
                 </AnimatePresence>
               </motion.div>
-            </motion.section>
-
-            <div className="w-full my-10 h-[2px]" style={{ background: "linear-gradient(90deg, rgba(46,196,182,0.1), rgba(46,196,182,0.4), rgba(46,196,182,0.1))" }} />
-
-            <motion.section className="mb-6" variants={sectionFade}>
-              <AwardsList initialAwards={INITIAL_AWARDS} />
             </motion.section>
           </div>
 
@@ -639,9 +616,33 @@ export default function CredentialsPage() {
 
           {/* Testimonials — spans both columns so marquee gets full width */}
           <section className="lg:col-span-2">
-            <div className="w-full my-10 h-[2px]" style={{ background: "linear-gradient(90deg, rgba(46,196,182,0.1), rgba(46,196,182,0.4), rgba(46,196,182,0.1))" }} />
+            <div className="w-full my-10 h-px bg-slate-200 dark:bg-slate-800" />
+
+            <motion.section className="mb-10" variants={sectionFade}>
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Toolkit</h2>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Technologies represented across projects and certifications.</p>
+              <div className="mt-6">
+                <ToolkitGrid toolkit={TOOLKIT} />
+              </div>
+            </motion.section>
+
+            <motion.section className="mb-10 rounded-2xl border border-slate-200 bg-slate-50 px-6 py-8 dark:border-slate-800 dark:bg-slate-900/40" variants={sectionFade}>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Resume</h2>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Full PDF résumé with detailed experience.</p>
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+              >
+                View Resume ↗
+              </a>
+            </motion.section>
+
+            <div className="w-full my-10 h-px bg-slate-200 dark:bg-slate-800" />
 
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.36 }}>
+              <h2 className="mb-4 text-2xl font-semibold text-slate-900 dark:text-white">What people say</h2>
               <Testimonials speed={36} />
             </motion.div>
           </section>

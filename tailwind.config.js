@@ -5,6 +5,22 @@ export default {
     extend: {
       colors: {
         primary: '#0ea5a4',
+        ds: {
+          bg: 'var(--ds-bg)',
+          subtle: 'var(--ds-bg-subtle)',
+          muted: 'var(--ds-bg-muted)',
+          surface: 'var(--ds-surface)',
+          border: 'var(--ds-border)',
+          text: 'var(--ds-text)',
+          'text-secondary': 'var(--ds-text-secondary)',
+          'text-muted': 'var(--ds-text-muted)',
+          accent: 'var(--ds-accent)',
+          success: 'var(--ds-success)',
+          warning: 'var(--ds-warning)',
+          error: 'var(--ds-error)',
+          data: 'var(--ds-data)',
+          pipeline: 'var(--ds-pipeline)',
+        },
         'card-bg': 'var(--color-bg-card)',
         'card-bg-hover': 'var(--color-bg-card-hover)',
         'card-border': 'var(--color-border-card)',

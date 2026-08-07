@@ -4,8 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import QRCode from "qrcode";
 import { motion, AnimatePresence } from "framer-motion";
 import QRCodeGenerator from "../../../components/tools/QRCodeGenerator";
-import Breadcrumbs from "../../../components/common/Breadcrumbs";
-import GpuSparks from "../../../components/GpuSparks";
+import ToolLayout from "../../../components/tools/ToolLayout";
 
 /* ---------- helpers ---------- */
 const isValidUrl = (value) => {
@@ -131,27 +130,21 @@ export default function QRPage() {
 
   /* ---------- Shared classes ---------- */
   const panelClass =
-    "p-4 rounded-lg border bg-card-bg border-card-border";
+    "p-4 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/40";
 
   const labelClass =
-    "block text-sm text-text-muted";
+    "block text-sm text-slate-600 dark:text-slate-400";
 
   const inputClass =
-    "w-full p-2 mt-1 text-sm rounded-md bg-transparent border border-card-border";
+    "w-full p-2 mt-1 text-sm rounded-md bg-white border border-slate-200 dark:bg-slate-950 dark:border-slate-800";
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <GpuSparks />
-      <Breadcrumbs
-        labelMap={{
-          tools: "Community Tools",
-          qr: "QR Code Generator",
-        }}
-      />
-      <h1 className="text-4xl font-bold mb-6" style={{ color: "var(--site-accent)" }}>
-        QR Code Generator
-      </h1>
-
+    <ToolLayout
+      title="QR code generator"
+      description="Generate QR codes for URLs, text, or UPI — processed locally; nothing is sent to a server."
+      breadcrumbMap={{ qr: "QR code generator" }}
+      wide
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* ---------- Controls ---------- */}
         <div className="space-y-4">
@@ -214,7 +207,7 @@ export default function QRPage() {
             <button
               onClick={generateUpiQr}
               disabled={!!upiError}
-              className="mt-4 px-3 py-1.5 text-sm rounded-md border border-card-border hover:scale-[1.02] transition disabled:opacity-40"
+              className="mt-4 px-3 py-1.5 text-sm rounded-md border border-slate-200 dark:border-slate-800 hover:scale-[1.02] transition disabled:opacity-40"
             >
               Generate UPI QR
             </button>
@@ -233,7 +226,7 @@ export default function QRPage() {
             <div className="mt-3 flex items-center gap-3">
               <label
                 htmlFor="qr-logo"
-                className="px-3 py-1.5 text-sm rounded-md border border-card-border cursor-pointer"
+                className="px-3 py-1.5 text-sm rounded-md border border-slate-200 dark:border-slate-800 cursor-pointer"
               >
                 Browse
               </label>
@@ -242,7 +235,7 @@ export default function QRPage() {
                 <img
                   src={activeLogo}
                   alt="logo"
-                  className="h-8 w-8 object-contain rounded bg-white p-1 border border-card-border"
+                  className="h-8 w-8 object-contain rounded bg-white p-1 border border-slate-200 dark:border-slate-800"
                 />
               )}
             </div>
@@ -290,13 +283,13 @@ export default function QRPage() {
                 <div className="mt-4 flex gap-3">
                   <button
                     onClick={downloadPng}
-                    className="px-3 py-1.5 text-sm rounded-md border border-card-border"
+                    className="px-3 py-1.5 text-sm rounded-md border border-slate-200 dark:border-slate-800"
                   >
                     Download PNG
                   </button>
                   <button
                     onClick={downloadSvg}
-                    className="px-3 py-1.5 text-sm rounded-md border border-card-border"
+                    className="px-3 py-1.5 text-sm rounded-md border border-slate-200 dark:border-slate-800"
                   >
                     Download SVG
                   </button>
@@ -312,8 +305,8 @@ export default function QRPage() {
       </div>
 
       {/* ---------- Disclaimer ---------- */}
-      <div className="mt-10 text-xs text-slate-600 dark:text-slate-400 border-t pt-4 leading-relaxed">
-        <p className="mb-2 font-medium">Privacy & Security Notice</p>
+      <div className="mt-10 text-xs text-slate-600 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-4 leading-relaxed">
+        <p className="mb-2 font-medium text-slate-800 dark:text-slate-200">Privacy & security</p>
         <p>
           This tool runs entirely in your browser. We do <strong>not</strong>{" "}
           capture, store, transmit, or log any QR content, UPI IDs, payment
@@ -324,6 +317,6 @@ export default function QRPage() {
           payment details before sharing or using QR codes for transactions.
         </p>
       </div>
-    </div>
+    </ToolLayout>
   );
 }

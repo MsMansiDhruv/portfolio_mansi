@@ -1,17 +1,20 @@
-import dynamic from "next/dynamic"; // ok to import dynamic, but we won't call ssr:false here
 import BillGeneratorClientWrapper from "../../../components/tools/BillGeneratorClientWrapper";
-import GpuSparks from "../../../components/GpuSparks";
-import QRCodeGenerator from "../../../components/tools/QRCodeGenerator";
+import ToolLayout from "../../../components/tools/ToolLayout";
+
 export const metadata = {
-  title: "Community Tools - Mansi Dhruv",
-  description: "Small useful tools and scripts - Bill generator, helpers and utilities.",
+  title: "Bill generator · Toolkit",
+  description: "Create, preview, and export invoices.",
 };
 
 export default function Page() {
   return (
-    <main className="p-6">
-      <GpuSparks />
+    <ToolLayout
+      title="Bill / invoice generator"
+      description="Build an invoice in the browser, then export PDF or share when your backend endpoints are configured."
+      breadcrumbMap={{ bill: "Bill generator" }}
+      wide
+    >
       <BillGeneratorClientWrapper />
-    </main>
+    </ToolLayout>
   );
 }
