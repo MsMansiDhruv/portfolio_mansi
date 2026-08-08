@@ -41,11 +41,12 @@ function cellEmphasis(row, value) {
   return "";
 }
 
-function FlowNode({ label, sub, emphasis, className }) {
+function FlowNode({ label, sub, emphasis, className, compact }) {
   return (
     <div
       className={cn(
-        "relative min-w-[6.5rem] shrink-0 rounded-md border px-3 py-2.5 text-center",
+        "relative rounded-md border px-3 py-2.5 text-center",
+        compact ? "min-w-[5.5rem] shrink-0" : "min-w-0 w-full max-w-[9rem] sm:max-w-none",
         emphasis
           ? "border-teal-700/40 bg-teal-50/90 dark:border-teal-500/45 dark:bg-teal-950/55"
           : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900",
@@ -67,65 +68,44 @@ function FlowNode({ label, sub, emphasis, className }) {
   );
 }
 
-function HorizontalFlow({ reduced }) {
+function HorizontalFlow() {
   return (
-    <div className="relative min-w-0 flex-1">
-      <div
-        className="pointer-events-none absolute left-[8%] right-[8%] top-1/2 hidden h-px -translate-y-1/2 bg-slate-300 dark:bg-slate-600 lg:block"
-        aria-hidden
-      />
-      {!reduced ? (
-        <motion.div
-          className="pointer-events-none absolute left-[8%] right-[8%] top-1/2 hidden h-px -translate-y-1/2 bg-teal-600/50 dark:bg-teal-400/40 lg:block"
-          aria-hidden
-          initial={{ scaleX: 0, originX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-        />
-      ) : null}
-      <div className="flex flex-col items-stretch gap-0 lg:flex-row lg:items-center lg:justify-between lg:gap-1">
-        {C.signal.nodes.map((node, i) => (
-          <React.Fragment key={node.id}>
-            <div className="flex flex-col items-center lg:flex-1 lg:px-0.5">
-              <FlowNode label={node.label} sub={node.sub} emphasis={node.emphasis} className="w-full max-w-[9rem] lg:max-w-none" />
+    <div className="min-w-0 w-full">
+      <div className="overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch]">
+        <div className="flex min-w-max items-center gap-2 px-0.5 sm:gap-3 xl:min-w-0 xl:flex-wrap xl:justify-center">
+          {C.signal.nodes.map((node, i) => (
+            <React.Fragment key={node.id}>
+              <FlowNode label={node.label} sub={node.sub} emphasis={node.emphasis} compact />
               {i < C.signal.nodes.length - 1 ? (
-                <div className="flex flex-col items-center py-2 lg:hidden" aria-hidden>
-                  <div className="h-3 w-px bg-slate-300 dark:bg-slate-600" />
-                  <span className="text-teal-700 dark:text-teal-400">↓</span>
-                </div>
+                <span className="shrink-0 text-sm font-medium text-teal-700/90 dark:text-teal-400/90" aria-hidden>
+                  →
+                </span>
               ) : null}
-            </div>
-            {i < C.signal.nodes.length - 1 ? (
-              <span className="hidden shrink-0 text-sm font-medium text-teal-700/90 lg:inline dark:text-teal-400/90" aria-hidden>
-                →
-              </span>
-            ) : null}
-          </React.Fragment>
-        ))}
+            </React.Fragment>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
 function SignalMoment() {
-  const reduced = useReducedMotion();
-
   return (
-    <div className="mt-10 min-w-0 rounded-xl border border-slate-200 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-900/40">
-      <div className="grid grid-cols-1 border-b border-slate-200 dark:border-slate-800 lg:grid-cols-12">
-        <div className="flex flex-col justify-center border-b border-slate-200 px-6 py-8 dark:border-slate-800 lg:col-span-3 lg:border-b-0 lg:border-r lg:py-10">
+    <div className="mt-10 min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-50/60 dark:border-slate-800 dark:bg-slate-900/40">
+      <div className="grid grid-cols-1 xl:grid-cols-12">
+        <div className="flex flex-col justify-center border-b border-slate-200 px-6 py-8 dark:border-slate-800 xl:col-span-3 xl:border-b-0 xl:border-r xl:py-10">
           <p className="text-[clamp(3.75rem,11vw,6rem)] font-semibold leading-none tracking-tighter text-slate-950 dark:text-white">
             {C.signal.metric}
           </p>
           <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">{C.signal.metricLabel}</p>
         </div>
 
-        <div className="flex flex-col justify-center px-6 py-6 lg:col-span-6 lg:py-8">
+        <div className="min-w-0 border-b border-slate-200 px-6 py-6 dark:border-slate-800 xl:col-span-6 xl:border-b-0 xl:py-8">
           <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Request path</p>
-          <HorizontalFlow reduced={!!reduced} />
+          <HorizontalFlow />
         </div>
 
-        <div className="border-t border-slate-200 px-6 py-6 dark:border-slate-800 lg:col-span-3 lg:border-l lg:border-t-0 lg:py-8">
+        <div className="min-w-0 border-t border-slate-200 px-6 py-6 dark:border-slate-800 xl:col-span-3 xl:border-l xl:border-t-0 xl:py-8">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Cost signal</p>
           <p className="mt-2 text-lg font-semibold tabular-nums text-slate-900 dark:text-white">{C.signal.serviceTotal}</p>
           <p className="mt-1 text-[11px] leading-snug text-slate-500">{C.signal.costNote}</p>
@@ -143,46 +123,38 @@ function WorkloadMap() {
 
   return (
     <div className="mt-12 min-w-0">
-      <div className="relative mx-auto max-w-5xl">
-        <svg className="pointer-events-none absolute inset-0 hidden h-full w-full sm:block" aria-hidden>
-          <line x1="50%" y1="28%" x2="22%" y2="58%" className="stroke-slate-300 dark:stroke-slate-600" strokeWidth="1" />
-          <line x1="50%" y1="28%" x2="78%" y2="58%" className="stroke-slate-300 dark:stroke-slate-600" strokeWidth="1" />
-          <line x1="50%" y1="28%" x2="50%" y2="78%" className="stroke-slate-300 dark:stroke-slate-600" strokeWidth="1" strokeDasharray="4 3" />
-        </svg>
-
-        <div className="flex flex-col items-center gap-10 sm:gap-12">
-          <div className="text-center">
-            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-slate-500">One engine</p>
-            <div className="mt-3 inline-block rounded-md border-2 border-slate-800 bg-slate-900 px-8 py-4 dark:border-slate-500 dark:bg-slate-800">
-              <p className="text-lg font-bold uppercase tracking-wide text-white">{fork.hub}</p>
-            </div>
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-10 sm:gap-12">
+        <div className="text-center">
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-slate-500">One engine</p>
+          <div className="mt-3 inline-block rounded-md border-2 border-slate-800 bg-slate-900 px-8 py-4 dark:border-slate-500 dark:bg-slate-800">
+            <p className="text-lg font-bold uppercase tracking-wide text-white">{fork.hub}</p>
           </div>
-
-          <div className="grid w-full grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-6 lg:gap-10">
-            <div className="border-l-2 border-teal-700 pl-5 dark:border-teal-500 sm:justify-self-end sm:max-w-md sm:pr-8">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-900 dark:text-teal-300">{fork.left.title}</p>
-              <ul className="mt-4 space-y-2">
-                {fork.left.items.map((x) => (
-                  <li key={x} className="text-base font-medium text-slate-900 dark:text-slate-100">
-                    {x}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="border-l-2 border-slate-400 pl-5 dark:border-slate-500 sm:max-w-md sm:pl-8">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">{fork.right.title}</p>
-              <ul className="mt-4 space-y-2">
-                {fork.right.items.map((x) => (
-                  <li key={x} className="text-base font-medium text-slate-900 dark:text-slate-100">
-                    {x}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <p className="text-sm font-bold uppercase tracking-[0.28em] text-slate-700 dark:text-slate-300">{fork.bottom}</p>
         </div>
+
+        <div className="grid w-full grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-8">
+          <div className="min-w-0 border-l-2 border-teal-700 pl-5 dark:border-teal-500">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-900 dark:text-teal-300">{fork.left.title}</p>
+            <ul className="mt-4 space-y-2">
+              {fork.left.items.map((x) => (
+                <li key={x} className="text-base font-medium text-slate-900 dark:text-slate-100">
+                  {x}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="min-w-0 border-l-2 border-slate-400 pl-5 dark:border-slate-500">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">{fork.right.title}</p>
+            <ul className="mt-4 space-y-2">
+              {fork.right.items.map((x) => (
+                <li key={x} className="text-base font-medium text-slate-900 dark:text-slate-100">
+                  {x}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <p className="text-sm font-bold uppercase tracking-[0.28em] text-slate-700 dark:text-slate-300">{fork.bottom}</p>
       </div>
     </div>
   );
@@ -191,14 +163,14 @@ function WorkloadMap() {
 function BenchmarkDashboard() {
   return (
     <div className="mt-10 w-full min-w-0 overflow-hidden rounded-xl border-2 border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950">
-      <div className="grid grid-cols-[minmax(7rem,1.15fr)_repeat(3,minmax(5rem,1fr))] border-b-2 border-slate-200 bg-slate-100 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
-        <div className="px-5 py-4">Workload</div>
-        <div className="border-l border-slate-200 px-5 py-4 dark:border-slate-700">Redshift</div>
-        <div className="border-l border-slate-200 px-5 py-4 dark:border-slate-700">Aurora</div>
-        <div className="border-l border-slate-200 px-5 py-4 dark:border-slate-700">S3 Tables</div>
-      </div>
       <div className="min-w-0 overflow-x-auto">
         <div className="min-w-[560px]">
+          <div className="grid grid-cols-[minmax(7rem,1.15fr)_repeat(3,minmax(5rem,1fr))] border-b-2 border-slate-200 bg-slate-100 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
+            <div className="px-5 py-4">Workload</div>
+            <div className="border-l border-slate-200 px-5 py-4 dark:border-slate-700">Redshift</div>
+            <div className="border-l border-slate-200 px-5 py-4 dark:border-slate-700">Aurora</div>
+            <div className="border-l border-slate-200 px-5 py-4 dark:border-slate-700">S3 Tables</div>
+          </div>
           {C.benchmark.rows.map((row, i) => (
             <div
               key={`${row.workload}-${i}`}
@@ -264,7 +236,7 @@ function ArchitectureDiagram() {
         </span>
       </div>
 
-      <div className="grid min-h-[min(52vh,520px)] grid-cols-1 items-stretch">
+      <div className="grid min-h-0 grid-cols-1 items-stretch sm:min-h-[420px]">
         <div className="flex flex-col items-center justify-center px-6 py-10">
           {layers.map((layer, i) => {
             if (layer.tone === "edge") {
@@ -314,9 +286,12 @@ function ArchitectureDiagram() {
 function DecisionMatrix() {
   return (
     <div className="mt-10 min-w-0 overflow-x-auto">
-      <div className="min-w-[640px] divide-y divide-slate-200 rounded-xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
+      <div className="min-w-0 divide-y divide-slate-200 rounded-xl border border-slate-200 dark:divide-slate-800 dark:border-slate-800">
         {C.decision.tradeoffs.map((t) => (
-          <div key={t.engine} className="grid grid-cols-1 gap-3 bg-white px-5 py-4 dark:bg-slate-950/80 sm:grid-cols-[7rem_6rem_1fr_minmax(12rem,1.2fr)] sm:items-start sm:gap-4">
+          <div
+            key={t.engine}
+            className="grid grid-cols-1 gap-3 bg-white px-5 py-4 dark:bg-slate-950/80 md:grid-cols-2 md:gap-x-6 lg:grid-cols-[7rem_6rem_1fr_minmax(0,1.2fr)] lg:items-start lg:gap-4"
+          >
             <p className="text-base font-bold text-slate-950 dark:text-white">{t.engine}</p>
             <p className="text-[10px] font-bold uppercase tracking-wide text-teal-800 dark:text-teal-400">{t.role}</p>
             <ul className="space-y-0.5 text-sm text-slate-800 dark:text-slate-200">
@@ -339,17 +314,17 @@ function DecisionMatrix() {
 
 export default function OlapWorkloadCaseStudy() {
   return (
-    <article className="min-w-0 w-full max-w-6xl animate-fadeIn xl:max-w-[88rem]">
+    <article className="min-w-0 w-full max-w-6xl animate-fadeIn xl:max-w-7xl">
       <Link href="/projects" className="text-sm font-medium text-teal-800 dark:text-teal-400">
         ← Back to projects
       </Link>
 
       {/* 01 — THE SIGNAL */}
-      <Reveal delay={0.02}>
+      <Reveal delay={0.02} className="min-w-0">
         <header className="mt-6">
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-teal-800/90 dark:text-teal-400/90">{C.eyebrow}</p>
-          <div className="mt-4 grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-10">
-            <div className="lg:col-span-8">
+          <div className="mt-4 grid gap-8 xl:grid-cols-12 xl:items-end xl:gap-10">
+            <div className="min-w-0 xl:col-span-8">
               <h1 className="text-[clamp(1.85rem,4.8vw,2.85rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
                 {C.titleLine1}
                 <br />
@@ -357,7 +332,7 @@ export default function OlapWorkloadCaseStudy() {
               </h1>
               <p className="mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-400">{C.subtitle}</p>
             </div>
-            <div className="hidden text-right lg:col-span-4 lg:block">
+            <div className="hidden min-w-0 text-right xl:col-span-4 xl:block">
               <p className="text-[clamp(3rem,6vw,4.5rem)] font-semibold leading-none tracking-tighter text-slate-950 dark:text-white">
                 {C.signal.metric}
               </p>
@@ -369,7 +344,7 @@ export default function OlapWorkloadCaseStudy() {
       </Reveal>
 
       {/* 02 — THE MISMATCH */}
-      <Reveal delay={0.04}>
+      <Reveal delay={0.04} className="min-w-0">
         <section className="mt-24 lg:mt-32" aria-labelledby="olap-mismatch">
           <p id="olap-mismatch" className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-600 dark:text-slate-400">
             {C.mismatch.pre}
@@ -387,7 +362,7 @@ export default function OlapWorkloadCaseStudy() {
       </Reveal>
 
       {/* 03 — THE BENCHMARK */}
-      <Reveal delay={0.06}>
+      <Reveal delay={0.06} className="min-w-0">
         <section className="mt-24 lg:mt-32" aria-labelledby="olap-bench">
           <p className="text-sm font-bold uppercase tracking-[0.16em] text-slate-500">{C.benchmark.pre}</p>
           <h2 id="olap-bench" className="mt-3 text-[clamp(1.75rem,4.2vw,2.75rem)] font-semibold uppercase tracking-tight text-slate-950 dark:text-white">
@@ -409,7 +384,7 @@ export default function OlapWorkloadCaseStudy() {
       </Reveal>
 
       {/* 04 — THE ARCHITECTURE */}
-      <Reveal delay={0.08}>
+      <Reveal delay={0.08} className="min-w-0">
         <section className="mt-24 lg:mt-32" aria-labelledby="olap-arch">
           <h2 id="olap-arch" className="max-w-3xl text-[clamp(1.75rem,4.5vw,3rem)] font-semibold uppercase leading-[1.05] tracking-tight text-slate-950 dark:text-white">
             {C.architecture.headline.map((line) => (
@@ -423,7 +398,7 @@ export default function OlapWorkloadCaseStudy() {
       </Reveal>
 
       {/* 05 — THE DECISION */}
-      <Reveal delay={0.1}>
+      <Reveal delay={0.1} className="min-w-0">
         <section className="mt-24 lg:mt-32" aria-labelledby="olap-decision">
           <DecisionMatrix />
           <h2 id="olap-decision" className="mx-auto mt-16 max-w-3xl text-center text-[clamp(1.75rem,4.5vw,2.75rem)] font-semibold uppercase leading-[1.06] tracking-tight text-slate-950 dark:text-white">
@@ -437,7 +412,7 @@ export default function OlapWorkloadCaseStudy() {
       </Reveal>
 
       {/* FINAL */}
-      <Reveal delay={0.12}>
+      <Reveal delay={0.12} className="min-w-0">
         <footer className="mt-28 py-16 text-center lg:mt-36 lg:py-24">
           <p className="text-[clamp(1.2rem,3.2vw,1.75rem)] font-semibold uppercase leading-snug tracking-tight text-slate-600 dark:text-slate-400">
             {C.final.line1.map((l) => (
