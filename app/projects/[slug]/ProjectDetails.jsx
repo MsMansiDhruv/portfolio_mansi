@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArchitectureFlow, DecisionList, TradeoffPanel } from "@/components/portfolio/storytelling";
 import { SupportingProjectCard } from "@/components/portfolio/featured-work";
 import AmcCaseStudy from "@/components/projects/AmcCaseStudy";
+import OlapWorkloadCaseStudy from "@/components/projects/OlapWorkloadCaseStudy";
 import { getRelatedProjects } from "@/lib/data/project-meta";
 import { cn } from "@/lib/cn";
 
@@ -49,6 +50,9 @@ export default function ProjectDetails({ project }) {
   const p = project;
   if (p.slug === "project-amc-datalake-solution" || p.caseStudy === "amc") {
     return <AmcCaseStudy />;
+  }
+  if (p.slug === "olap-workload-architecture" || p.caseStudy === "olap") {
+    return <OlapWorkloadCaseStudy />;
   }
   const related = getRelatedProjects(p.slug);
   const hasArchitecture = Boolean(p.architectureLayers?.length);

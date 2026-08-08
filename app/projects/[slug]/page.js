@@ -1,6 +1,7 @@
 import ProjectDetails from "./ProjectDetails";
 import { PROJECT_META, getProjectMeta, resolveProjectSlug } from "@/lib/data/project-meta";
 import { AMC_CASE_STUDY_SLUG } from "@/lib/data/amc-case-study";
+import { OLAP_CASE_STUDY_SLUG } from "@/lib/data/olap-case-study";
 
 export async function generateStaticParams() {
   const slugs = Object.keys(PROJECT_META);
@@ -18,6 +19,14 @@ export async function generateMetadata(props) {
       title: "Legacy Data Modernization & ETL | Case Study",
       description:
         "Engineering case study: AWS data lake, Glue ETL, Redshift, and analytics modernization for a Leading AMC — architecture, decisions, and outcomes.",
+    };
+  }
+
+  if (slug === OLAP_CASE_STUDY_SLUG) {
+    return {
+      title: "From OLAP to Workload-Specific Data Architecture | Mansi Dhruv",
+      description:
+        "A database architecture PoC evaluating Redshift, S3 Tables, Aurora PostgreSQL, and DynamoDB for mixed analytical and operational workloads.",
     };
   }
 
