@@ -8,103 +8,90 @@ import { BENCHMARK_ENGINES, workloadNumeric } from "@/components/projects/olap/b
 
 const C = OLAP_CASE_STUDY;
 
-const STROKE = "stroke-slate-400 dark:stroke-slate-500";
-const STROKE_TEAL = "stroke-teal-700/80 dark:stroke-teal-400/70";
+const stroke = { neutral: "stroke-slate-400 dark:stroke-slate-500", teal: "stroke-teal-700 dark:stroke-teal-500" };
 
-function VLine({ className, teal }) {
-  return <div className={cn("w-px bg-slate-300 dark:bg-slate-600", teal && "bg-teal-600/70 dark:bg-teal-400/60", className)} aria-hidden />;
+function ArrowDown({ teal, className }) {
+  return (
+    <span className={cn("text-lg leading-none", teal ? "text-teal-700 dark:text-teal-400" : "text-slate-400", className)} aria-hidden>
+      ↓
+    </span>
+  );
 }
 
-/** Full-width hero: title block + poster-style problem diagram */
+/** Split hero: narrative left, vertical “problem at a glance” right */
 export function ProblemHero() {
   const { fork } = C.mismatch;
   return (
     <header className="min-w-0">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-teal-800/90 dark:text-teal-400/90">{C.eyebrow}</p>
-      <h1 className="mt-4 max-w-3xl text-[clamp(2rem,5vw,3rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
-        {C.titleLine1}
-        <br />
-        {C.titleLine2}
-      </h1>
-      <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400">{C.subtitle}</p>
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-14">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-teal-800/90 dark:text-teal-400/90">{C.eyebrow}</p>
+          <h1 className="mt-4 text-[clamp(1.9rem,4.5vw,2.85rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
+            {C.titleLine1}
+            <br />
+            {C.titleLine2}
+          </h1>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-600 dark:text-slate-400">{C.subtitle}</p>
+          <p className="mt-5 text-[11px] font-medium uppercase tracking-[0.14em] text-slate-500">{C.eyebrow}</p>
+        </div>
 
-      <div className="relative mt-12 min-h-[min(52vh,420px)] w-full">
-        <svg className="absolute inset-0 h-full w-full" viewBox="0 0 900 380" preserveAspectRatio="xMidYMid meet" aria-hidden>
-          <path d="M 120 120 L 450 160" fill="none" className={STROKE_TEAL} strokeWidth="1" />
-          <path d="M 780 120 L 450 160" fill="none" className={STROKE} strokeWidth="1" />
-          <path d="M 450 200 L 450 260" fill="none" className={STROKE_TEAL} strokeWidth="1" />
-          <rect x="370" y="160" width="160" height="44" fill="none" className={STROKE} strokeWidth="1.5" />
-        </svg>
-
-        <div className="relative grid h-full grid-cols-1 grid-rows-[auto_1fr_auto] gap-4 md:grid-cols-3 md:grid-rows-1 md:items-center">
-          <div className="md:pr-8 md:text-right">
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-900 dark:text-teal-300">Serving</p>
-            <p className="mt-1 text-[10px] font-semibold uppercase text-slate-500">{fork.left.title}</p>
-            <ul className="mt-4 space-y-2 text-sm font-medium text-slate-800 dark:text-slate-200 md:ml-auto md:max-w-[12rem]">
-              {fork.left.items.map((x) => (
-                <li key={x}>{x}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="flex flex-col items-center justify-center py-6 md:py-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-slate-500">One engine</p>
-            <p className="mt-2 text-[clamp(1.75rem,4vw,2.75rem)] font-semibold uppercase tracking-tight text-slate-950 dark:text-white">
-              {fork.hub}
-            </p>
-            <p className="mt-8 text-sm font-bold uppercase tracking-[0.35em] text-teal-900 dark:text-teal-300">{fork.bottom}</p>
-          </div>
-
-          <div className="md:pl-8">
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">Analytics</p>
-            <p className="mt-1 text-[10px] font-semibold uppercase text-slate-500">{fork.right.title}</p>
-            <ul className="mt-4 space-y-2 text-sm font-medium text-slate-800 dark:text-slate-200 md:max-w-[12rem]">
-              {fork.right.items.map((x) => (
-                <li key={x}>{x}</li>
-              ))}
-            </ul>
-          </div>
+        <div className="flex flex-col items-center text-center lg:items-end lg:pr-4 lg:text-right">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal-900 dark:text-teal-300">{fork.left.title}</p>
+          <ul className="mt-2 space-y-0.5 text-sm text-slate-800 dark:text-slate-200">
+            {fork.left.items.map((x) => (
+              <li key={x}>{x}</li>
+            ))}
+          </ul>
+          <ArrowDown teal className="my-3" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">One engine</p>
+          <p className="mt-1 text-2xl font-semibold uppercase tracking-tight text-slate-950 dark:text-white">{fork.hub}</p>
+          <ArrowDown className="my-3" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">{fork.right.title}</p>
+          <ul className="mt-2 space-y-0.5 text-sm text-slate-800 dark:text-slate-200">
+            {fork.right.items.map((x) => (
+              <li key={x}>{x}</li>
+            ))}
+          </ul>
+          <p className="mt-5 text-sm font-bold uppercase tracking-[0.32em] text-teal-900 dark:text-teal-300">{fork.bottom}</p>
         </div>
       </div>
     </header>
   );
 }
 
+/** 60K evidence + trail + secondary cost */
 export function SignalSection() {
   return (
-    <section className="min-w-0" aria-label="Investigation signal">
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
-        <div>
-          <p className="text-[clamp(4rem,14vw,7rem)] font-semibold leading-none tracking-tighter text-slate-950 dark:text-white">
+    <section className="min-w-0 pt-16 md:pt-20" aria-label="Investigation signal">
+      <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
+        <div className="lg:col-span-5">
+          <p className="text-[clamp(3.5rem,12vw,6.5rem)] font-semibold leading-none tracking-tighter text-slate-950 dark:text-white">
             {C.signal.metric}
           </p>
-          <p className="mt-3 text-xs font-bold uppercase tracking-[0.25em] text-slate-500">{C.signal.metricLabel}</p>
-          <div className="mt-8 max-w-xs">
-            <p className="text-2xl font-semibold tabular-nums text-slate-900 dark:text-white">{C.signal.serviceTotal}</p>
-            <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Cost context</p>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{C.signal.costNote}</p>
-            <div className="relative mt-4 aspect-[16/10] w-full max-w-[280px]">
-              <Image src={OLAP_COST_EVIDENCE_IMAGE} alt={C.signal.costImageAlt} fill className="object-contain object-left" sizes="280px" />
-            </div>
-          </div>
+          <p className="mt-2 text-xs font-bold uppercase tracking-[0.24em] text-slate-500">{C.signal.metricLabel}</p>
         </div>
 
-        <div className="flex min-w-0 flex-col items-start pl-0 lg:pl-6">
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Investigation trail</p>
-          <div className="mt-6 flex flex-col items-start">
-            {C.signal.nodes.map((node, i) => (
-              <React.Fragment key={node.id}>
-                <p
-                  className={cn(
-                    "text-sm font-bold uppercase tracking-wide",
-                    node.emphasis ? "text-teal-900 dark:text-teal-300" : "text-slate-900 dark:text-white"
-                  )}
-                >
-                  {node.sub ? `${node.label} ${node.sub}` : node.label}
-                </p>
-                {i < C.signal.nodes.length - 1 ? <VLine className="my-2 h-5" teal={i === C.signal.nodes.length - 2} /> : null}
-              </React.Fragment>
-            ))}
+        <div className="flex flex-col items-start lg:col-span-4 lg:pl-4">
+          {C.signal.nodes.map((node, i) => (
+            <React.Fragment key={node.id}>
+              <p
+                className={cn(
+                  "text-[13px] font-bold uppercase tracking-wide",
+                  node.emphasis ? "text-teal-900 dark:text-teal-300" : "text-slate-900 dark:text-white"
+                )}
+              >
+                {node.sub ? `${node.label} · ${node.sub}` : node.label}
+              </p>
+              {i < C.signal.nodes.length - 1 ? <ArrowDown teal={node.id === "lookup"} className="my-1.5 text-base" /> : null}
+            </React.Fragment>
+          ))}
+        </div>
+
+        <div className="lg:col-span-3 lg:border-l lg:border-slate-200 lg:pl-6 dark:lg:border-slate-800">
+          <p className="text-lg font-semibold tabular-nums text-slate-800 dark:text-slate-200">{C.signal.serviceTotal}</p>
+          <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{C.signal.costNote}</p>
+          <div className="relative mt-4 aspect-[16/10] w-full max-w-[220px]">
+            <Image src={OLAP_COST_EVIDENCE_IMAGE} alt={C.signal.costImageAlt} fill className="object-contain object-left opacity-95" sizes="220px" />
           </div>
         </div>
       </div>
@@ -112,59 +99,50 @@ export function SignalSection() {
   );
 }
 
+/** Converging workloads on one engine */
 export function WorkloadMismatch() {
   const { fork } = C.mismatch;
   return (
-    <section className="min-w-0" aria-labelledby="olap-mismatch">
-      <div className="relative mx-auto w-full max-w-4xl py-4">
-        <svg className="mx-auto block w-full max-w-2xl" viewBox="0 0 480 320" aria-hidden>
-          <circle cx="240" cy="48" r="6" className="fill-slate-900 dark:fill-white" />
-          <text x="240" y="32" textAnchor="middle" className="fill-slate-900 text-[11px] font-bold dark:fill-white" fontSize="11">
-            {fork.hub.toUpperCase()}
-          </text>
-          <path d="M 240 54 L 240 72" fill="none" className={STROKE} strokeWidth="1" />
-          <path d="M 240 72 L 80 72 L 80 100" fill="none" className={STROKE_TEAL} strokeWidth="1" />
-          <path d="M 240 72 L 400 72 L 400 100" fill="none" className={STROKE} strokeWidth="1" />
-          <circle cx="80" cy="108" r="5" className="fill-teal-700 dark:fill-teal-400" />
-          <circle cx="400" cy="108" r="5" className="fill-slate-400" />
-          <path d="M 80 113 L 80 140" fill="none" className={STROKE_TEAL} strokeWidth="1" />
-          <path d="M 400 113 L 400 140" fill="none" className={STROKE} strokeWidth="1" />
+    <section className="min-w-0 pt-16 md:pt-20" aria-labelledby="olap-mismatch">
+      <div className="relative mx-auto max-w-3xl">
+        <svg className="pointer-events-none absolute inset-0 hidden h-full w-full sm:block" viewBox="0 0 600 280" preserveAspectRatio="xMidYMid meet" aria-hidden>
+          <path d="M 100 200 L 300 120" fill="none" className={stroke.teal} strokeWidth="1" />
+          <path d="M 500 200 L 300 120" fill="none" className={stroke.neutral} strokeWidth="1" />
+          <path d="M 300 120 L 300 200" fill="none" className={stroke.neutral} strokeWidth="1" />
         </svg>
 
-        <div className="mt-2 grid grid-cols-2 gap-8 text-center sm:gap-16">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-900 dark:text-teal-300">Serving</p>
-            <ul className="mt-3 space-y-1 text-sm text-slate-800 dark:text-slate-200">
+        <div className="relative grid gap-10 sm:grid-cols-[1fr_auto_1fr] sm:items-end sm:gap-6">
+          <div className="sm:text-right">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-900 dark:text-teal-300">Application serving</p>
+            <ul className="mt-3 space-y-1.5 text-sm text-slate-800 dark:text-slate-200">
               {fork.left.items.map((x) => (
-                <li key={x}>{x}</li>
+                <li key={x}>· {x}</li>
               ))}
             </ul>
           </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">Analytics</p>
-            <ul className="mt-3 space-y-1 text-sm text-slate-800 dark:text-slate-200">
-              {fork.right.items.map((x) => (
-                <li key={x}>{x}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
 
-        <div className="mt-10 space-y-2 text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">One engine</p>
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-500">Two very different access patterns</p>
-          <p className="text-lg font-bold uppercase tracking-[0.2em] text-teal-900 dark:text-teal-300">{fork.bottom}</p>
+          <div className="flex flex-col items-center py-4 sm:py-0">
+            <p className="text-3xl font-semibold uppercase tracking-tight text-slate-950 dark:text-white">{fork.hub}</p>
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-500">One engine</p>
+          </div>
+
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-400">Analytics</p>
+            <ul className="mt-3 space-y-1.5 text-sm text-slate-800 dark:text-slate-200">
+              {fork.right.items.map((x) => (
+                <li key={x}>· {x}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
 
-      <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_1.2fr] lg:gap-12">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{C.mismatch.pre}</p>
-          <h2 id="olap-mismatch" className="mt-2 text-xl font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white sm:text-2xl">
-            {C.mismatch.headline.join(" ")}
-          </h2>
-        </div>
-        <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{C.mismatch.summary}</p>
+      <div className="mt-12 max-w-3xl">
+        <p className="text-sm text-slate-600 dark:text-slate-400">{C.mismatch.pre}</p>
+        <h2 id="olap-mismatch" className="mt-2 text-[clamp(1.35rem,3.2vw,2rem)] font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white">
+          {C.mismatch.headline.join(" ")}
+        </h2>
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">{C.mismatch.summary}</p>
       </div>
     </section>
   );
@@ -176,23 +154,18 @@ function BenchmarkBars({ row }) {
   const fastest = rowMax ? Math.min(...nums) : null;
 
   return (
-    <div className="space-y-3">
+    <div className="mt-3 space-y-2.5">
       {BENCHMARK_ENGINES.map((e) => {
         const n = workloadNumeric(row[e.key]);
         const width = n != null && rowMax > 0 ? Math.max(2, (n / rowMax) * 100) : 0;
         const isFast = n != null && n === fastest && nums.length > 1;
         return (
-          <div key={e.key}>
-            <div className="flex items-baseline justify-between gap-4">
-              <span className="text-[10px] font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400">{e.label}</span>
-              <span className={cn("text-sm font-semibold tabular-nums", isFast && "text-teal-900 dark:text-teal-300")}>{row[e.key]}</span>
+          <div key={e.key} className="grid grid-cols-[5rem_1fr_auto] items-center gap-3">
+            <span className="text-[10px] font-bold uppercase text-slate-500">{e.label}</span>
+            <div className="h-1.5 bg-slate-200 dark:bg-slate-800">
+              <div className={cn("h-full", isFast ? "bg-teal-700 dark:bg-teal-500" : "bg-slate-400/70")} style={{ width: `${width}%` }} />
             </div>
-            <div className="mt-1.5 h-2 w-full bg-slate-200/80 dark:bg-slate-800">
-              <div
-                className={cn("h-full", isFast ? "bg-teal-700 dark:bg-teal-500" : "bg-slate-500/60 dark:bg-slate-500/50")}
-                style={{ width: `${width}%` }}
-              />
-            </div>
+            <span className={cn("text-xs font-semibold tabular-nums", isFast && "text-teal-900 dark:text-teal-300")}>{row[e.key]}</span>
           </div>
         );
       })}
@@ -202,106 +175,96 @@ function BenchmarkBars({ row }) {
 
 export function BenchmarkViz() {
   return (
-    <section className="min-w-0" aria-labelledby="olap-bench">
-      <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">{C.benchmark.pre}</p>
-      <h2 id="olap-bench" className="mt-1 text-xl font-semibold uppercase tracking-tight text-slate-950 dark:text-white">
-        {C.benchmark.headline}
-      </h2>
-      <ul className="mt-3 flex flex-wrap gap-x-6 text-[11px] text-slate-500">
-        {C.benchmark.config.map((cfg) => (
-          <li key={cfg}>{cfg}</li>
-        ))}
-      </ul>
+    <section className="min-w-0 pt-16 md:pt-20" aria-labelledby="olap-bench">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{C.benchmark.pre}</p>
+          <h2 id="olap-bench" className="mt-1 text-lg font-semibold uppercase text-slate-950 dark:text-white">
+            {C.benchmark.headline}
+          </h2>
+        </div>
+        <ul className="text-[11px] text-slate-500">
+          {C.benchmark.config.map((cfg) => (
+            <li key={cfg}>{cfg}</li>
+          ))}
+        </ul>
+      </div>
 
-      <div className="mt-10 space-y-12">
+      <div className="mt-10 grid gap-x-12 gap-y-10 lg:grid-cols-2">
         {C.benchmark.rows.map((row, i) => (
           <div key={`${row.workload}-${i}`}>
-            <p className="text-lg font-bold uppercase tracking-tight text-slate-950 dark:text-white">{row.workload}</p>
-            <div className="mt-4 max-w-2xl">
-              <BenchmarkBars row={row} />
-            </div>
+            <p className="text-base font-bold uppercase text-slate-950 dark:text-white">{row.workload}</p>
+            <BenchmarkBars row={row} />
           </div>
         ))}
       </div>
-    </section>
-  );
-}
 
-export function DecisionMap() {
-  const paths = [
-    { shape: C.decision.tradeoffs[0].points[0], engine: C.decision.tradeoffs[0].engine },
-    { shape: C.decision.tradeoffs[1].points.join(" / "), engine: C.decision.tradeoffs[1].engine },
-    { shape: C.decision.tradeoffs[2].points[0], engine: `${C.decision.tradeoffs[2].engine} / ${C.decision.tradeoffs[3].engine}` },
-  ];
-
-  return (
-    <section className="min-w-0 border-t border-slate-200 pt-12 dark:border-slate-800">
-      <p className="text-center text-2xl font-semibold uppercase tracking-tight text-slate-950 dark:text-white sm:text-3xl">
-        {C.benchmark.verdict}
-      </p>
-      <p className="mt-3 text-center text-sm font-medium uppercase tracking-[0.12em] text-slate-600 dark:text-slate-400">
-        {C.benchmark.closing}
-      </p>
-
-      <div className="mx-auto mt-12 flex max-w-md flex-col items-center gap-0">
-        {paths.map((p, i) => (
-          <React.Fragment key={p.shape}>
-            <p className="text-center text-[11px] font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300">{p.shape}</p>
-            <VLine className="my-2 h-4" teal />
-            <p className="text-center text-sm font-bold uppercase text-teal-900 dark:text-teal-300">{p.engine}</p>
-            {i < paths.length - 1 ? <VLine className="my-4 h-6" /> : null}
-          </React.Fragment>
-        ))}
+      <div className="mt-14 max-w-2xl border-l-2 border-teal-700 pl-5 dark:border-teal-500">
+        <p className="text-xl font-semibold uppercase tracking-tight text-slate-950 dark:text-white sm:text-2xl">{C.benchmark.verdict}</p>
+        <p className="mt-2 text-sm font-medium text-slate-700 dark:text-slate-300">{C.benchmark.closing}</p>
       </div>
     </section>
   );
 }
 
+/** Branching architecture — visual centerpiece */
 export function ArchitectureDiagram() {
   return (
-    <section className="min-w-0 py-4" aria-labelledby="olap-arch">
-      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{C.architecture.eyebrow}</p>
-      <h2 id="olap-arch" className="mt-2 max-w-2xl text-lg font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white sm:text-xl">
+    <section className="min-w-0 pt-16 md:pt-24" aria-labelledby="olap-arch">
+      <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{C.architecture.eyebrow}</p>
+      <h2 id="olap-arch" className="mt-2 max-w-xl text-lg font-semibold uppercase leading-snug text-slate-950 dark:text-white">
         {C.architecture.headline.join(" ")}
       </h2>
-      <p className="mt-2 text-[10px] uppercase tracking-wide text-slate-500">PoC direction · not production migration</p>
+      <p className="mt-1 text-[11px] text-slate-500">PoC direction · not production migration</p>
 
-      <div className="relative mt-10 w-full">
-        <svg className="hidden w-full md:block" viewBox="0 0 900 340" aria-hidden>
-          <path d="M 450 20 L 450 50" fill="none" className={STROKE} strokeWidth="1" />
-          <path d="M 450 50 L 220 50 L 220 100" fill="none" className={STROKE_TEAL} strokeWidth="1.25" />
-          <path d="M 450 50 L 680 50 L 680 100" fill="none" className={STROKE} strokeWidth="1" />
-          <path d="M 680 130 L 680 160" fill="none" className={STROKE} strokeWidth="1" />
-          <path d="M 680 190 L 680 220" fill="none" className={STROKE} strokeWidth="1" />
-          <path d="M 680 250 L 680 280" fill="none" className={STROKE} strokeWidth="1" />
-          <text x="280" y="44" fill="#0f766e" fontSize="10" fontWeight="600">
-            Point reads
+      <div className="relative mt-12 w-full">
+        <svg className="mx-auto hidden w-full max-w-4xl md:block" viewBox="0 0 720 300" role="img" aria-label="Workload separation architecture">
+          <path d="M 360 24 L 360 56" fill="none" className={stroke.neutral} strokeWidth="1" />
+          <path d="M 360 56 L 360 72" fill="none" className={stroke.neutral} strokeWidth="1" />
+          <path d="M 360 72 L 180 72 L 180 120" fill="none" className={stroke.teal} strokeWidth="1.25" />
+          <path d="M 360 72 L 540 72 L 540 120" fill="none" className={stroke.neutral} strokeWidth="1" />
+          <path d="M 540 148 L 540 176" fill="none" className={stroke.neutral} strokeWidth="1" />
+          <path d="M 540 204 L 540 232" fill="none" className={stroke.neutral} strokeWidth="1" />
+          <text x="360" y="18" textAnchor="middle" fontSize="11" fontWeight="700" fill="currentColor" className="text-slate-900 dark:text-white">
+            APPLICATION
           </text>
-          <text x="520" y="44" fill="#64748b" fontSize="10" fontWeight="600">
-            Data pipeline
+          <text x="120" y="68" fontSize="9" fontWeight="600" fill="#0f766e">
+            SERVING PATH
+          </text>
+          <text x="180" y="112" textAnchor="middle" fontSize="10" fontWeight="700" fill="#0f766e">
+            DYNAMODB
+          </text>
+          <text x="460" y="68" fontSize="9" fontWeight="600" fill="#64748b">
+            ANALYTICS PATH
+          </text>
+          <text x="540" y="112" textAnchor="middle" fontSize="10" fontWeight="700" fill="currentColor" className="text-slate-800">
+            S3 TABLES
+          </text>
+          <text x="540" y="168" textAnchor="middle" fontSize="9" fontWeight="600" fill="#64748b">
+            ATHENA / PRESTO
+          </text>
+          <text x="540" y="224" textAnchor="middle" fontSize="10" fontWeight="700" fill="currentColor" className="text-slate-800">
+            BI / ANALYTICS
           </text>
         </svg>
 
-        <div className="flex flex-col items-center md:min-h-[300px]">
-          <p className="text-sm font-bold uppercase tracking-wide text-slate-900 dark:text-white">Application</p>
-          <VLine className="my-3 h-6" />
-
-          <div className="grid w-full gap-12 md:grid-cols-2 md:gap-24">
-            <div className="flex flex-col items-center md:items-end">
-              <p className="mb-2 text-[10px] font-bold uppercase text-teal-800 dark:text-teal-400">{C.architecture.servingLabel}</p>
-              <p className="text-sm font-bold uppercase text-slate-900 dark:text-white">DynamoDB</p>
+        <div className="md:hidden">
+          <p className="text-center text-sm font-bold uppercase">Application</p>
+          <div className="mt-6 grid grid-cols-2 gap-6">
+            <div>
+              <p className="text-[10px] font-bold uppercase text-teal-800">{C.architecture.servingLabel}</p>
+              <p className="mt-2 text-sm font-bold uppercase">DynamoDB</p>
             </div>
-            <div className="flex flex-col items-center md:items-start">
-              <p className="mb-2 text-[10px] font-bold uppercase text-slate-500">Data pipeline</p>
-              <p className="text-sm font-bold uppercase text-slate-900 dark:text-white">S3 Tables</p>
-              <VLine className="my-3 h-5" />
-              <p className="text-sm font-bold uppercase text-slate-900 dark:text-white">Athena / Presto</p>
-              <p className="mt-1 text-[10px] uppercase text-slate-500">{C.architecture.analyticsLabel}</p>
-              <VLine className="my-3 h-5" />
-              <p className="text-sm font-bold uppercase text-slate-900 dark:text-white">BI / Analytics</p>
+            <div>
+              <p className="text-[10px] font-bold uppercase text-slate-500">{C.architecture.analyticsLabel}</p>
+              <p className="mt-2 text-sm font-bold uppercase">S3 Tables</p>
+              <p className="mt-3 text-sm font-bold uppercase">Athena / Presto</p>
+              <p className="mt-3 text-sm font-bold uppercase">BI / Analytics</p>
             </div>
           </div>
         </div>
+
+        <p className="mx-auto mt-8 max-w-lg text-center text-sm text-slate-600 dark:text-slate-400 md:mt-6">{C.architecture.servingLabel} · {C.architecture.analyticsLabel}</p>
       </div>
     </section>
   );
@@ -310,43 +273,29 @@ export function ArchitectureDiagram() {
 export function BeforeAfter() {
   const { fork } = C.mismatch;
   return (
-    <section className="min-w-0">
-      <div className="grid gap-8 md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-6">
-        <div className="text-center md:text-right">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-500">Before</p>
-          <p className="mt-4 text-2xl font-semibold uppercase tracking-tight text-slate-950 dark:text-white">{fork.hub}</p>
-          <p className="mt-2 text-xs uppercase text-slate-600 dark:text-slate-400">
+    <section className="min-w-0 pt-16 md:pt-20">
+      <div className="grid items-center gap-8 md:grid-cols-[1fr_auto_1fr] md:gap-10">
+        <div className="md:text-right">
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Before</p>
+          <p className="mt-3 text-[10px] font-bold uppercase text-slate-500">One engine</p>
+          <p className="mt-2 text-3xl font-semibold uppercase text-slate-950 dark:text-white">{fork.hub}</p>
+          <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
             {fork.left.title} + {fork.right.title.toLowerCase()}
           </p>
-          <VLine className="mx-auto my-4 h-8 md:ml-auto md:mr-0" />
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-700 dark:text-slate-300">Workload collision</p>
         </div>
-
-        <p className="hidden text-3xl font-light text-teal-800 md:block dark:text-teal-400" aria-hidden>
+        <p className="text-center text-4xl font-light text-teal-800 dark:text-teal-400" aria-hidden>
           →
         </p>
-
-        <div className="text-center md:text-left">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-teal-800 dark:text-teal-400">After · PoC</p>
-          <div className="mt-4 inline-flex flex-col items-center gap-0 text-left md:items-start">
-            <p className="text-sm font-bold uppercase">Application</p>
-            <div className="flex gap-8 pl-2">
-              <div>
-                <VLine className="h-4" teal />
-                <p className="text-[10px] uppercase text-slate-500">Point reads</p>
-                <p className="text-sm font-bold uppercase text-teal-900 dark:text-teal-300">DynamoDB</p>
-              </div>
-              <div>
-                <VLine className="h-4" />
-                <p className="text-[10px] uppercase text-slate-500">Data pipeline</p>
-                <p className="text-sm font-bold uppercase">S3 Tables</p>
-                <VLine className="my-2 h-4" />
-                <p className="text-sm font-bold uppercase">Athena / Presto</p>
-                <VLine className="my-2 h-4" />
-                <p className="text-sm font-bold uppercase">Analytics</p>
-              </div>
-            </div>
-          </div>
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800 dark:text-teal-400">After</p>
+          <p className="mt-3 text-sm font-bold uppercase text-slate-900 dark:text-white">Workload-specific architecture</p>
+          <p className="mt-4 text-sm text-slate-800 dark:text-slate-200">
+            <span className="font-semibold text-teal-900 dark:text-teal-300">Serving</span> → DynamoDB
+          </p>
+          <p className="mt-2 text-sm text-slate-800 dark:text-slate-200">
+            <span className="font-semibold">Analytics</span> → S3 Tables → Athena / Presto
+          </p>
+          <p className="mt-4 text-[10px] uppercase text-slate-500">PoC · not production migration</p>
         </div>
       </div>
     </section>
@@ -355,71 +304,57 @@ export function BeforeAfter() {
 
 export function EngineMatrix() {
   return (
-    <section className="min-w-0" aria-labelledby="olap-decision">
-      <div className="space-y-0 divide-y divide-slate-200 dark:divide-slate-800">
+    <section className="min-w-0 pt-16 md:pt-20" aria-labelledby="olap-decision">
+      <div className="grid gap-10 lg:grid-cols-2 lg:gap-x-14 lg:gap-y-12">
         {C.decision.tradeoffs.map((t) => (
-          <div key={t.engine} className="grid gap-4 py-6 sm:grid-cols-[7rem_6rem_1fr_minmax(0,1.1fr)] sm:gap-6">
-            <p className="text-base font-bold text-slate-950 dark:text-white">{t.engine}</p>
-            <div>
-              <p className="text-[9px] font-bold uppercase text-slate-500">Best for</p>
-              <p className="mt-1 text-[11px] font-bold uppercase text-teal-900 dark:text-teal-300">{t.role}</p>
-            </div>
-            <div>
-              <p className="text-[9px] font-bold uppercase text-slate-500">Strength</p>
-              <ul className="mt-1 text-sm text-slate-800 dark:text-slate-200">
-                {t.points.map((p) => (
-                  <li key={p}>{p}</li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-[9px] font-bold uppercase text-slate-500">Trade-off</p>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t.tradeoff}</p>
-            </div>
+          <div key={t.engine}>
+            <p className="text-lg font-bold text-slate-950 dark:text-white">{t.engine}</p>
+            <dl className="mt-3 space-y-3 text-sm">
+              <div>
+                <dt className="text-[9px] font-bold uppercase text-slate-500">Best for</dt>
+                <dd className="mt-0.5 font-semibold uppercase text-teal-900 dark:text-teal-300">{t.role}</dd>
+              </div>
+              <div>
+                <dt className="text-[9px] font-bold uppercase text-slate-500">Strength</dt>
+                <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{t.points.join(" · ")}</dd>
+              </div>
+              <div>
+                <dt className="text-[9px] font-bold uppercase text-slate-500">Trade-off</dt>
+                <dd className="mt-0.5 text-slate-600 dark:text-slate-400">{t.tradeoff}</dd>
+              </div>
+            </dl>
           </div>
         ))}
       </div>
-      <p id="olap-decision" className="mt-8 text-base font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white">
+      <p id="olap-decision" className="mt-12 text-base font-semibold uppercase leading-snug text-slate-950 dark:text-white">
         {C.decision.headline.join(" ")}
       </p>
-      <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Still open</p>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{C.decision.stillOpen.join(" · ")}</p>
+      <p className="mt-6 text-sm text-slate-600 dark:text-slate-400">
+        <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Still open · </span>
+        {C.decision.stillOpen.join(" · ")}
+      </p>
     </section>
   );
 }
 
-const RECAP = ["One engine", "Workload mismatch", "Benchmark", "Workload-specific architecture"];
-
 export function FinalInsight() {
   return (
-    <section className="min-w-0 border-t border-slate-200 pt-12 dark:border-slate-800">
-      <p className="max-w-3xl text-base font-semibold uppercase leading-snug tracking-tight text-slate-600 dark:text-slate-400 sm:text-lg">
+    <section className="min-w-0 pt-16 pb-4 md:pt-20 md:pb-8">
+      <p className="max-w-2xl text-sm font-semibold uppercase leading-relaxed text-slate-500 dark:text-slate-400">
         {C.final.line1.map((l) => (
           <span key={l} className="block">
             {l}
           </span>
         ))}
       </p>
-      <p className="mt-6 max-w-3xl text-[clamp(1.35rem,3.5vw,2.25rem)] font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white">
+      <p className="mt-5 max-w-3xl text-[clamp(1.4rem,3.8vw,2.35rem)] font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white">
         {C.final.line2.map((l) => (
           <span key={l} className="block">
             {l}
           </span>
         ))}
       </p>
-
-      <div className="mt-10 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
-        {RECAP.map((step, i) => (
-          <React.Fragment key={step}>
-            <span>{step}</span>
-            {i < RECAP.length - 1 ? <span className="text-teal-700 dark:text-teal-400">↓</span> : null}
-          </React.Fragment>
-        ))}
-      </div>
+      <p className="mt-6 max-w-xl text-sm text-slate-600 dark:text-slate-400">{C.benchmark.closing}</p>
     </section>
   );
-}
-
-export function StoryDivider() {
-  return <div className="my-14 h-px w-full bg-slate-200 dark:bg-slate-800" aria-hidden />;
 }

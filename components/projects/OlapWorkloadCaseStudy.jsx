@@ -8,12 +8,10 @@ import {
   SignalSection,
   WorkloadMismatch,
   BenchmarkViz,
-  DecisionMap,
   ArchitectureDiagram,
   BeforeAfter,
   EngineMatrix,
   FinalInsight,
-  StoryDivider,
 } from "@/components/projects/olap/OlapCaseStudySections";
 
 export default function OlapWorkloadCaseStudy() {
@@ -28,38 +26,30 @@ export default function OlapWorkloadCaseStudy() {
       </Reveal>
 
       <Reveal delay={0.03} className="min-w-0">
-        <StoryDivider />
         <SignalSection />
       </Reveal>
 
       <Reveal delay={0.04} className="min-w-0">
-        <StoryDivider />
         <WorkloadMismatch />
       </Reveal>
 
       <Reveal delay={0.05} className="min-w-0">
-        <StoryDivider />
         <BenchmarkViz />
-        <DecisionMap />
       </Reveal>
 
       <Reveal delay={0.06} className="min-w-0">
-        <StoryDivider />
         <ArchitectureDiagram />
       </Reveal>
 
       <Reveal delay={0.07} className="min-w-0">
-        <StoryDivider />
         <BeforeAfter />
       </Reveal>
 
       <Reveal delay={0.08} className="min-w-0">
-        <StoryDivider />
         <EngineMatrix />
       </Reveal>
 
       <Reveal delay={0.09} className="min-w-0">
-        <StoryDivider />
         <FinalInsight />
       </Reveal>
     </article>
