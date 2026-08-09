@@ -12,7 +12,7 @@ const EASE = [0.22, 1, 0.36, 1];
 
 function Section({ children, className, id }) {
   return (
-    <section id={id} className={cn("min-w-0 py-14 md:py-20", className)}>
+    <section id={id} className={cn("min-w-0 py-10 md:py-14", className)}>
       {children}
     </section>
   );
@@ -196,8 +196,8 @@ export function SignalSection() {
   const flowNodes = C.signal.nodes.filter((n) => n.id !== "user");
 
   return (
-    <Section aria-label="What triggered the investigation?">
-      <div ref={ref} className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-12">
+    <Section aria-label="What triggered the investigation?" className="pb-6 md:pb-8">
+      <div ref={ref} className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start lg:gap-8">
         <div>
           <motion.p
             className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800 dark:text-teal-400"
@@ -212,7 +212,7 @@ export function SignalSection() {
           </div>
           <p className="mt-2 text-xs font-bold uppercase tracking-[0.24em] text-slate-500">{C.signal.metricLabel}</p>
 
-          <div className="mt-8 overflow-x-auto pb-1">
+          <div className="mt-5 overflow-x-auto pb-1">
             <div className="flex min-w-max items-center gap-2 md:flex-wrap md:gap-3">
               {flowNodes.map((node, i) => (
                 <React.Fragment key={node.id}>
@@ -250,7 +250,7 @@ export function SignalSection() {
             <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{C.signal.costNote}</p>
           </motion.div>
           <motion.div
-            className="relative mt-6 aspect-[16/10] w-full max-w-[min(100%,420px)]"
+            className="relative mt-4 aspect-[16/10] max-h-[200px] w-full max-w-[min(100%,380px)]"
             initial={{ opacity: 0 }}
             animate={inView && !reduced ? { opacity: 1 } : { opacity: 1 }}
             transition={{ duration: 0.65, delay: 0.72, ease: EASE }}
@@ -258,6 +258,19 @@ export function SignalSection() {
             <Image src={OLAP_COST_EVIDENCE_IMAGE} alt={C.signal.costImageAlt} fill className="object-contain object-left-top" sizes="(max-width:1024px) 100vw, 420px" />
           </motion.div>
         </div>
+      </div>
+
+      <div className="mt-8 border-t border-slate-200 pt-8 dark:border-slate-800 md:mt-10 md:pt-9">
+        <p className="text-sm font-medium uppercase tracking-[0.12em] text-slate-600 dark:text-slate-400">{C.mismatch.pre}</p>
+        <h2 id="olap-mismatch" className="mt-3 max-w-3xl text-[clamp(1.65rem,3.8vw,2.65rem)] font-semibold uppercase leading-[1.04] tracking-tight text-slate-950 dark:text-white">
+          {C.mismatch.headline.map((line) => (
+            <span key={line} className="block">
+              {line}
+            </span>
+          ))}
+        </h2>
+        <p className="mt-4 max-w-2xl text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200">{C.mismatch.problemInsight}</p>
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400">{C.mismatch.summary}</p>
       </div>
     </Section>
   );
@@ -269,24 +282,11 @@ export function MismatchSection() {
   const reduced = useReducedMotion();
 
   return (
-    <Section aria-labelledby="olap-mismatch">
-      <motion.div {...fadeUp(reduced)}>
-        <p className="text-sm font-medium uppercase tracking-[0.12em] text-slate-600 dark:text-slate-400">{C.mismatch.pre}</p>
-        <h2 id="olap-mismatch" className="mt-4 max-w-3xl text-[clamp(1.85rem,4.2vw,2.85rem)] font-semibold uppercase leading-[1.04] tracking-tight text-slate-950 dark:text-white">
-          {C.mismatch.headline.map((line) => (
-            <span key={line} className="block">
-              {line}
-            </span>
-          ))}
-        </h2>
-        <p className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200">{C.mismatch.problemInsight}</p>
-        <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400">{C.mismatch.summary}</p>
-      </motion.div>
-
-      <motion.div className="mx-auto mt-10 max-w-lg text-center md:max-w-xl" {...fadeUp(reduced, 0.1)}>
+    <Section aria-labelledby="olap-mismatch-diagram" className="pt-4 pb-8 md:pt-5 md:pb-10">
+      <motion.div className="mx-auto max-w-lg text-center md:max-w-xl" {...fadeUp(reduced)}>
         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">One engine · two access patterns</p>
-        <p className="mt-4 text-[clamp(1.75rem,4vw,2.25rem)] font-semibold uppercase tracking-tight text-slate-950 dark:text-white">{fork.hub}</p>
-        <div className="mt-8 grid grid-cols-2 gap-8 text-left text-sm md:gap-12">
+        <p className="mt-3 text-[clamp(1.5rem,3.5vw,2rem)] font-semibold uppercase tracking-tight text-slate-950 dark:text-white">{fork.hub}</p>
+        <div className="mt-5 grid grid-cols-2 gap-6 text-left text-sm md:gap-8">
           <div>
             <p className="text-[10px] font-bold uppercase text-teal-800 dark:text-teal-400">Application serving</p>
             <ul className="mt-2 space-y-1.5 text-slate-800 dark:text-slate-200">
@@ -394,7 +394,7 @@ export function ArchitectureSection() {
   const { fork } = C.mismatch;
 
   return (
-    <Section aria-labelledby="olap-arch" className="py-14 md:py-[4.5rem]">
+    <Section aria-labelledby="olap-arch" className="py-10 md:py-12">
       <motion.div {...fadeUp(reduced)}>
         <Eyebrow>{C.architecture.eyebrow}</Eyebrow>
         <h2 id="olap-arch" className="mt-3 max-w-3xl text-[clamp(1.35rem,3.2vw,2rem)] font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white">
@@ -541,39 +541,38 @@ export function TradeoffsSection() {
 /** 7. Open questions — compact note */
 export function OpenQuestionsSection() {
   return (
-    <div className="border-t border-slate-200 py-6 dark:border-slate-800">
+    <div className="border-t border-slate-200 py-4 dark:border-slate-800">
       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Still open</p>
       <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{C.decision.stillOpen.join(" · ")}</p>
     </div>
   );
 }
 
-/** Transition: result → lesson */
+/** Result + conclusion — compact centered footer */
 export function ResultTransition() {
   const reduced = useReducedMotion();
   const r = C.result;
 
   return (
-    <div className="border-t border-slate-200 py-10 text-center dark:border-slate-800 md:py-12">
+    <div className="border-t border-slate-200 pt-8 text-center dark:border-slate-800 md:pt-10">
       <motion.div {...fadeUp(reduced)}>
         <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">{r.label}</p>
-        <p className="mt-3 text-lg font-semibold uppercase tracking-tight text-slate-950 dark:text-white md:text-xl">{r.title}</p>
-        <p className="mt-4 text-sm text-teal-900 dark:text-teal-300">{r.serving}</p>
-        <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">{r.analytics}</p>
+        <p className="mt-2 text-lg font-semibold uppercase tracking-tight text-slate-950 dark:text-white">{r.title}</p>
+        <p className="mt-2 text-sm text-teal-900 dark:text-teal-300">{r.serving}</p>
+        <p className="mt-0.5 text-sm text-slate-700 dark:text-slate-300">{r.analytics}</p>
       </motion.div>
     </div>
   );
 }
 
-/** 8. Conclusion — center aligned */
 export function ConclusionSection() {
   const reduced = useReducedMotion();
 
   return (
-    <Section className="py-24 text-center md:py-32">
+    <section className="min-w-0 pb-10 pt-8 text-center md:pb-14 md:pt-10">
       <motion.p
-        className="mx-auto max-w-2xl text-sm font-semibold uppercase leading-relaxed tracking-tight text-slate-500 dark:text-slate-400"
-        {...fadeUp(reduced)}
+        className="mx-auto max-w-2xl text-sm font-semibold uppercase leading-snug tracking-tight text-slate-500 dark:text-slate-400"
+        {...fadeUp(reduced, 0.05)}
       >
         {C.final.line1.map((l) => (
           <span key={l} className="block">
@@ -582,8 +581,8 @@ export function ConclusionSection() {
         ))}
       </motion.p>
       <motion.p
-        className="mx-auto mt-6 max-w-3xl text-[clamp(1.55rem,4.2vw,2.65rem)] font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white"
-        {...fadeUp(reduced, 0.08)}
+        className="mx-auto mt-4 max-w-3xl text-[clamp(1.45rem,3.8vw,2.35rem)] font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white"
+        {...fadeUp(reduced, 0.1)}
       >
         {C.final.line2.map((l) => (
           <span key={l} className="block">
@@ -591,9 +590,9 @@ export function ConclusionSection() {
           </span>
         ))}
       </motion.p>
-      <motion.p className="mx-auto mt-8 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400" {...fadeUp(reduced, 0.16)}>
+      <motion.p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400" {...fadeUp(reduced, 0.15)}>
         {C.final.supporting}
       </motion.p>
-    </Section>
+    </section>
   );
 }
