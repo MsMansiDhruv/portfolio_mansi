@@ -6,6 +6,7 @@ import { ArchitectureFlow, DecisionList, TradeoffPanel } from "@/components/port
 import { SupportingProjectCard } from "@/components/portfolio/featured-work";
 import AmcCaseStudy from "@/components/projects/AmcCaseStudy";
 import OlapWorkloadCaseStudy from "@/components/projects/OlapWorkloadCaseStudy";
+import BrainMvpCaseStudy from "@/components/projects/BrainMvpCaseStudy";
 import { ProjectCaseStudyNav } from "@/components/projects/ProjectCaseStudyNav";
 import { getRelatedProjects } from "@/lib/data/project-meta";
 import { cn } from "@/lib/cn";
@@ -54,6 +55,9 @@ export default function ProjectDetails({ project }) {
   }
   if (p.slug === "olap-workload-architecture" || p.caseStudy === "olap") {
     return <OlapWorkloadCaseStudy />;
+  }
+  if (p.slug === "brain-mvp" || p.caseStudy === "brain") {
+    return <BrainMvpCaseStudy />;
   }
   const related = getRelatedProjects(p.slug);
   const hasArchitecture = Boolean(p.architectureLayers?.length);

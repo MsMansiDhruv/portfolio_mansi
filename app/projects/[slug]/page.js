@@ -2,6 +2,7 @@ import ProjectDetails from "./ProjectDetails";
 import { PROJECT_META, getProjectMeta, resolveProjectSlug } from "@/lib/data/project-meta";
 import { AMC_CASE_STUDY_SLUG } from "@/lib/data/amc-case-study";
 import { OLAP_CASE_STUDY_SLUG } from "@/lib/data/olap-case-study";
+import { BRAIN_CASE_STUDY_SLUG } from "@/lib/data/brain-case-study";
 
 export async function generateStaticParams() {
   const slugs = Object.keys(PROJECT_META);
@@ -27,6 +28,14 @@ export async function generateMetadata(props) {
       title: "From OLAP to Workload-Specific Data Architecture | Mansi Dhruv",
       description:
         "Production data-platform migration: separating application serving and analytical workloads after Redshift cost and benchmark evidence.",
+    };
+  }
+
+  if (slug === BRAIN_CASE_STUDY_SLUG) {
+    return {
+      title: "Productionizing an ML-Driven Allocation Engine | Mansi Dhruv",
+      description:
+        "Case study: ML allocation for a confidential fintech engagement — classification, production pipeline, and event-driven decisioning on AWS.",
     };
   }
 
