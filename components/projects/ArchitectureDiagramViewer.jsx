@@ -11,7 +11,15 @@ const CANDIDATE_PATHS = (base) => [base, base.replace(/\.png$/i, ".webp"), base.
 const diagramImageClass =
   "object-contain p-2 sm:p-4 dark:brightness-[0.96] dark:contrast-[1.08] dark:invert dark:hue-rotate-180";
 
-export function ArchitectureDiagramViewer({ src, alt, caption, className, modalTitle = "Platform architecture", previewClassName }) {
+export function ArchitectureDiagramViewer({
+  src,
+  alt,
+  caption,
+  className,
+  modalTitle = "Platform architecture",
+  previewClassName,
+  previewAspect = "aspect-[16/10]",
+}) {
   const [open, setOpen] = useState(false);
   const [activeSrc, setActiveSrc] = useState(src);
   const [failed, setFailed] = useState(false);
@@ -51,7 +59,8 @@ export function ArchitectureDiagramViewer({ src, alt, caption, className, modalT
         >
           <div
             className={cn(
-              "relative aspect-[16/10] w-full max-h-[min(72vh,720px)] min-h-[220px] bg-slate-100 dark:bg-slate-950",
+              "relative w-full max-h-[min(72vh,720px)] min-h-[220px] bg-slate-100 dark:bg-slate-950",
+              previewAspect,
               previewClassName
             )}
           >
@@ -60,7 +69,7 @@ export function ArchitectureDiagramViewer({ src, alt, caption, className, modalT
               alt={alt}
               fill
               className={diagramImageClass}
-              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1100px"
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 96vw, 1200px"
               onError={tryNext}
               priority
             />
