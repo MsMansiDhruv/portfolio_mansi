@@ -10,8 +10,7 @@ import {
   ArchitectureSection,
   TradeoffsSection,
   OpenQuestionsSection,
-  ResultTransition,
-  ConclusionSection,
+  ClosingSection,
 } from "@/components/projects/olap/OlapCaseStudySections";
 
 export default function OlapWorkloadCaseStudy() {
@@ -28,8 +27,7 @@ export default function OlapWorkloadCaseStudy() {
       <ArchitectureSection />
       <TradeoffsSection />
       <OpenQuestionsSection />
-      <ResultTransition />
-      <ConclusionSection />
+      <ClosingSection />
     </article>
   );
 }

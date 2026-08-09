@@ -11,7 +11,7 @@ const CANDIDATE_PATHS = (base) => [base, base.replace(/\.png$/i, ".webp"), base.
 const diagramImageClass =
   "object-contain p-2 sm:p-4 dark:brightness-[0.96] dark:contrast-[1.08] dark:invert dark:hue-rotate-180";
 
-export function ArchitectureDiagramViewer({ src, alt, caption, className }) {
+export function ArchitectureDiagramViewer({ src, alt, caption, className, modalTitle = "Platform architecture", previewClassName }) {
   const [open, setOpen] = useState(false);
   const [activeSrc, setActiveSrc] = useState(src);
   const [failed, setFailed] = useState(false);
@@ -49,7 +49,12 @@ export function ArchitectureDiagramViewer({ src, alt, caption, className }) {
           className="group relative block w-full min-w-0 overflow-hidden rounded-2xl border border-slate-200/90 bg-white text-left shadow-sm transition hover:border-teal-600/30 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-none dark:hover:border-teal-500/40 dark:focus-visible:ring-offset-slate-950"
           aria-label="Open architecture diagram full size"
         >
-          <div className="relative aspect-[16/10] w-full max-h-[min(72vh,720px)] min-h-[220px] bg-slate-100 dark:bg-slate-950">
+          <div
+            className={cn(
+              "relative aspect-[16/10] w-full max-h-[min(72vh,720px)] min-h-[220px] bg-slate-100 dark:bg-slate-950",
+              previewClassName
+            )}
+          >
             <Image
               src={activeSrc}
               alt={alt}
@@ -71,7 +76,7 @@ export function ArchitectureDiagramViewer({ src, alt, caption, className }) {
         <figcaption className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">{caption}</figcaption>
       ) : null}
 
-      <Modal isOpen={open} onClose={() => setOpen(false)} title="Platform architecture" size="2xl" className="max-w-6xl">
+      <Modal isOpen={open} onClose={() => setOpen(false)} title={modalTitle} size="2xl" className="max-w-6xl">
         <div className="relative mx-auto min-h-[50vh] w-full max-w-full overflow-x-auto rounded-xl bg-slate-100 dark:bg-slate-950">
           {!failed ? (
             <div className="relative mx-auto h-[min(70vh,800px)] w-full min-w-[min(100%,640px)]">

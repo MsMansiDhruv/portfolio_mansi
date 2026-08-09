@@ -81,6 +81,7 @@ export const Modal = React.forwardRef(function Modal(
         aria-modal="true"
         aria-labelledby="modal-title"
         className="fixed inset-0 z-[101] flex items-center justify-center p-4"
+        onClick={onClose}
       >
         <div
           className={cn(
