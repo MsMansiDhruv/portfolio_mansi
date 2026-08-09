@@ -5,7 +5,7 @@ export const architectureKnowledge = {
   kind: "architecture",
   tags: ["architecture", "lakehouse", "platform", "design"],
   technologies: ["databricks", "spark", "sql", "terraform"],
-  projects: ["project/amc-datalake", "project/small-datalake-poc"],
+  projects: ["project/amc-datalake", "project/olap-workload-architecture"],
   topics: ["enterprise architecture", "platform design", "governance"],
   summary: "I design data platforms around business reliability, governance, and reuse, not just around the latest tool choice.",
   businessContext: "A good data architecture should improve trust, reduce support cost, and make it easier for teams to deliver analytics repeatedly.",

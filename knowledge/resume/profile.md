@@ -2,7 +2,7 @@
 title: Profile
 tags: [resume, profile, career]
 technologies: [python, sql, spark, databricks, aws, terraform]
-projects: [amc-datalake, gpu-benchmark, small-datalake-poc]
+projects: [amc-datalake, gpu-benchmark]
 skills: [leadership, architecture, automation, governance]
 topics: [career, summary]
 difficulty: [basic]

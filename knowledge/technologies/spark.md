@@ -2,7 +2,7 @@
 title: Spark
 tags: [technology, spark, pyspark, distributed-compute]
 technologies: [databricks, sql]
-projects: [amc-datalake, gpu-benchmark, small-datalake-poc]
+projects: [amc-datalake, gpu-benchmark]
 skills: [performance, scaling]
 topics: [spark, distributed systems]
 difficulty: [intermediate]

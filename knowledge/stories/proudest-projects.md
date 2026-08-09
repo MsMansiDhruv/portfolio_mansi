@@ -2,7 +2,7 @@
 title: Proudest Projects
 tags: [story, projects, impact]
 technologies: [databricks, spark, aws]
-projects: [amc-datalake, gpu-benchmark, small-datalake-poc]
+projects: [amc-datalake, gpu-benchmark, olap-workload-architecture]
 skills: [impact, leadership]
 topics: [projects, mentoring]
 difficulty: [intermediate]
@@ -23,5 +23,5 @@ What I Would Highlight
 Related Experience
 - AMC - Datalake Solution
 - GPU Benchmark Pod
-- Small Data Lake (PoC)
+- OLAP Workload Architecture
 

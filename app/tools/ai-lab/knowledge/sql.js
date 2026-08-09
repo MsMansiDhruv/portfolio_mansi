@@ -5,7 +5,7 @@ export const sqlKnowledge = {
   kind: "technology",
   tags: ["sql", "query", "joins", "analytics"],
   technologies: ["spark", "snowflake", "power bi"],
-  projects: ["project/amc-datalake", "project/small-datalake-poc"],
+  projects: ["project/amc-datalake"],
   topics: ["query design", "performance", "analytics"],
   summary: "I treat SQL as the language that turns data platforms into decision systems, so the query shape matters as much as the model underneath it.",
   businessContext: "SQL is where most teams feel the difference between a platform that is fast enough to trust and one that makes users wait for answers.",

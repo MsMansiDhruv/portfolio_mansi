@@ -2,7 +2,7 @@
 title: Delta Lake
 tags: [technology, delta-lake, storage, lakehouse]
 technologies: [databricks, spark, sql]
-projects: [amc-datalake, small-datalake-poc]
+projects: [amc-datalake]
 skills: [governance, reliability]
 topics: [lakehouse storage]
 difficulty: [intermediate]

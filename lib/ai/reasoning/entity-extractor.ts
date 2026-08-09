@@ -24,7 +24,7 @@ const FALLBACK_SEEDS: EntitySeed[] = [
   { label: "SQL", aliases: ["sql"], kind: "technology" },
   { label: "AMC", aliases: ["amc", "amc datalake", "datalake solution"], kind: "project" },
   { label: "GPU Benchmark", aliases: ["gpu benchmark"], kind: "project" },
-  { label: "Small Data Lake POC", aliases: ["small data lake", "small data lake poc"], kind: "project" },
+  { label: "OLAP Workload Architecture", aliases: ["olap", "olap workload", "workload architecture"], kind: "project" },
   { label: "architecture review", aliases: ["architecture review", "system design", "architecture"], kind: "concept" },
   { label: "lakehouse", aliases: ["lakehouse"], kind: "concept" },
   { label: "streaming", aliases: ["streaming"], kind: "concept" },

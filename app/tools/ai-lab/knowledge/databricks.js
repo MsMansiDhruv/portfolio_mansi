@@ -5,7 +5,7 @@ export const databricksKnowledge = {
   kind: "technology",
   tags: ["databricks", "spark", "lakehouse", "unity catalog"],
   technologies: ["spark", "delta lake", "unity catalog"],
-  projects: ["project/amc-datalake", "project/small-datalake-poc"],
+  projects: ["project/amc-datalake"],
   topics: ["lakehouse", "governance", "distributed compute"],
   summary: "I reach for Databricks when I need one platform for large-scale Spark processing, governed lakehouse workflows, and a clean path from exploration to production.",
   businessContext: "Enterprise analytics teams usually need scale, governance, and shared semantics without stitching together too many point tools.",
@@ -46,7 +46,7 @@ export const databricksKnowledge = {
     "I watch cluster idle time and workspace sprawl carefully."
   ],
   relatedTechnologies: ["Spark", "Delta Lake", "Terraform"],
-  relatedProjects: ["AMC - Datalake Solution", "Small Data Lake (PoC)"],
+    relatedProjects: ["AMC - Datalake Solution"],
   followUps: [
     "Explain why I would choose Databricks over Snowflake for a lakehouse",
     "Walk through the scaling and cost controls I would put around it",

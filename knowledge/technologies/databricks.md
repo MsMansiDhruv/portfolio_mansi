@@ -2,7 +2,7 @@
 title: Databricks
 tags: [technology, databricks, spark, lakehouse]
 technologies: [spark, delta-lake, unity-catalog]
-projects: [amc-datalake, small-datalake-poc]
+projects: [amc-datalake]
 skills: [platform engineering, governance]
 topics: [databricks, lakehouse]
 difficulty: [intermediate]

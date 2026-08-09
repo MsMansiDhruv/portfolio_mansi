@@ -6,7 +6,7 @@ export const projectKnowledge = [
     kind: "project",
     tags: ["amc", "datalake", "lakehouse", "asset management"],
     technologies: ["s3", "iceberg", "pyspark", "terraform", "redshift", "sql"],
-    projects: ["gpu-benchmark", "small-datalake-poc"],
+    projects: ["gpu-benchmark", "olap-workload-architecture"],
     topics: ["enterprise analytics", "migration", "governed lakehouse"],
     summary: "I built a reusable cloud analytics foundation that replaced fragmented on-prem reporting paths with a more reliable and cost-aware lakehouse pattern.",
     businessContext: "The client needed a single analytics foundation that could unify legacy sources, improve trust in reporting, and reduce the operational burden of the old platform.",
@@ -43,7 +43,7 @@ export const projectKnowledge = [
       "I would formalize consumer contracts earlier so downstream dependencies are visible sooner."
     ],
     relatedTechnologies: ["Databricks", "Delta Lake", "SQL", "Terraform"],
-    relatedProjects: ["GPU Benchmark Pod", "Small Data Lake (PoC)"],
+    relatedProjects: ["GPU Benchmark Pod", "OLAP Workload Architecture"],
     followUps: [
       "Walk through the ingestion and validation flow",
       "Explain the trade-offs versus a warehouse-first design",
@@ -91,59 +91,11 @@ export const projectKnowledge = [
       "I would tie the benchmark results more directly to cost-per-run analysis."
     ],
     relatedTechnologies: ["CUDA", "Python", "Spark"],
-    relatedProjects: ["AMC - Datalake Solution", "Small Data Lake (PoC)"],
+    relatedProjects: ["AMC - Datalake Solution", "OLAP Workload Architecture"],
     followUps: [
       "Show how I would turn this into a production sizing model",
       "Explain when GPU compute is actually worth the spend",
       "Compare this approach with CPU-first tuning"
-    ]
-  },
-  {
-    id: "project/small-datalake-poc",
-    title: "Small Data Lake (PoC)",
-    category: "project",
-    kind: "project",
-    tags: ["poc", "datalake", "proof of concept", "iceberg"],
-    technologies: ["spark", "iceberg", "sql", "aws"],
-    projects: ["amc-datalake"],
-    topics: ["architecture validation", "prototype", "lakehouse"],
-    summary: "I used this proof of concept to validate a lighter-weight lakehouse pattern before scaling the design into a larger enterprise setup.",
-    businessContext: "The goal was to reduce uncertainty before committing the team to a broader platform build.",
-    problemStatement: "The real question was whether the pattern could deliver enough reliability and reuse without becoming too expensive or too complex.",
-    myRole: "I shaped the architecture, tested the core data flow, and used the PoC to de-risk the larger implementation.",
-    architecture: [
-      "I kept the design deliberately small so the critical path was easy to reason about.",
-      "I used the PoC to prove ingestion, transformation, and serving behavior before broadening scope.",
-      "I treated the prototype as a decision artifact, not as throwaway code."
-    ],
-    decisions: [
-      "I chose a narrow scope because early validation is only useful when the team can isolate the important variables.",
-      "I favored open table patterns so the lessons would transfer to the larger architecture.",
-      "I avoided overengineering the PoC because the main job was learning, not perfect completeness."
-    ],
-    tradeoffs: [
-      "A small PoC gives fast signal, but it can hide operational issues that appear at scale.",
-      "A broader prototype would have been more realistic, but it would have slowed the decision."
-    ],
-    outcomes: [
-      "The PoC gave confidence that the architecture could be extended into the production platform.",
-      "It helped narrow the scope of the later enterprise implementation."
-    ],
-    lessonsLearned: [
-      "A good PoC answers one hard question really well.",
-      "The faster I can remove ambiguity, the better the downstream architecture decisions become."
-    ],
-    scale: "Small by design, used to validate future scale decisions.",
-    whatIWouldImproveToday: [
-      "I would formalize the success criteria earlier.",
-      "I would capture more operational assumptions alongside the prototype results."
-    ],
-    relatedTechnologies: ["Spark", "Iceberg", "AWS"],
-    relatedProjects: ["AMC - Datalake Solution", "GPU Benchmark Pod"],
-    followUps: [
-      "Explain the decision criteria for moving from PoC to production",
-      "Show the biggest risks I would watch at larger scale",
-      "Compare the PoC with the AMC production design"
     ]
   }
 ];

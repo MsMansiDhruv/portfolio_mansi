@@ -5,7 +5,7 @@ export const resumeKnowledge = {
   kind: "resume",
   tags: ["resume", "profile", "timeline", "career"],
   technologies: ["databricks", "spark", "aws", "terraform", "sql"],
-  projects: ["project/amc-datalake", "project/gpu-benchmark", "project/small-datalake-poc"],
+  projects: ["project/amc-datalake", "project/gpu-benchmark", "project/olap-workload-architecture"],
   topics: ["career", "leadership", "growth"],
   summary: "I present my background through the systems I built, the decisions I made, and the outcomes I was accountable for.",
   roles: [

@@ -5,7 +5,7 @@ export const sparkKnowledge = {
   kind: "technology",
   tags: ["spark", "pyspark", "distributed compute", "etl"],
   technologies: ["databricks", "sql", "python"],
-  projects: ["project/amc-datalake", "project/small-datalake-poc", "project/gpu-benchmark"],
+  projects: ["project/amc-datalake", "project/gpu-benchmark"],
   topics: ["distributed compute", "transformation", "performance"],
   summary: "I use Spark when I need parallel data processing that still lets me reason about the shape of the workload and the cost of the transformation.",
   businessContext: "Spark matters when a team has more data, more joins, or more transformation complexity than a single-node pattern can handle cleanly.",

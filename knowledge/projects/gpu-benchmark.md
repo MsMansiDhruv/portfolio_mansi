@@ -2,7 +2,7 @@
 title: GPU Benchmark Pod
 tags: [project, gpu, cuda, performance]
 technologies: [cuda, profiling]
-projects: [amc-datalake, small-datalake-poc]
+projects: [amc-datalake, olap-workload-architecture]
 skills: [performance, benchmarking]
 topics: [gpu, optimization]
 difficulty: [advanced]
@@ -58,5 +58,5 @@ Related Technologies
 - CUDA, profiling, benchmarking
 
 Related Projects
-- AMC - Datalake Solution, Small Data Lake (PoC)
+- AMC - Datalake Solution, OLAP Workload Architecture
 

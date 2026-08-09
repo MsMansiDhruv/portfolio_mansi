@@ -2,7 +2,7 @@
 title: AMC - Datalake Solution
 tags: [project, datalake, amc, databricks, aws, sql]
 technologies: [s3, iceberg, pyspark, aws, terraform, redshift]
-projects: [gpu-benchmark, small-datalake-poc]
+projects: [gpu-benchmark, olap-workload-architecture]
 skills: [architecture, automation, governance]
 topics: [lakehouse, analytics, enterprise]
 difficulty: [advanced]
@@ -61,5 +61,5 @@ Related Technologies
 - Databricks, Delta Lake, SQL, Terraform
 
 Related Projects
-- GPU Benchmark Pod, Small Data Lake (PoC)
+- GPU Benchmark Pod, OLAP Workload Architecture
 
