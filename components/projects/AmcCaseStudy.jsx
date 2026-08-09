@@ -5,7 +5,8 @@ import Link from "next/link";
 import { ArrowDown, ArrowRight, ChevronDown } from "lucide-react";
 import { Reveal, HoverLift } from "@/components/portfolio/motion";
 import { ArchitectureDiagramViewer } from "@/components/projects/ArchitectureDiagramViewer";
-import { AMC_ARCHITECTURE_IMAGE, AMC_CASE_STUDY } from "@/lib/data/amc-case-study";
+import { AMC_ARCHITECTURE_IMAGE, AMC_CASE_STUDY, AMC_CASE_STUDY_SLUG } from "@/lib/data/amc-case-study";
+import { ProjectCaseStudyNav } from "@/components/projects/ProjectCaseStudyNav";
 import { cn } from "@/lib/cn";
 
 const C = AMC_CASE_STUDY;
@@ -411,35 +412,7 @@ export default function AmcCaseStudy() {
 
       {/* Takeaway + nav */}
       <Reveal delay={0.14}>
-        <footer className="mt-14 border-t border-slate-200 pt-12 pb-4 dark:border-slate-800">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-            Engineering takeaway
-          </h2>
-          <blockquote className="mt-4 max-w-2xl border-l-2 border-teal-700/40 pl-4 text-base leading-relaxed text-slate-700 dark:border-teal-500/50 dark:text-slate-300">
-            {C.takeaway}
-          </blockquote>
-          <nav
-            className="mt-10 flex flex-col gap-4 border-t border-slate-200/80 pt-8 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800"
-            aria-label="Case study navigation"
-          >
-            <Link
-              href="/projects"
-              className="inline-flex min-h-[44px] items-center text-sm font-medium text-teal-800 transition hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-300"
-            >
-              ← Back to Projects
-            </Link>
-            {C.nextProject ? (
-              <Link
-                href={`/projects/${C.nextProject.slug}`}
-                className="inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-slate-700 transition hover:text-teal-800 dark:text-slate-300 dark:hover:text-teal-400"
-              >
-                Next project
-                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
-                <span className="text-teal-800 dark:text-teal-400">{C.nextProject.title}</span>
-              </Link>
-            ) : null}
-          </nav>
-        </footer>
+        <ProjectCaseStudyNav slug={AMC_CASE_STUDY_SLUG} takeaway={C.takeaway} />
       </Reveal>
     </article>
   );

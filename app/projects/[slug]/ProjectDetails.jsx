@@ -6,6 +6,7 @@ import { ArchitectureFlow, DecisionList, TradeoffPanel } from "@/components/port
 import { SupportingProjectCard } from "@/components/portfolio/featured-work";
 import AmcCaseStudy from "@/components/projects/AmcCaseStudy";
 import OlapWorkloadCaseStudy from "@/components/projects/OlapWorkloadCaseStudy";
+import { ProjectCaseStudyNav } from "@/components/projects/ProjectCaseStudyNav";
 import { getRelatedProjects } from "@/lib/data/project-meta";
 import { cn } from "@/lib/cn";
 
@@ -197,11 +198,7 @@ export default function ProjectDetails({ project }) {
             </Section>
           ) : null}
 
-          <div className="mt-12 border-t border-slate-200 pt-8 dark:border-slate-800">
-            <Link href="/projects" className="text-sm font-medium text-teal-700 hover:underline dark:text-teal-400">
-              ← All projects
-            </Link>
-          </div>
+          <ProjectCaseStudyNav slug={p.slug} className="mt-12" />
         </div>
 
         {hasArchitecture ? (
