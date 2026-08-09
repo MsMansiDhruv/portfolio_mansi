@@ -26,7 +26,7 @@ export async function generateMetadata(props) {
     return {
       title: "From OLAP to Workload-Specific Data Architecture | Mansi Dhruv",
       description:
-        "A database architecture PoC evaluating Redshift, S3 Tables, Aurora PostgreSQL, and DynamoDB for mixed analytical and operational workloads.",
+        "Production data-platform migration: separating application serving and analytical workloads after Redshift cost and benchmark evidence.",
     };
   }
 

@@ -12,7 +12,7 @@ const EASE = [0.22, 1, 0.36, 1];
 
 function Section({ children, className, id }) {
   return (
-    <section id={id} className={cn("min-w-0 py-16 md:py-24", className)}>
+    <section id={id} className={cn("min-w-0 py-14 md:py-20", className)}>
       {children}
     </section>
   );
@@ -41,8 +41,8 @@ export function HeroSection() {
   const play = inView && !reduced;
 
   return (
-    <header ref={ref} className="min-w-0 pt-8 md:pt-10">
-      <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
+    <header ref={ref} className="min-w-0 pt-6 md:pt-8">
+      <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-14">
         <div>
           <Eyebrow>{C.eyebrow}</Eyebrow>
           <h1 className="mt-4 text-[clamp(2rem,4.5vw,2.85rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
@@ -190,45 +190,73 @@ function Metric60K() {
 export function SignalSection() {
   const reduced = useReducedMotion();
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.3 });
+  const inView = useInView(ref, { once: true, amount: 0.25 });
+  const flowStart = 0.35;
+
+  const flowNodes = C.signal.nodes.filter((n) => n.id !== "user");
 
   return (
     <Section aria-label="What triggered the investigation?">
-      <div ref={ref}>
-        <Metric60K />
-        <p className="mt-3 text-xs font-bold uppercase tracking-[0.24em] text-slate-500">{C.signal.metricLabel}</p>
+      <div ref={ref} className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-12">
+        <div>
+          <motion.p
+            className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800 dark:text-teal-400"
+            initial={{ opacity: 0 }}
+            animate={inView && !reduced ? { opacity: 1 } : { opacity: 1 }}
+            transition={{ duration: 0.45, ease: EASE }}
+          >
+            {C.signal.highFrequencyLead}
+          </motion.p>
+          <div className="mt-3">
+            <Metric60K />
+          </div>
+          <p className="mt-2 text-xs font-bold uppercase tracking-[0.24em] text-slate-500">{C.signal.metricLabel}</p>
 
-        <div className="mt-12 overflow-x-auto pb-2">
-          <div className="flex min-w-max items-center gap-2 md:min-w-0 md:flex-wrap md:gap-3">
-            {C.signal.nodes.map((node, i) => (
-              <React.Fragment key={node.id}>
-                <motion.span
-                  className={cn(
-                    "text-[11px] font-bold uppercase tracking-wide",
-                    node.emphasis ? "text-teal-900 dark:text-teal-300" : "text-slate-900 dark:text-white"
-                  )}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={inView && !reduced ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: i * 0.1, ease: EASE }}
-                >
-                  {node.sub ? `${node.label} ${node.sub}` : node.label}
-                </motion.span>
-                {i < C.signal.nodes.length - 1 ? (
-                  <span className="text-slate-400" aria-hidden>
-                    →
-                  </span>
-                ) : null}
-              </React.Fragment>
-            ))}
+          <div className="mt-8 overflow-x-auto pb-1">
+            <div className="flex min-w-max items-center gap-2 md:flex-wrap md:gap-3">
+              {flowNodes.map((node, i) => (
+                <React.Fragment key={node.id}>
+                  <motion.span
+                    className={cn(
+                      "text-[11px] font-bold uppercase tracking-wide",
+                      node.emphasis ? "text-teal-900 dark:text-teal-300" : "text-slate-900 dark:text-white"
+                    )}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={inView && !reduced ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: flowStart + i * 0.1, ease: EASE }}
+                  >
+                    {node.sub ? `${node.label} ${node.sub}` : node.label}
+                  </motion.span>
+                  {i < flowNodes.length - 1 ? (
+                    <span className="text-slate-400" aria-hidden>
+                      →
+                    </span>
+                  ) : null}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="mt-12 max-w-md border-t border-slate-200 pt-6 dark:border-slate-800">
-          <p className="text-xl font-semibold tabular-nums text-slate-900 dark:text-white">{C.signal.serviceTotal}</p>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{C.signal.costNote}</p>
-          <div className="relative mt-4 aspect-[16/9] w-full max-w-[200px] opacity-90">
-            <Image src={OLAP_COST_EVIDENCE_IMAGE} alt={C.signal.costImageAlt} fill className="object-contain object-left" sizes="200px" />
-          </div>
+        <div className="lg:pl-4">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={inView && !reduced ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.55, ease: EASE }}
+          >
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Cost signal</p>
+            <p className="mt-2 text-3xl font-semibold tabular-nums text-slate-950 dark:text-white">{C.signal.serviceTotal}</p>
+            <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400">{C.signal.costLabel}</p>
+            <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{C.signal.costNote}</p>
+          </motion.div>
+          <motion.div
+            className="relative mt-6 aspect-[16/10] w-full max-w-[min(100%,420px)]"
+            initial={{ opacity: 0 }}
+            animate={inView && !reduced ? { opacity: 1 } : { opacity: 1 }}
+            transition={{ duration: 0.65, delay: 0.72, ease: EASE }}
+          >
+            <Image src={OLAP_COST_EVIDENCE_IMAGE} alt={C.signal.costImageAlt} fill className="object-contain object-left-top" sizes="(max-width:1024px) 100vw, 420px" />
+          </motion.div>
         </div>
       </div>
     </Section>
@@ -244,33 +272,34 @@ export function MismatchSection() {
     <Section aria-labelledby="olap-mismatch">
       <motion.div {...fadeUp(reduced)}>
         <p className="text-sm font-medium uppercase tracking-[0.12em] text-slate-600 dark:text-slate-400">{C.mismatch.pre}</p>
-        <h2 id="olap-mismatch" className="mt-4 max-w-3xl text-[clamp(1.75rem,4vw,2.75rem)] font-semibold uppercase leading-[1.05] tracking-tight text-slate-950 dark:text-white">
+        <h2 id="olap-mismatch" className="mt-4 max-w-3xl text-[clamp(1.85rem,4.2vw,2.85rem)] font-semibold uppercase leading-[1.04] tracking-tight text-slate-950 dark:text-white">
           {C.mismatch.headline.map((line) => (
             <span key={line} className="block">
               {line}
             </span>
           ))}
         </h2>
-        <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400">{C.mismatch.summary}</p>
+        <p className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-slate-800 dark:text-slate-200">{C.mismatch.problemInsight}</p>
+        <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400">{C.mismatch.summary}</p>
       </motion.div>
 
-      <motion.div className="mx-auto mt-14 max-w-md text-center" {...fadeUp(reduced, 0.12)}>
-        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">One engine</p>
-        <p className="mt-4 text-2xl font-semibold uppercase tracking-tight text-slate-950 dark:text-white">{fork.hub}</p>
-        <div className="mt-8 grid grid-cols-2 gap-8 text-left text-sm">
+      <motion.div className="mx-auto mt-10 max-w-lg text-center md:max-w-xl" {...fadeUp(reduced, 0.1)}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">One engine · two access patterns</p>
+        <p className="mt-4 text-[clamp(1.75rem,4vw,2.25rem)] font-semibold uppercase tracking-tight text-slate-950 dark:text-white">{fork.hub}</p>
+        <div className="mt-8 grid grid-cols-2 gap-8 text-left text-sm md:gap-12">
           <div>
-            <p className="text-[10px] font-bold uppercase text-teal-800 dark:text-teal-400">Serving</p>
-            <ul className="mt-2 space-y-1 text-slate-800 dark:text-slate-200">
+            <p className="text-[10px] font-bold uppercase text-teal-800 dark:text-teal-400">Application serving</p>
+            <ul className="mt-2 space-y-1.5 text-slate-800 dark:text-slate-200">
               {fork.left.items.map((x) => (
-                <li key={x}>{x}</li>
+                <li key={x}>· {x}</li>
               ))}
             </ul>
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase text-slate-500">Analytics</p>
-            <ul className="mt-2 space-y-1 text-slate-800 dark:text-slate-200">
+            <ul className="mt-2 space-y-1.5 text-slate-800 dark:text-slate-200">
               {fork.right.items.map((x) => (
-                <li key={x}>{x}</li>
+                <li key={x}>· {x}</li>
               ))}
             </ul>
           </div>
@@ -305,7 +334,7 @@ export function BenchmarkSection() {
         </ul>
       </motion.div>
 
-      <motion.div className="mt-10 w-full overflow-x-auto" {...fadeUp(reduced, 0.08)}>
+      <motion.div className="mt-8 w-full overflow-x-auto" {...fadeUp(reduced, 0.08)}>
         <table className="w-full min-w-[520px] border-collapse text-left">
           <thead>
             <tr className="border-b-2 border-slate-900 dark:border-slate-100">
@@ -321,7 +350,14 @@ export function BenchmarkSection() {
             {C.benchmark.rows.map((row, i) => {
               const fast = fastestKey(row);
               return (
-                <tr key={`${row.workload}-${i}`} className="border-b border-slate-200 dark:border-slate-800">
+                <motion.tr
+                  key={`${row.workload}-${i}`}
+                  className="border-b border-slate-200 dark:border-slate-800"
+                  initial={{ opacity: 0, y: 8 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.5, delay: i * 0.06, ease: EASE }}
+                >
                   <td className="py-3.5 pr-4 text-sm font-semibold text-slate-900 dark:text-white">{row.workload}</td>
                   {BENCHMARK_ENGINES.map((e) => (
                     <td
@@ -334,14 +370,14 @@ export function BenchmarkSection() {
                       {row[e.key]}
                     </td>
                   ))}
-                </tr>
+                </motion.tr>
               );
             })}
           </tbody>
         </table>
       </motion.div>
 
-      <motion.div className="mx-auto mt-16 max-w-2xl text-center" {...fadeUp(reduced, 0.15)}>
+      <motion.div className="mx-auto mt-12 max-w-2xl text-center" {...fadeUp(reduced, 0.12)}>
         <p className="text-2xl font-semibold uppercase tracking-tight text-slate-950 dark:text-white md:text-3xl">{C.benchmark.verdict}</p>
         <p className="mt-4 text-sm font-medium uppercase tracking-[0.1em] text-slate-600 dark:text-slate-400">{C.benchmark.closing}</p>
       </motion.div>
@@ -358,7 +394,7 @@ export function ArchitectureSection() {
   const { fork } = C.mismatch;
 
   return (
-    <Section aria-labelledby="olap-arch" className="py-20 md:py-28">
+    <Section aria-labelledby="olap-arch" className="py-14 md:py-[4.5rem]">
       <motion.div {...fadeUp(reduced)}>
         <Eyebrow>{C.architecture.eyebrow}</Eyebrow>
         <h2 id="olap-arch" className="mt-3 max-w-3xl text-[clamp(1.35rem,3.2vw,2rem)] font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white">
@@ -366,7 +402,7 @@ export function ArchitectureSection() {
         </h2>
       </motion.div>
 
-      <div ref={ref} className="relative mx-auto mt-14 w-full max-w-3xl">
+      <div ref={ref} className="relative mx-auto mt-10 w-full max-w-3xl">
         <svg viewBox="0 0 600 320" className="mx-auto hidden w-full md:block" aria-label="Before and after architecture">
           {/* BEFORE */}
           <motion.g initial={{ opacity: 0 }} animate={play ? { opacity: 1 } : { opacity: 1 }} transition={{ duration: 0.5 }}>
@@ -449,7 +485,7 @@ export function ArchitectureSection() {
         </div>
       </div>
 
-      <div className="mx-auto mt-12 grid max-w-3xl gap-4 text-center text-sm md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-6">
+      <div className="mx-auto mt-8 grid max-w-3xl gap-4 text-center text-sm md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-6">
         <div className="md:text-right">
           <p className="text-[10px] font-bold uppercase text-slate-500">Before</p>
           <p className="mt-1 font-semibold uppercase">{fork.hub}</p>
@@ -462,11 +498,11 @@ export function ArchitectureSection() {
         </span>
         <div className="md:text-left">
           <p className="text-[10px] font-bold uppercase text-teal-800 dark:text-teal-400">After</p>
-          <p className="mt-1 font-semibold uppercase">Workload-specific architecture</p>
+          <p className="mt-1 font-semibold uppercase">Production target architecture</p>
           <p className="mt-1 text-slate-600 dark:text-slate-400">Serving → DynamoDB · Analytics → S3 Tables → Athena / Presto</p>
         </div>
       </div>
-      <p className="mt-8 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">PoC — not production migration</p>
+      <p className="mt-6 text-center text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">{C.architecture.migrationNote}</p>
     </Section>
   );
 }
@@ -495,7 +531,7 @@ export function TradeoffsSection() {
           </div>
         ))}
       </motion.div>
-      <p className="mt-12 text-center text-sm font-semibold uppercase tracking-tight text-slate-950 dark:text-white">
+      <p className="mt-10 text-center text-sm font-semibold uppercase tracking-tight text-slate-950 dark:text-white">
         {C.decision.headline.join(" ")}
       </p>
     </Section>
@@ -505,9 +541,26 @@ export function TradeoffsSection() {
 /** 7. Open questions — compact note */
 export function OpenQuestionsSection() {
   return (
-    <div className="border-t border-slate-200 py-8 dark:border-slate-800">
+    <div className="border-t border-slate-200 py-6 dark:border-slate-800">
       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Still open</p>
       <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{C.decision.stillOpen.join(" · ")}</p>
+    </div>
+  );
+}
+
+/** Transition: result → lesson */
+export function ResultTransition() {
+  const reduced = useReducedMotion();
+  const r = C.result;
+
+  return (
+    <div className="border-t border-slate-200 py-10 text-center dark:border-slate-800 md:py-12">
+      <motion.div {...fadeUp(reduced)}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">{r.label}</p>
+        <p className="mt-3 text-lg font-semibold uppercase tracking-tight text-slate-950 dark:text-white md:text-xl">{r.title}</p>
+        <p className="mt-4 text-sm text-teal-900 dark:text-teal-300">{r.serving}</p>
+        <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">{r.analytics}</p>
+      </motion.div>
     </div>
   );
 }
@@ -519,7 +572,7 @@ export function ConclusionSection() {
   return (
     <Section className="py-24 text-center md:py-32">
       <motion.p
-        className="mx-auto max-w-2xl text-sm font-semibold uppercase leading-relaxed tracking-tight text-slate-500 dark:text-slate-400 sm:text-base"
+        className="mx-auto max-w-2xl text-sm font-semibold uppercase leading-relaxed tracking-tight text-slate-500 dark:text-slate-400"
         {...fadeUp(reduced)}
       >
         {C.final.line1.map((l) => (
@@ -529,8 +582,8 @@ export function ConclusionSection() {
         ))}
       </motion.p>
       <motion.p
-        className="mx-auto mt-8 max-w-3xl text-[clamp(1.5rem,4vw,2.5rem)] font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white"
-        {...fadeUp(reduced, 0.1)}
+        className="mx-auto mt-6 max-w-3xl text-[clamp(1.55rem,4.2vw,2.65rem)] font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white"
+        {...fadeUp(reduced, 0.08)}
       >
         {C.final.line2.map((l) => (
           <span key={l} className="block">
@@ -538,8 +591,8 @@ export function ConclusionSection() {
           </span>
         ))}
       </motion.p>
-      <motion.p className="mx-auto mt-8 max-w-lg text-sm text-slate-600 dark:text-slate-400" {...fadeUp(reduced, 0.18)}>
-        {C.benchmark.closing}
+      <motion.p className="mx-auto mt-8 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400" {...fadeUp(reduced, 0.16)}>
+        {C.final.supporting}
       </motion.p>
     </Section>
   );
