@@ -49,6 +49,179 @@ function motionProps(reduced, delay = 0) {
   };
 }
 
+/** Connected nodes with lines + traveling signal (decisioning / flows) */
+function ConnectedFlowDiagram({ steps, reduced, className }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.22 });
+  const play = inView && !reduced;
+
+  return (
+    <div ref={ref} className={cn("relative min-w-0 w-full", className)}>
+      <div className="flex flex-col gap-0 md:hidden">
+        {steps.map((label, i) => (
+          <React.Fragment key={label}>
+            <motion.div
+              className="flex items-center gap-3 border-l-2 border-teal-700/35 py-2 pl-4 dark:border-teal-500/40"
+              initial={{ opacity: 0.4, x: -6 }}
+              animate={play ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.08, ease: EASE }}
+            >
+              <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-900 dark:text-white">{label}</span>
+            </motion.div>
+            {i < steps.length - 1 && play && !reduced ? (
+              <motion.div
+                className="ml-[7px] h-4 w-px bg-teal-600/50 dark:bg-teal-400/50"
+                initial={{ scaleY: 0 }}
+                animate={{ scaleY: 1 }}
+                transition={{ duration: 0.35, delay: i * 0.08 + 0.05 }}
+                style={{ originY: 0 }}
+              />
+            ) : null}
+          </React.Fragment>
+        ))}
+      </div>
+
+      <div className="hidden min-w-0 md:flex md:items-center md:gap-0">
+        {steps.map((label, i) => (
+          <React.Fragment key={label}>
+            <motion.div
+              className="relative z-[1] shrink-0 px-1 text-center"
+              initial={{ opacity: 0.35 }}
+              animate={play ? { opacity: 1 } : { opacity: 1 }}
+              transition={{ duration: 0.4, delay: i * 0.09, ease: EASE }}
+            >
+              <p className="max-w-[6.5rem] text-[10px] font-bold uppercase leading-snug tracking-[0.12em] text-slate-900 dark:text-white lg:max-w-[7.5rem] lg:text-[11px]">
+                {label}
+              </p>
+              <motion.span
+                className="mx-auto mt-2 block h-1.5 w-1.5 rounded-full bg-teal-700 dark:bg-teal-400"
+                animate={play ? { opacity: [0.45, 1, 0.45] } : {}}
+                transition={play ? { duration: 1.4, delay: 0.3 + i * 0.12, repeat: Infinity, repeatDelay: 2.2 } : {}}
+              />
+            </motion.div>
+            {i < steps.length - 1 ? (
+              <div className="relative mx-0.5 h-px min-w-[1.25rem] flex-1 bg-slate-300 dark:bg-slate-600">
+                {play && !reduced ? (
+                  <motion.span
+                    className="absolute top-1/2 h-1 w-1 -translate-y-1/2 rounded-full bg-teal-600 dark:bg-teal-400"
+                    initial={{ left: "0%", opacity: 0 }}
+                    animate={{ left: ["0%", "100%"], opacity: [0, 1, 0] }}
+                    transition={{ duration: 1.05, delay: 0.35 + i * 0.18, repeat: Infinity, repeatDelay: 2.8 }}
+                  />
+                ) : null}
+              </div>
+            ) : null}
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** ML production pipeline — stages primary, tech secondary */
+function ProductionPipelineTrack({ pipeline, reduced }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.28 });
+  const play = inView && !reduced;
+
+  return (
+    <div ref={ref} className="relative mt-10 min-w-0 w-full overflow-x-auto">
+      <div className="relative flex min-w-min flex-col border-t border-slate-300 dark:border-slate-600 md:min-w-0 md:flex-row md:items-stretch">
+        {play && !reduced ? (
+          <motion.div
+            className="pointer-events-none absolute left-0 top-0 hidden h-0.5 bg-teal-600/75 md:block dark:bg-teal-400/75"
+            initial={{ width: "0%" }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 1.6, ease: EASE, delay: 0.15 }}
+          />
+        ) : null}
+        {pipeline.map((step, i) => (
+          <motion.div
+            key={step.stage}
+            className={cn(
+              "relative min-w-[8.5rem] flex-1 border-b border-slate-200 px-3 py-4 last:border-b-0 md:border-b-0 md:border-r md:px-4 md:py-5 md:last:border-r-0",
+              play && "md:pt-6"
+            )}
+            initial={{ opacity: 0.45 }}
+            animate={play ? { opacity: 1 } : { opacity: 1 }}
+            transition={{ delay: 0.12 + i * 0.08, duration: 0.4 }}
+          >
+            {i > 0 ? (
+              <span className="absolute -top-[5px] left-3 hidden h-2 w-2 rounded-full border border-slate-300 bg-white md:block dark:border-slate-600 dark:bg-slate-950" aria-hidden />
+            ) : null}
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-900 dark:text-white">{step.stage}</p>
+            {step.tech.length ? (
+              <p className="mt-1.5 text-[10px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                {step.tech.join(" · ")}
+              </p>
+            ) : null}
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Closed-loop system diagram */
+function SystemLoopDiagram({ steps, reduced }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.3 });
+  const play = inView && !reduced;
+
+  return (
+    <div ref={ref} className="relative mx-auto mt-10 w-full max-w-3xl min-w-0">
+      <div className="hidden sm:block">
+        <svg viewBox="0 0 520 88" className="mb-2 w-full" aria-hidden>
+          <motion.path
+            d="M 40 36 H 480"
+            fill="none"
+            stroke="currentColor"
+            className="text-slate-300 dark:text-slate-600"
+            strokeWidth="1"
+            initial={{ pathLength: 0 }}
+            animate={play ? { pathLength: 1 } : { pathLength: 1 }}
+            transition={{ duration: 1.1, ease: EASE }}
+          />
+          <motion.path
+            d="M 480 44 Q 260 82 40 44"
+            fill="none"
+            stroke="currentColor"
+            className="text-teal-700/50 dark:text-teal-400/50"
+            strokeWidth="1"
+            strokeDasharray="5 4"
+            initial={{ pathLength: 0, opacity: 0.5 }}
+            animate={play ? { pathLength: 1, opacity: 1 } : { pathLength: 1, opacity: 1 }}
+            transition={{ duration: 1.3, delay: 0.45, ease: EASE }}
+          />
+        </svg>
+        <div className="grid grid-cols-5 gap-1 text-center">
+          {steps.map((word, i) => (
+            <motion.span
+              key={word}
+              className="text-[clamp(0.65rem,1.5vw,0.8rem)] font-bold uppercase tracking-[0.06em] text-slate-950 dark:text-white lg:text-xs"
+              initial={{ opacity: 0.35 }}
+              animate={play ? { opacity: 1 } : { opacity: 1 }}
+              transition={{ delay: 0.12 + i * 0.09, duration: 0.4 }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </div>
+        <p className="mt-6 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-teal-800/80 dark:text-teal-400/80">
+          Feedback returns to signals
+        </p>
+      </div>
+
+      <div className="sm:hidden">
+        <ConnectedFlowDiagram steps={steps} reduced={reduced} />
+        <p className="mt-4 text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-teal-800/80 dark:text-teal-400/80">
+          Feedback ↺ Signals
+        </p>
+      </div>
+    </div>
+  );
+}
+
 /** Horizontal flow with traveling pulse */
 function FlowRail({ steps, className, reduced, emphasizeLast }) {
   const ref = useRef(null);
@@ -235,17 +408,17 @@ export function DecisioningSection() {
         </h2>
       </motion.div>
 
-      <div className="mx-auto mt-12 grid max-w-4xl gap-10 md:grid-cols-[0.75fr_1.25fr] md:gap-12">
+      <div className="mx-auto mt-12 grid max-w-5xl gap-10 md:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] md:gap-12 md:items-start">
         <motion.div {...motionProps(reduced, 0.06)}>
           <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">Before</p>
           <div className="mt-4">
             <VerticalMicroFlow steps={d.before} muted reduced={reduced} dominant={false} />
           </div>
         </motion.div>
-        <motion.div className="border-l border-slate-200 pl-8 dark:border-slate-700 md:pl-10" {...motionProps(reduced, 0.1)}>
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800 dark:text-teal-400">After</p>
-          <div className="mt-4">
-            <VerticalMicroFlow steps={d.after} reduced={reduced} dominant />
+        <motion.div className="min-w-0 border-l border-slate-200 pl-6 dark:border-slate-700 md:pl-10" {...motionProps(reduced, 0.1)}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800 dark:text-teal-400">After · Decisioning flow</p>
+          <div className="mt-5">
+            <ConnectedFlowDiagram steps={d.after} reduced={reduced} />
           </div>
         </motion.div>
       </div>
@@ -260,9 +433,6 @@ export function DecisioningSection() {
 export function ModelToProductionSection() {
   const reduced = useReducedMotion();
   const m = C.modelToProduction;
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.3 });
-  const play = inView && !reduced;
 
   return (
     <Section className="border-t border-slate-200 dark:border-slate-800" pad="md">
@@ -274,35 +444,24 @@ export function ModelToProductionSection() {
         <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{m.body}</p>
       </motion.div>
 
-      <div ref={ref} className="relative mt-10 overflow-x-auto">
-        <div className="relative flex min-w-max border-t border-slate-300 dark:border-slate-600">
-          {play && !reduced ? (
-            <motion.div
-              className="pointer-events-none absolute left-0 top-0 h-0.5 bg-teal-600/70 dark:bg-teal-400/70"
-              initial={{ width: "0%" }}
-              whileInView={{ width: "100%" }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.8, ease: EASE, delay: 0.2 }}
-            />
-          ) : null}
-          {m.pipeline.map((step, i) => (
-            <motion.div
-              key={step.stage}
-              className="min-w-[6.75rem] border-r border-slate-200 px-3 py-4 last:border-r-0 dark:border-slate-700 md:min-w-[8.5rem] md:px-4"
-              initial={{ opacity: 0.45 }}
-              animate={play ? { opacity: 1 } : { opacity: 1 }}
-              transition={{ delay: 0.15 + i * 0.1, duration: 0.4 }}
-            >
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-800 dark:text-slate-200">{step.stage}</p>
-              {step.tech.length ? (
-                <p className="mt-2 text-[10px] font-medium uppercase tracking-wide text-teal-900/85 dark:text-teal-400/90">
-                  {step.tech.join(" · ")}
-                </p>
-              ) : null}
-            </motion.div>
+      <ProductionPipelineTrack pipeline={m.pipeline} reduced={reduced} />
+    </Section>
+  );
+}
+
+export function MyContributionSection() {
+  const reduced = useReducedMotion();
+
+  return (
+    <Section className="border-t border-slate-200 dark:border-slate-800" pad="sm">
+      <motion.div {...motionProps(reduced)}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-teal-800/90 dark:text-teal-400/90">My contribution</p>
+        <ul className="mt-4 max-w-2xl space-y-2.5 border-l border-slate-200 pl-5 text-sm leading-relaxed text-slate-700 dark:border-slate-700 dark:text-slate-300">
+          {C.contributions.map((item) => (
+            <li key={item}>{item}</li>
           ))}
-        </div>
-      </div>
+        </ul>
+      </motion.div>
     </Section>
   );
 }
@@ -456,9 +615,6 @@ export function EngineeringDecisionsSection() {
 export function SystemViewSection() {
   const reduced = useReducedMotion();
   const s = C.systemView;
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.35 });
-  const play = inView && !reduced;
 
   return (
     <Section className="border-t border-slate-200 dark:border-slate-800" pad="lg">
@@ -466,49 +622,11 @@ export function SystemViewSection() {
         06 · System loop
       </motion.p>
 
-      <div ref={ref} className="relative mx-auto mt-10 max-w-3xl">
-        <div className="flex flex-col items-center gap-2 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-2">
-          {s.flow.map((word, i) => (
-            <React.Fragment key={word}>
-              <motion.span
-                className="text-[clamp(1.15rem,2.8vw,1.75rem)] font-semibold uppercase tracking-tight text-slate-950 dark:text-white"
-                initial={{ opacity: 0.4 }}
-                animate={play ? { opacity: 1 } : { opacity: 1 }}
-                transition={{ delay: i * 0.12, duration: 0.4 }}
-              >
-                {word}
-              </motion.span>
-              {i < s.flow.length - 1 ? (
-                <span className="hidden text-teal-700/50 sm:inline dark:text-teal-400/50" aria-hidden>
-                  →
-                </span>
-              ) : null}
-              {i < s.flow.length - 1 ? (
-                <span className="text-teal-700/50 sm:hidden dark:text-teal-400/50" aria-hidden>
-                  ↓
-                </span>
-              ) : null}
-            </React.Fragment>
-          ))}
-        </div>
+      <SystemLoopDiagram steps={s.flow} reduced={reduced} />
 
-        {play && !reduced ? (
-          <motion.p
-            className="mt-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-teal-800/80 dark:text-teal-400/80"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 0.6, 1] }}
-            transition={{ duration: 2, delay: 0.8, repeat: Infinity, repeatDelay: 2.5 }}
-          >
-            Feedback ↺ Signals
-          </motion.p>
-        ) : (
-          <p className="mt-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-teal-800/80 dark:text-teal-400/80">
-            Feedback ↺ Signals
-          </p>
-        )}
-
-        <p className="mx-auto mt-10 max-w-lg text-center text-base leading-relaxed text-slate-600 dark:text-slate-400">{s.line}</p>
-      </div>
+      <motion.p className="mx-auto mt-10 max-w-lg text-center text-base leading-relaxed text-slate-600 dark:text-slate-400" {...motionProps(reduced, 0.08)}>
+        {s.line}
+      </motion.p>
     </Section>
   );
 }
@@ -521,8 +639,8 @@ export function ConclusionSection() {
     <Section className="border-t border-slate-200 dark:border-slate-800" pad="lg">
       <motion.div className="mx-auto max-w-3xl text-center" {...motionProps(reduced)}>
         <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">{c.eyebrow}</p>
-        <p className="mt-8 text-sm font-semibold uppercase tracking-[0.12em] text-slate-600 dark:text-slate-400 md:text-base">
-          {c.pre}
+        <p className="mt-8 text-sm font-semibold uppercase tracking-[0.1em] text-slate-600 dark:text-slate-400 md:text-base">
+          {c.line1}
         </p>
         <h2 className="mx-auto mt-4 max-w-2xl text-[clamp(1.75rem,4vw,2.85rem)] font-semibold leading-[1.1] tracking-tight text-slate-950 dark:text-white">
           {c.headline}
@@ -534,5 +652,5 @@ export function ConclusionSection() {
 }
 
 export function CaseStudyFooter() {
-  return <ProjectCaseStudyNav slug={BRAIN_CASE_STUDY_SLUG} takeaway={C.takeaway} />;
+  return <ProjectCaseStudyNav slug={BRAIN_CASE_STUDY_SLUG} />;
 }

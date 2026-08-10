@@ -6,6 +6,7 @@ import {
   ProductGapSection,
   DecisioningSection,
   ModelToProductionSection,
+  MyContributionSection,
   ProductionArchitectureSection,
   EngineeringDecisionsSection,
   SystemViewSection,
@@ -20,6 +21,7 @@ export default function BrainMvpCaseStudy() {
       <ProductGapSection />
       <DecisioningSection />
       <ModelToProductionSection />
+      <MyContributionSection />
       <ProductionArchitectureSection />
       <EngineeringDecisionsSection />
       <SystemViewSection />
