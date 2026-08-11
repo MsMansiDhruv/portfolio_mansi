@@ -3,6 +3,7 @@ import { PROJECT_META, getProjectMeta, resolveProjectSlug } from "@/lib/data/pro
 import { AMC_CASE_STUDY_SLUG } from "@/lib/data/amc-case-study";
 import { OLAP_CASE_STUDY_SLUG } from "@/lib/data/olap-case-study";
 import { BRAIN_CASE_STUDY_SLUG } from "@/lib/data/brain-case-study";
+import { INTELLIGENCE_PIPELINE_SLUG } from "@/lib/data/intelligence-pipeline-case-study";
 
 export async function generateStaticParams() {
   const slugs = Object.keys(PROJECT_META);
@@ -36,6 +37,14 @@ export async function generateMetadata(props) {
       title: "Productionizing an ML-Driven Allocation Engine | Mansi Dhruv",
       description:
         "Case study: ML allocation for a confidential fintech engagement — classification, production pipeline, and event-driven decisioning on AWS.",
+    };
+  }
+
+  if (slug === INTELLIGENCE_PIPELINE_SLUG) {
+    return {
+      title: "Automated Web Intelligence Pipeline | Mansi Dhruv",
+      description:
+        "Data engineering case study: crawlers, extraction, deduplication, AWS infrastructure, and integration of a Data Science classification model into production reporting.",
     };
   }
 

@@ -7,6 +7,7 @@ import { SupportingProjectCard } from "@/components/portfolio/featured-work";
 import AmcCaseStudy from "@/components/projects/AmcCaseStudy";
 import OlapWorkloadCaseStudy from "@/components/projects/OlapWorkloadCaseStudy";
 import BrainMvpCaseStudy from "@/components/projects/BrainMvpCaseStudy";
+import IntelligencePipelineCaseStudy from "@/components/projects/IntelligencePipelineCaseStudy";
 import { ProjectCaseStudyNav } from "@/components/projects/ProjectCaseStudyNav";
 import { getRelatedProjects } from "@/lib/data/project-meta";
 import { cn } from "@/lib/cn";
@@ -58,6 +59,9 @@ export default function ProjectDetails({ project }) {
   }
   if (p.slug === "brain-mvp" || p.caseStudy === "brain") {
     return <BrainMvpCaseStudy />;
+  }
+  if (p.slug === "automated-intelligence-pipeline" || p.caseStudy === "intelligence") {
+    return <IntelligencePipelineCaseStudy />;
   }
   const related = getRelatedProjects(p.slug);
   const hasArchitecture = Boolean(p.architectureLayers?.length);
