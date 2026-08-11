@@ -12,7 +12,6 @@ import {
 } from "@/lib/data/home-content";
 import { FEATURED_PROJECT_SLUG, getProjectMeta } from "@/lib/data/project-meta";
 import { Reveal, HoverLift } from "@/components/portfolio/motion";
-import { ArchitectureFlow } from "@/components/portfolio/storytelling";
 
 function SectionLabel({ children }) {
   return (
@@ -26,23 +25,64 @@ function formatTechLabel(label, max = 4) {
   return parts.slice(0, max).join(" · ");
 }
 
-function CaseStudyRow({ study, featured = false }) {
+function FeaturedStackMeta({ tech = [] }) {
+  if (!tech.length) return null;
+  return (
+    <div className="md:max-w-[11rem] md:shrink-0 lg:max-w-[12.5rem]">
+      <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+        Featured stack
+      </p>
+      <ul className="mt-2 flex flex-wrap gap-1.5 md:flex-col md:items-end md:gap-1">
+        {tech.slice(0, 8).map((item) => (
+          <li
+            key={item}
+            className="rounded-md border border-slate-200/70 bg-slate-50/60 px-2 py-0.5 text-[11px] leading-snug text-slate-500 dark:border-slate-800/80 dark:bg-slate-900/40 dark:text-slate-400"
+          >
+            {item.replace(/^AWS\s+/i, "")}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function FeaturedCaseStudyRow({ study, stackTech }) {
   return (
     <HoverLift>
       <Link
         href={`/projects/${study.slug}`}
-        className={`group block border-b border-slate-200/90 py-6 transition dark:border-slate-800 ${
-          featured ? "md:py-8" : ""
-        }`}
+        className="group block border-b border-slate-200/90 py-6 transition dark:border-slate-800 md:py-8"
+      >
+        <div className="grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-8 lg:gap-10">
+          <div className="min-w-0">
+            <p className="text-xs text-slate-500 dark:text-slate-400">{study.category}</p>
+            <h3 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950 dark:text-white md:text-3xl">
+              {study.title}
+            </h3>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">{study.outcome}</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-teal-800 transition group-hover:gap-2 dark:text-teal-400">
+              Explore project
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+            </span>
+          </div>
+          <FeaturedStackMeta tech={stackTech} />
+        </div>
+      </Link>
+    </HoverLift>
+  );
+}
+
+function CaseStudyRow({ study }) {
+  return (
+    <HoverLift>
+      <Link
+        href={`/projects/${study.slug}`}
+        className="group block border-b border-slate-200/90 py-6 transition dark:border-slate-800"
       >
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div className="min-w-0 flex-1">
             <p className="text-xs text-slate-500 dark:text-slate-400">{study.category}</p>
-            <h3
-              className={`mt-1 font-semibold tracking-tight text-slate-950 dark:text-white ${
-                featured ? "text-2xl md:text-3xl" : "text-xl"
-              }`}
-            >
+            <h3 className="mt-1 text-xl font-semibold tracking-tight text-slate-950 dark:text-white">
               {study.title}
             </h3>
             <p className="mt-2 break-words text-xs text-slate-500 dark:text-slate-400">{formatTechLabel(study.techLabel)}</p>
@@ -93,17 +133,13 @@ export default function HomePage() {
             A few projects that represent how I approach platform engineering.
           </p>
           <div className="mt-6">
-            {primary ? <CaseStudyRow study={primary} featured /> : null}
+            {primary ? (
+              <FeaturedCaseStudyRow study={primary} stackTech={heroProject?.tech || []} />
+            ) : null}
             {rest.map((study) => (
               <CaseStudyRow key={study.slug} study={study} />
             ))}
           </div>
-          {heroProject?.architectureLayers ? (
-            <div className="mt-8 hidden max-w-xs lg:block">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Featured stack (layers)</p>
-              <ArchitectureFlow layers={heroProject.architectureLayers.slice(0, 4)} compact className="mt-3" />
-            </div>
-          ) : null}
           <Link href="/projects" className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-teal-800 dark:text-teal-400">
             View all projects
             <ArrowRight className="h-4 w-4" />

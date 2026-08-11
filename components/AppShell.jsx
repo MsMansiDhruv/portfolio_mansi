@@ -15,10 +15,15 @@ export default function AppShell({ children }) {
   const pathname = usePathname();
   const isAiLab = pathname?.startsWith("/tools/ai-lab");
   const isHome = pathname === "/";
+  const isSister = pathname === "/sister";
 
   useEffect(() => {
     document.getElementById("gpu-sparks-canvas")?.remove();
   }, [pathname]);
+
+  if (isSister) {
+    return <DSv2ThemeProvider defaultTheme="system" storageKey="theme">{children}</DSv2ThemeProvider>;
+  }
 
   return (
     <DSv2ThemeProvider defaultTheme="system" storageKey="theme">
