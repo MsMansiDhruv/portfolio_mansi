@@ -1,3 +1,7 @@
+import { getExperienceYearsLabel } from "@/lib/career/experience";
+
+const experienceYears = getExperienceYearsLabel();
+
 export const resumeKnowledge = {
   id: "resume/profile",
   title: "Resume and Career",
@@ -40,12 +44,11 @@ export const resumeKnowledge = {
   topics: ["career", "leadership", "mentoring", "professional profile"],
   difficulty: ["intermediate"],
   relatedDocuments: ["philosophy/engineering", "leadership/mentoring"],
-  summary:
-    "I am Mansi Dhruv, Lead Data Engineer with 5+ years of professional experience in data engineering, cloud data platforms, ETL/ELT, data architecture, production pipelines, and ML pipeline integration.",
+  summary: `I am Mansi Dhruv, Lead Data Engineer with ${experienceYears} years of professional experience in data engineering, cloud data platforms, ETL/ELT, data architecture, production pipelines, and ML pipeline integration.`,
   profile: {
     name: "Mansi Dhruv",
     title: "Lead Data Engineer",
-    experienceYears: "5+",
+    experienceYears,
     focus: [
       "Data Engineering",
       "Data Architecture",

@@ -1,13 +1,10 @@
-// components/AwardsList.jsx
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Reveal } from "@/components/portfolio/motion";
 
 const STORAGE_KEY = "mansi_awards_v1";
-const ACCENT = "var(--color-accent)";
 
-/* FALLBACK_AWARDS (keeps the original list you provided) */
 const FALLBACK_AWARDS = [
   {
     id: "value-able-2024",
@@ -56,7 +53,6 @@ const FALLBACK_AWARDS = [
   },
 ];
 
-/* ---------- helpers ---------- */
 function safeParse(raw) {
   try {
     return JSON.parse(raw);
@@ -65,10 +61,6 @@ function safeParse(raw) {
   }
 }
 
-/**
- * sanitizeAwards - normalizes and deduplicates awards by title (case-insensitive)
- * returns array of { id, title, org, year, summary, sourceUrl }
- */
 function sanitizeAwards(arr) {
   if (!Array.isArray(arr)) return [];
   const seen = new Set();
@@ -95,8 +87,36 @@ function sanitizeAwards(arr) {
   return out;
 }
 
-/* ---- Award card component (compact + animated) ---- */
-function Card({ a, reduced }) {
+function EditorialAward({ award }) {
+  return (
+    <article className="min-w-0 border-b border-l-2 border-slate-200/90 border-l-teal-800/15 py-5 pl-4 dark:border-slate-800/90 dark:border-l-teal-500/20">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-sm font-semibold text-slate-950 dark:text-white">{award.title}</h3>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {award.org}
+            {award.year ? ` · ${award.year}` : ""}
+          </p>
+          {award.summary ? (
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{award.summary}</p>
+          ) : null}
+        </div>
+        {award.sourceUrl ? (
+          <a
+            href={award.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 text-xs font-medium text-teal-800 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-300"
+          >
+            Source →
+          </a>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
+function LegacyAwardCard({ a }) {
   const initials = (() => {
     const src = a.org || a.title || "";
     const p = src.split(" ").filter(Boolean);
@@ -104,173 +124,93 @@ function Card({ a, reduced }) {
     return (p[0][0] + (p[1]?.[0] || "")).toUpperCase();
   })();
 
-  const hoverProps = reduced
-    ? {}
-    : {
-        whileHover: { y: -6, scale: 1.01 },
-        whileTap: { scale: 0.995 },
-      };
-
   return (
-    <motion.article
-      layout
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 6 }}
-      transition={{ duration: 0.32, ease: "easeOut" }}
-      className="rounded-lg"
-      {...hoverProps}
-      style={{
-        transformOrigin: "center",
-        willChange: reduced ? "auto" : "transform",
-        transform: "translateZ(0)",
-        WebkitFontSmoothing: "antialiased",
-        backfaceVisibility: "hidden",
-      }}
-    >
+    <article className="rounded-lg">
       <div
-        className="
-          flex items-start gap-4 p-4 rounded-lg
-          bg-gradient-to-b from-slate-50 to-white
-          dark:from-slate-800/30 dark:to-slate-800/20
-          shadow-sm
-        "
-        style={{
-          border: "1px solid rgba(46,196,182,0.35)",
-          overflow: "visible",
-        }}
+        className="flex items-start gap-4 rounded-lg border border-teal-600/20 bg-gradient-to-b from-slate-50 to-white p-4 shadow-sm dark:from-slate-800/30 dark:to-slate-800/20"
       >
-        <div className="flex-shrink-0">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center font-semibold bg-avatar-bg text-avatar-text text-sm"
-            style={{ WebkitFontSmoothing: "antialiased" }}
-          >
-            {initials}
-          </div>
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-avatar-bg text-sm font-semibold text-avatar-text">
+          {initials}
         </div>
-
         <div className="min-w-0 flex-1">
-          <div className="flex items-start gap-3">
-            <div className="min-w-0">
-              <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-                {a.title}
-              </div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                {a.org}
-              </div>
-
-              {a.summary && (
-                <div className="text-sm text-slate-600 dark:text-slate-300 mt-2 line-clamp-2">
-                  {a.summary}
-                </div>
-              )}
-            </div>
-
-            <div className="ml-auto flex flex-col items-end gap-2 min-w-fit">
-              <div
-                className="text-xs font-medium px-2 py-0.5 rounded-md"
-                style={{
-                  background: "rgba(46,196,182,0.15)",
-                  color: ACCENT,
-                }}
-              >
-                {a.year || "—"}
-              </div>
-
-              {a.sourceUrl && (
-                <a
-                  href={a.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs underline"
-                  style={{ color: ACCENT }}
-                >
-                  Source →
-                </a>
-              )}
-            </div>
+          <div className="text-sm font-semibold text-slate-900 dark:text-white">{a.title}</div>
+          <div className="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">{a.org}</div>
+          {a.summary ? (
+            <div className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">{a.summary}</div>
+          ) : null}
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <span className="text-xs font-medium text-teal-800 dark:text-teal-400">{a.year || "—"}</span>
+            {a.sourceUrl ? (
+              <a href={a.sourceUrl} target="_blank" rel="noreferrer" className="text-xs text-teal-800 underline dark:text-teal-400">
+                Source →
+              </a>
+            ) : null}
           </div>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 }
 
-/* ---- Main component ---- */
-export default function AwardsList({ initialAwards = null }) {
+export default function AwardsList({ initialAwards = null, showHeader = true, variant = "legacy" }) {
   const [awards, setAwards] = useState([]);
-  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
-    // read from localStorage
     const raw = localStorage.getItem(STORAGE_KEY);
     const parsed = safeParse(raw);
-
-    // normalize initialAwards (if any)
     const normInitial = Array.isArray(initialAwards) ? sanitizeAwards(initialAwards) : null;
 
-    // Decide source:
-    // 1) If stored array present -> use it
-    // 2) Else if initialAwards provided -> use it and seed localStorage
-    // 3) Else fallback -> use FALLBACK_AWARDS and seed localStorage
     if (Array.isArray(parsed) && parsed.length > 0) {
-      const s = sanitizeAwards(parsed);
-      setAwards(s);
-      console.debug("[AwardsList] using localStorage, items:", s.length);
+      setAwards(sanitizeAwards(parsed));
     } else if (Array.isArray(normInitial) && normInitial.length > 0) {
       setAwards(normInitial);
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(normInitial));
-        console.debug("[AwardsList] seeded localStorage from initialAwards, items:", normInitial.length);
-      } catch (e) {
-        console.warn("[AwardsList] failed to seed localStorage from initialAwards", e);
+      } catch {
+        /* ignore */
       }
     } else {
       const fb = sanitizeAwards(FALLBACK_AWARDS);
       setAwards(fb);
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(fb));
-        console.debug("[AwardsList] seeded localStorage from FALLBACK_AWARDS, items:", fb.length);
-      } catch (e) {
-        console.warn("[AwardsList] failed to seed localStorage from fallback", e);
+      } catch {
+        /* ignore */
       }
     }
   }, [initialAwards]);
 
+  if (variant === "editorial") {
+    return (
+      <div className="grid min-w-0 gap-x-10 md:grid-cols-2">
+        {awards.map((award, index) => (
+          <Reveal key={award.id} delay={index * 0.05} viewportAmount={0.12}>
+            <EditorialAward award={award} />
+          </Reveal>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className="mb-4">
-        <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">
-          Awards & Recognition
-        </h3>
-
-        <div className="flex items-center justify-between mt-1">
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            A curated selection of achievements, scholarships & recognitions.
-          </p>
-
-          <span className="text-sm text-slate-600 dark:text-slate-400">
-            {awards.length} total
-          </span>
+      {showHeader ? (
+        <div className="mb-4">
+          <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">Awards & Recognition</h3>
+          <div className="mt-1 flex items-center justify-between">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              A curated selection of achievements, scholarships & recognitions.
+            </p>
+            <span className="text-sm text-slate-600 dark:text-slate-400">{awards.length} total</span>
+          </div>
         </div>
-      </div>
+      ) : null}
 
-      <motion.div
-        layout
-        initial="hidden"
-        animate="show"
-        className="grid gap-4 grid-cols-1 md:grid-cols-2"
-        variants={{
-          hidden: {},
-          show: { transition: { staggerChildren: 0.05 } },
-        }}
-      >
-        <AnimatePresence initial={false}>
-          {awards.map((a) => (
-            <Card key={a.id} a={a} reduced={prefersReducedMotion} />
-          ))}
-        </AnimatePresence>
-      </motion.div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {awards.map((a) => (
+          <LegacyAwardCard key={a.id} a={a} />
+        ))}
+      </div>
     </>
   );
 }

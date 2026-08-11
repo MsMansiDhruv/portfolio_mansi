@@ -4,16 +4,13 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const ACCENT = "var(--color-accent)";
+import { TESTIMONIALS } from "@/lib/data/testimonials";
+
 const STORAGE_KEY = "mansi_full_testimonials_v1";
 const THEME_KEYS = ["theme", "color-mode", "site-theme", "mode"];
 const BASE_SPEED = 36; // px per second
 
-const DEFAULT_TESTIMONIALS = [
-  { id: "rec-madhavi", name: "Madhavi Solanki", title: "Colleague @ Cyphertree", text: "I had the pleasure of working with Mansi Dhruv at Cyphertree — she’s collaborative, deliberate, and always focused on delivering business value.", sourceUrl: "#" },
-  { id: "rec-vinit", name: "Vinit Kumar", title: "Interviewer / Colleague", text: "Mansi is a capable Software Engineer who knows her stack well and can think creatively when required. Her attitude to learn is best-in-class.", sourceUrl: "#" },
-  { id: "rec-vishal", name: "Vishal Chandale", title: "Colleague @ SG Analytics", text: "Mansi has strong backend skills and UI experience. Helpful teammate and very dependable.", sourceUrl: "#" },
-  { id: "rec-mrinmoy", name: "Mrinmoy Sarkar", title: "Colleague @ SG Analytics", text: "Her practical, no-nonsense approach to problems made working together very productive. Highly recommended.", sourceUrl: "#" },
-];
+const DEFAULT_TESTIMONIALS = TESTIMONIALS;
 
 function safeParse(raw) { try { return JSON.parse(raw); } catch { return null; } }
 function initials(name = "") {

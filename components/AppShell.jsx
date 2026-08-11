@@ -35,7 +35,7 @@ export default function AppShell({ children }) {
             className={cn(
               "min-w-0",
               isAiLab ? "max-w-none px-0 py-0" : "mx-auto max-w-7xl px-5 sm:px-6 lg:px-8",
-              !isAiLab && (isHome ? "py-8 sm:py-10 lg:py-12" : "py-8 sm:py-10 lg:py-14")
+              !isAiLab && (isHome ? "pt-6 pb-4 sm:pt-7 sm:pb-4 lg:pt-8 lg:pb-3" : "py-8 sm:py-10 lg:py-14")
             )}
           >
             <PageTransition>{children}</PageTransition>
