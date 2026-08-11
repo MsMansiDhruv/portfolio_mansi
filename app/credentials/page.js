@@ -70,7 +70,7 @@ export default function CredentialsPage() {
       </Reveal>
 
       <Reveal delay={0.07} className="mt-12 block">
-        <section>
+        <section id="recommendations">
           <SectionLabel>Recommendations</SectionLabel>
           <SectionRule />
           <RecommendationsSection />

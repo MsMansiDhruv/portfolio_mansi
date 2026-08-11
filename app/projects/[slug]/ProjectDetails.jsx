@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArchitectureFlow, DecisionList, TradeoffPanel } from "@/components/portfolio/storytelling";
+import EditorialNote from "@/components/portfolio/identity/EditorialNote";
 import { SupportingProjectCard } from "@/components/portfolio/featured-work";
 import AmcCaseStudy from "@/components/projects/AmcCaseStudy";
 import OlapWorkloadCaseStudy from "@/components/projects/OlapWorkloadCaseStudy";
@@ -112,6 +113,11 @@ export default function ProjectDetails({ project }) {
           </Section>
 
           <Section title="Key decisions">
+            {p.decisions?.[0]?.why ? (
+              <EditorialNote label="Mansi's call" className="mb-6 max-w-2xl">
+                {p.decisions[0].why}
+              </EditorialNote>
+            ) : null}
             <DecisionList decisions={p.decisions} />
             {!p.decisions?.length ? (
               <p className="text-sm text-slate-600 dark:text-slate-400">Decision notes for this project are not documented yet.</p>

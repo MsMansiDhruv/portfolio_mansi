@@ -59,18 +59,29 @@ export default function BlogPage() {
 
       {!loading && !error && featured ? (
         <Reveal delay={0.05}>
-          <article className="group cursor-pointer rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950 sm:p-8" onClick={() => openArticle(featured.url)}>
-            <p className="text-xs font-medium uppercase tracking-widest text-slate-500">Featured</p>
-            <h2 className="mt-3 break-words text-xl font-semibold text-slate-950 group-hover:text-teal-800 dark:text-white dark:group-hover:text-teal-400 sm:text-2xl">
-              {featured.title}
-            </h2>
-            <p className="mt-3 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">{featured.subtitle}</p>
-            <div className="mt-4 flex items-center gap-3 text-xs text-slate-500">
-              <span>{formatDate(featured.publishedAt)}</span>
-              <span className="inline-flex items-center gap-1 font-medium text-teal-800 dark:text-teal-400">
-                Read on Medium
-                <ArrowRight className="h-3 w-3" />
-              </span>
+          <article
+            className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950"
+            onClick={() => openArticle(featured.url)}
+          >
+            <div className="border-b border-slate-200/80 bg-gradient-to-r from-teal-50/40 to-transparent px-5 py-3 dark:border-slate-800 dark:from-teal-950/20">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal-800/80 dark:text-teal-400/90">
+                Latest · Engineering notes
+              </p>
+            </div>
+            <div className="p-5 sm:p-8">
+              <h2 className="break-words text-xl font-semibold text-slate-950 group-hover:text-teal-800 dark:text-white dark:group-hover:text-teal-400 sm:text-2xl">
+                {featured.title}
+              </h2>
+              <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                {featured.subtitle}
+              </p>
+              <div className="mt-5 flex items-center gap-3 text-xs text-slate-500">
+                <span>{formatDate(featured.publishedAt)}</span>
+                <span className="inline-flex items-center gap-1 font-medium text-teal-800 dark:text-teal-400">
+                  Read on Medium
+                  <ArrowRight className="h-3 w-3" />
+                </span>
+              </div>
             </div>
           </article>
         </Reveal>

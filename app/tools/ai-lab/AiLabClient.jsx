@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
@@ -462,6 +463,7 @@ function ConversationMessage({ role, children, streaming = false }) {
 
 export default function AiLabPage() {
   const reducedMotion = useReducedMotion();
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState("ask");
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -480,6 +482,15 @@ export default function AiLabPage() {
   const streamingPreview = isStreaming ? animatedStreaming : latestAssistantMessage?.content;
 
   const conversationRef = useRef({ recentQuestions: [], recentSubjects: [], currentEntities: [] });
+
+  useEffect(() => {
+    const requested = searchParams.get("mode");
+    if (requested && MODES.some((item) => item.id === requested)) {
+      setMode(requested);
+    }
+    const seed = searchParams.get("q");
+    if (seed) setInput(seed);
+  }, [searchParams]);
 
   const handleModeSelect = (nextMode) => {
     setMode(nextMode);
