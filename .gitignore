@@ -52,3 +52,4 @@ Thumbs.db
 .turbo/
 build.log
 vercel-build-test.log
+.vercel
