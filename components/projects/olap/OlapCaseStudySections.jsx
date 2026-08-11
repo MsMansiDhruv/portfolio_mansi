@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { ArchitectureDiagramViewer } from "@/components/projects/ArchitectureDiagramViewer";
+import React, { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { OLAP_CASE_STUDY, OLAP_CASE_STUDY_SLUG, OLAP_COST_EVIDENCE_IMAGE } from "@/lib/data/olap-case-study";
+import { OLAP_CASE_STUDY, OLAP_CASE_STUDY_SLUG } from "@/lib/data/olap-case-study";
 import { ProjectCaseStudyNav } from "@/components/projects/ProjectCaseStudyNav";
 import { cn } from "@/lib/cn";
 import { BENCHMARK_ENGINES, workloadNumeric } from "@/components/projects/olap/benchmark-utils";
@@ -166,31 +165,66 @@ export function HeroSection() {
   );
 }
 
-function Metric60K() {
-  const reduced = useReducedMotion();
+function CostSignalChart({ reduced }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.5 });
-  const [display, setDisplay] = useState(reduced ? 60 : 0);
-
-  useEffect(() => {
-    if (reduced || !inView) return;
-    const target = 60;
-    const start = performance.now();
-    const dur = 650;
-    let frame;
-    const tick = (now) => {
-      const t = Math.min(1, (now - start) / dur);
-      setDisplay(Math.round(target * t));
-      if (t < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [inView, reduced]);
+  const inView = useInView(ref, { once: true, amount: 0.35 });
+  const play = inView && !reduced;
+  const s = C.signal;
 
   return (
-    <p ref={ref} className="text-[clamp(4rem,14vw,7.5rem)] font-semibold leading-none tracking-tighter text-slate-950 dark:text-white">
-      {display}K
-    </p>
+    <div ref={ref} className="mt-4 min-w-0">
+      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{s.costChartLabel}</p>
+      <svg viewBox="0 0 360 160" className="mt-3 w-full" role="img" aria-label="Conceptual chart showing warehouse serving cost rising after workload introduction">
+        <line x1="36" y1="128" x2="332" y2="128" stroke="currentColor" className="text-slate-300 dark:text-slate-600" strokeWidth="1" />
+        <motion.path
+          d="M 36 118 L 88 112 L 140 98 L 192 72 L 244 48 L 296 34 L 332 28"
+          fill="none"
+          stroke="#0f766e"
+          strokeWidth="2"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0.4 }}
+          animate={play ? { pathLength: 1, opacity: 1 } : { pathLength: 1, opacity: 1 }}
+          transition={{ duration: 1.1, ease: EASE, delay: 0.15 }}
+        />
+        <motion.path
+          d="M 36 118 L 88 112 L 140 98 L 192 72 L 244 48 L 296 34 L 332 28 L 332 128 L 36 128 Z"
+          fill="#0f766e"
+          fillOpacity="0.06"
+          initial={{ opacity: 0 }}
+          animate={play ? { opacity: 1 } : { opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.75 }}
+        />
+        <motion.line
+          x1="192"
+          y1="24"
+          x2="192"
+          y2="128"
+          stroke="currentColor"
+          className="text-slate-300 dark:text-slate-600"
+          strokeWidth="1"
+          strokeDasharray="3 3"
+          initial={{ opacity: 0 }}
+          animate={play ? { opacity: 1 } : { opacity: 1 }}
+          transition={{ delay: 0.85, duration: 0.4 }}
+        />
+        <motion.text
+          x="192"
+          y="18"
+          textAnchor="middle"
+          fontSize="8"
+          fontWeight="600"
+          fill="#64748b"
+          initial={{ opacity: 0 }}
+          animate={play ? { opacity: 1 } : { opacity: 1 }}
+          transition={{ delay: 0.95, duration: 0.4 }}
+        >
+          {s.costChartAnnotation}
+        </motion.text>
+        <text x="184" y="146" textAnchor="middle" fontSize="8" fontWeight="600" fill="#64748b">
+          {s.costChartTimeline}
+        </text>
+      </svg>
+    </div>
   );
 }
 
@@ -200,25 +234,34 @@ export function SignalSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.25 });
   const flowStart = 0.35;
-
-  const flowNodes = C.signal.nodes.filter((n) => n.id !== "user");
+  const flowNodes = C.signal.nodes;
 
   return (
     <Section compact aria-label="What triggered the investigation?" className="pb-8 md:pb-10">
       <div ref={ref} className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-x-8 lg:gap-y-5">
         <div>
-          <motion.p
-            className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800 dark:text-teal-400"
-            initial={{ opacity: 0 }}
-            animate={inView && !reduced ? { opacity: 1 } : { opacity: 1 }}
-            transition={{ duration: 0.45, ease: EASE }}
+          <motion.h2
+            className="text-[clamp(1.35rem,3.2vw,2rem)] font-semibold leading-snug tracking-tight text-slate-950 dark:text-white"
+            initial={{ opacity: 0, y: 10 }}
+            animate={inView && !reduced ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: EASE }}
           >
-            {C.signal.highFrequencyLead}
-          </motion.p>
-          <div className="mt-3">
-            <Metric60K />
+            {C.signal.triggerLead}
+          </motion.h2>
+
+          <div className="mt-4 space-y-3">
+            {C.signal.triggerBody.map((paragraph) => (
+              <motion.p
+                key={paragraph}
+                className="text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base"
+                initial={{ opacity: 0, y: 8 }}
+                animate={inView && !reduced ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.12, ease: EASE }}
+              >
+                {paragraph}
+              </motion.p>
+            ))}
           </div>
-          <p className="mt-2 text-xs font-bold uppercase tracking-[0.24em] text-slate-500">{C.signal.metricLabel}</p>
 
           <div className="mt-5 overflow-x-auto pb-1">
             <div className="flex min-w-max items-center gap-2 md:flex-wrap md:gap-3">
@@ -250,16 +293,15 @@ export function SignalSection() {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={inView && !reduced ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.55, ease: EASE }}
+            transition={{ duration: 0.55, delay: 0.35, ease: EASE }}
           >
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Cost signal</p>
-            <p className="mt-2 text-3xl font-semibold tabular-nums text-slate-950 dark:text-white">{C.signal.serviceTotal}</p>
-            <p className="mt-1 text-[11px] font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400">{C.signal.costLabel}</p>
-            <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{C.signal.costNote}</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{C.signal.costHeading}</p>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{C.signal.costBody}</p>
+            <CostSignalChart reduced={reduced} />
           </motion.div>
         </div>
 
-        <div className="border-t border-slate-200 pt-6 dark:border-slate-800 lg:pt-7">
+        <div className="border-t border-slate-200 pt-6 dark:border-slate-800 lg:col-span-2 lg:pt-7">
           <p className="text-sm font-medium uppercase tracking-[0.12em] text-slate-600 dark:text-slate-400">{C.mismatch.pre}</p>
           <h2 id="olap-mismatch" className="mt-3 text-[clamp(1.65rem,3.8vw,2.65rem)] font-semibold uppercase leading-[1.04] tracking-tight text-slate-950 dark:text-white">
             {C.mismatch.headline.map((line) => (
@@ -268,22 +310,6 @@ export function SignalSection() {
               </span>
             ))}
           </h2>
-        </div>
-
-        <div className="border-t border-slate-200 pt-4 dark:border-slate-800 lg:pt-5 lg:pl-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={inView && !reduced ? { opacity: 1 } : { opacity: 1 }}
-            transition={{ duration: 0.65, delay: 0.72, ease: EASE }}
-          >
-            <ArchitectureDiagramViewer
-              src={OLAP_COST_EVIDENCE_IMAGE}
-              alt={C.signal.costImageAlt}
-              modalTitle="Redshift service cost"
-              className="mt-0"
-              previewClassName="min-h-[160px] max-h-[300px] sm:max-h-[320px] lg:max-h-[340px] bg-transparent dark:bg-transparent"
-            />
-          </motion.div>
         </div>
       </div>
 
@@ -346,7 +372,8 @@ export function BenchmarkSection() {
         <h2 id="olap-bench" className="mt-2 text-[clamp(1.35rem,3vw,2rem)] font-semibold uppercase leading-snug tracking-tight text-slate-950 dark:text-white">
           {C.benchmark.headline}
         </h2>
-        <ul className="mt-4 flex flex-wrap gap-x-6 text-[11px] text-slate-500">
+        <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{C.benchmark.pocLabel}</p>
+        <ul className="mt-3 flex flex-wrap gap-x-6 text-[11px] text-slate-500">
           {C.benchmark.config.map((cfg) => (
             <li key={cfg}>{cfg}</li>
           ))}
