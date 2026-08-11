@@ -1,5 +1,6 @@
 import type { KnowledgeDocument, KnowledgeSearchCache } from "../types";
 import { buildSearchCache } from "../knowledge-loader";
+import { getModeAgent } from "../mode-agents";
 import type {
   EntityExtraction,
   IntentClassification,
@@ -31,7 +32,7 @@ const PREFERRED_BY_QUESTION_TYPE: Partial<Record<QuestionType, string[]>> = {
   EXPLANATION: ["technology", "architecture", "project"],
   COMPARISON: ["technology", "architecture"],
   PROJECT_QUESTION: ["project", "technology", "story"],
-  PERSONAL_EXPERIENCE: ["philosophy", "leadership", "resume", "project", "story"],
+  PERSONAL_EXPERIENCE: ["story", "philosophy", "leadership", "project", "resume"],
   CAREER: ["resume", "leadership", "project"],
   INTERVIEW: ["interview", "story", "project", "architecture"],
   COST_ANALYSIS: ["technology", "story", "project", "architecture"],
@@ -89,7 +90,8 @@ function scoreDocument(
   questionType: QuestionType,
   intent: IntentClassification,
   entities: EntityExtraction,
-  analysis: UserInputAnalysis
+  analysis: UserInputAnalysis,
+  mode: string
 ) {
   if (isBlocked(document, questionType, analysis)) return null;
 
@@ -129,6 +131,38 @@ function scoreDocument(
   const preferred = PREFERRED_BY_QUESTION_TYPE[questionType] || [];
   const cat = normalize(document.category);
   if (preferred.includes(cat)) score += 6;
+
+  const modeAgent = getModeAgent(mode);
+  const modeBoost = modeAgent.knowledgeBoost[cat] || 0;
+  if (modeBoost) {
+    score += modeBoost;
+    reasons.push(`mode:${modeAgent.id}:${cat}`);
+  }
+
+  if (modeAgent.id === "sql") {
+    const sqlHaystack = normalize([document.title, ...document.tags, ...document.technologies].join(" "));
+    if (/\b(sql|spark|redshift|databricks|postgres|query|warehouse)\b/.test(sqlHaystack)) {
+      score += 8;
+      reasons.push("mode:sql-tech");
+    }
+  }
+
+  if (modeAgent.id === "cloud") {
+    const cloudHaystack = normalize([document.title, document.summary, ...document.tags, ...document.technologies].join(" "));
+    if (/\b(aws|cost|redshift|glue|lambda|s3|dynamodb|finops|cloud|databricks|egress|compute|storage)\b/.test(cloudHaystack)) {
+      score += 8;
+      reasons.push("mode:cloud-tech");
+    }
+  }
+
+  if (modeAgent.allowedKnowledge.length && modeAgent.id !== "ask") {
+    const tier = documentTier(document);
+    if (tier === "personal" && !modeAgent.allowedKnowledge.includes("personal") && !modeAgent.allowedKnowledge.includes("project")) {
+      if (!/\b(you|your|mansi|career|project|role)\b/i.test(question)) {
+        score -= 6;
+      }
+    }
+  }
 
   if (questionType === "ARCHITECTURE_DESIGN" && cat === "project" && !/\bamc\b/i.test(question) && !entities.projects.length) {
     score -= 12;
@@ -229,7 +263,7 @@ export function buildContext(
   cache: KnowledgeSearchCache = buildSearchCache(documents)
 ): ReasoningContext {
   const scored = cache.documents
-    .map((document) => scoreDocument(document, question, questionType, intent, entities, analysis))
+    .map((document) => scoreDocument(document, question, questionType, intent, entities, analysis, mode))
     .filter(Boolean) as Array<{
     document: KnowledgeDocument;
     score: number;

@@ -34,7 +34,7 @@ export function generateFollowUps(
   }
 
   if (context.questionType === "PORTFOLIO_OVERVIEW") {
-    pushFollowUp(followUps, { label: "Tell me about the AMC Datalake project.", targetAction: "describe", targetSubject: "AMC", parentTopic: "projects" });
+    pushFollowUp(followUps, { label: "Tell me about the legacy data modernization project.", targetAction: "describe", targetSubject: "Legacy Data Modernization", parentTopic: "projects" });
     pushFollowUp(followUps, { label: "What did you build with GPUs?", targetAction: "describe", targetSubject: "GPU Benchmark Pod" });
     pushFollowUp(followUps, { label: "How has your role evolved over time?", targetAction: "explain", targetSubject: "career" });
     return followUps.slice(0, 4);
@@ -91,7 +91,14 @@ export function generateFollowUps(
       }
       break;
     case "SQL_OPTIMIZATION":
-      pushFollowUp(followUps, { label: "Paste the full query for a line-by-line rewrite.", targetAction: "optimize", targetSubject: "SQL" });
+      if (mode.id === "sql") {
+        pushFollowUp(followUps, { label: "Paste the full query for a line-by-line rewrite.", targetAction: "optimize", targetSubject: "SQL" });
+        pushFollowUp(followUps, {
+          label: "Why is this slow? SELECT ... FROM ... JOIN ... (include engine + table sizes)",
+          targetAction: "optimize",
+          targetSubject: "SQL",
+        });
+      }
       break;
     case "OPTIMIZATION":
       pushFollowUp(followUps, { label: "Share Spark UI stage timings.", targetAction: "optimize", targetSubject: subject || "Spark" });

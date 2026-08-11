@@ -20,7 +20,7 @@ export async function generateMetadata(props) {
     return {
       title: "Legacy Data Modernization & ETL | Case Study",
       description:
-        "Engineering case study: AWS data lake, Glue ETL, Redshift, and analytics modernization for a Leading AMC — architecture, decisions, and outcomes.",
+        "Engineering case study: AWS data lake, Glue ETL, Redshift, and analytics modernization for a confidential asset-management client — architecture, decisions, and outcomes.",
     };
   }
 

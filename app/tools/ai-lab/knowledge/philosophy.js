@@ -1,0 +1,81 @@
+export const philosophyKnowledge = {
+  id: "philosophy/engineering",
+  title: "Engineering Philosophy",
+  category: "philosophy",
+  kind: "philosophy",
+  tags: ["philosophy", "architecture", "production", "leadership", "principles"],
+  technologies: ["aws", "terraform", "databricks", "spark", "sql"],
+  projects: [
+    "project/amc-datalake",
+    "project/olap-workload-architecture",
+    "project/brain-mvp",
+    "project/automated-intelligence-pipeline",
+    "experience/fintech-ml-platform",
+  ],
+  skills: ["data architecture", "production engineering", "technical leadership"],
+  topics: [
+    "workload-first architecture",
+    "production thinking",
+    "infrastructure as code",
+    "observability",
+    "cost-aware engineering",
+    "collaboration",
+  ],
+  difficulty: ["intermediate"],
+  relatedDocuments: [
+    "architecture/principles",
+    "leadership/mentoring",
+    "project/olap-workload-architecture",
+    "story/cost-driven-architecture-investigation",
+    "story/productionizing-ml-pipelines",
+  ],
+  summary:
+    "I design data systems around workload fit, production operability, and evidence — not tool popularity. A pipeline or model is not done when it works locally; it needs deployment, monitoring, testing, and ownership.",
+  systems: [
+    "Workload-first architecture: choose storage and compute based on access patterns — serving lookups, analytical scans, bulk loads, and aggregations may need different engines (see OLAP workload separation and data lake modernization work).",
+    "Progressive modernization: migrate when business requirements and evidence justify it, not because a vendor narrative says so.",
+    "Separate ingestion, transformation, and serving boundaries — Bronze/Silver/Gold and lake-plus-warehouse patterns exist to make ownership clear.",
+    "Batch vs streaming is a latency and operational-cost trade-off, not a moral choice — I use streaming when the business needs justify the complexity.",
+  ],
+  mentoring: [
+    "I mentor by making trade-offs explicit so engineers learn to reason about systems, not just tickets.",
+    "I prefer automation and reproducibility over heroics — if only one person can deploy it, it is not production-ready.",
+    "Good standards explain the 'why' in business and operational terms.",
+  ],
+  architecture: [
+    "The question is often not 'which database is best?' but 'which engine fits this workload?' — benchmark evidence beats assumptions.",
+    "Hybrid architectures are acceptable when no single store serves every pattern well.",
+    "I define freshness, ownership, and recovery expectations before locking the stack.",
+  ],
+  delivery: [
+    "Production thinking: deployment, monitoring, testing, reliability, and rollback are part of the definition of done.",
+    "Working with Data Scientists: they own model quality; I own the path to production — pipelines, integration, infrastructure, scheduling, and observability.",
+    "I do not claim ownership of models I did not build; I engineer the system around them.",
+  ],
+  scalability: [
+    "Design for reprocessing and backfills early.",
+    "Partition and model data by how it is consumed, not only how it arrives.",
+    "Keep compute elastic where workloads are bursty; right-size where they are steady.",
+  ],
+  observability: [
+    "Monitoring should explain system health — freshness, volume, failures, and business-impacting conditions — not just display dashboards.",
+    "Pipelines should fail visibly: scheduled jobs, alerting, and clear ownership when stages break.",
+    "CloudWatch and operational controls are part of architecture, not an afterthought.",
+  ],
+  automation: [
+    "Infrastructure as Code: environments should be reproducible, version-controlled, and reviewable (Terraform, CloudFormation).",
+    "CI/CD guardrails beat manual promotion — environment drift causes more pain than most application bugs.",
+    "TODO: Add a specific IaC lesson learned from a verified incident if approved for publication.",
+  ],
+  governance: [
+    "Lineage and data quality are architecture concerns, not optional extras.",
+    "Least privilege and auditability support trust in shared platforms.",
+    "Confidential client work stays confidential — I explain engineering approach and lessons at a high level without exposing identifiers.",
+  ],
+  followUps: [
+    "What is your approach to observability?",
+    "How do you work with Data Scientists?",
+    "Why would you separate OLTP and OLAP workloads?",
+    "What would you do differently today?",
+  ],
+};

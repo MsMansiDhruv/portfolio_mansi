@@ -1,6 +1,6 @@
 ---
-title: AMC - Datalake Solution
-tags: [project, datalake, amc, databricks, aws, sql]
+title: Legacy Data Modernization (Confidential Client)
+tags: [project, datalake, lakehouse, databricks, aws, sql]
 technologies: [s3, iceberg, pyspark, aws, terraform, redshift]
 projects: [gpu-benchmark, olap-workload-architecture]
 skills: [architecture, automation, governance]
@@ -9,16 +9,16 @@ difficulty: [advanced]
 related_documents: [knowledge/technologies/databricks.md, knowledge/technologies/delta-lake.md, knowledge/stories/optimization-wins.md]
 ---
 
-# AMC - Datalake Solution
+# Legacy Data Modernization (Confidential Client)
 
 Business Context
-- Built a reusable, cost-efficient cloud-native analytics foundation for an asset management client.
+- Built a reusable, cost-efficient cloud-native analytics foundation for a confidential asset-management client.
 
 Problem Statement
 - Multiple on-prem sources needed to be unified with better reliability, lower cost, and faster analytics access.
 
 My Responsibilities
-- Led end-to-end architecture design.
+- Contributed to end-to-end architecture design.
 - Built incremental ingestion and validation patterns.
 - Designed CI/CD and infrastructure automation.
 
@@ -43,13 +43,13 @@ Challenges
 - Coordinating source migration, network setup, validation, and downstream consumers.
 
 Business Impact
-- Unified customer, transaction, and portfolio data into a single source of truth.
+- Unified operational and portfolio data into a more consistent source of truth.
 
 Scale
-- TODO: Add row counts, throughput, and source count.
+- Large enough that repeated full reloads and manual operations were no longer defensible.
 
 Performance
-- Sub-10 second BI queries on large transactional datasets were achieved for the intended surfaces.
+- Improved BI query responsiveness for intended analytical surfaces.
 
 Lessons Learned
 - Platform decisions matter most when they reduce future onboarding and support cost.
@@ -62,4 +62,3 @@ Related Technologies
 
 Related Projects
 - GPU Benchmark Pod, OLAP Workload Architecture
-

@@ -5,7 +5,7 @@ export const sqlKnowledge = {
   kind: "technology",
   tags: ["sql", "query", "joins", "analytics"],
   technologies: ["spark", "snowflake", "power bi"],
-  projects: ["project/amc-datalake"],
+  projects: ["project/amc-datalake", "project/olap-workload-architecture", "experience/enterprise-data-extraction"],
   topics: ["query design", "performance", "analytics"],
   summary: "I treat SQL as the language that turns data platforms into decision systems, so the query shape matters as much as the model underneath it.",
   businessContext: "SQL is where most teams feel the difference between a platform that is fast enough to trust and one that makes users wait for answers.",
@@ -45,7 +45,7 @@ export const sqlKnowledge = {
     "I keep query ownership tied to the downstream use case."
   ],
   relatedTechnologies: ["Spark", "Snowflake", "Power BI"],
-  relatedProjects: ["AMC - Datalake Solution"],
+  relatedProjects: ["Legacy Data Modernization & ETL", "OLAP Workload Architecture"],
   followUps: [
     "Optimize a multi-join query",
     "Explain how I tune SQL for large fact tables",

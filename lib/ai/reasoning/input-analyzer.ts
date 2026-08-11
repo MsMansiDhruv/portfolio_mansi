@@ -271,6 +271,21 @@ function inferQuestionType(
   }
   if (/\bhow do you mentor\b/i.test(text)) return "PERSONAL_EXPERIENCE";
   if (/\bwhy did you (use|choose)\b/i.test(text)) return "PERSONAL_EXPERIENCE";
+  if (
+    /\b(difficult|hard|challenging|tough)\b/i.test(text) &&
+    /\b(engineering )?(decision|problem|challenge|situation|trade-off|mistake|failure|incident)\b/i.test(text)
+  ) {
+    return "PERSONAL_EXPERIENCE";
+  }
+  if (
+    /\btell me about\b/i.test(text) &&
+    /\b(yourself|your experience|your approach|a time when|when you|lesson|learned|failure|mistake|production)\b/i.test(text)
+  ) {
+    return "PERSONAL_EXPERIENCE";
+  }
+  if (/\bwhat have you learned\b/i.test(text) || /\bwhat did you learn\b/i.test(text)) {
+    return "PERSONAL_EXPERIENCE";
+  }
   if (/\bwhat('s| is) your experience\b/i.test(text) || (/\bcareer\b/i.test(text) && !/\bdesign\b/i.test(text))) {
     return "CAREER";
   }

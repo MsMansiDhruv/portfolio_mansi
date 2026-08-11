@@ -15,7 +15,7 @@ Lead Data Engineer
 - Dates: 2025
 - Company: TODO
 - Responsibilities: Led a cross-functional data team and architecture decisions.
-- Achievements: Mentored four engineers and owned delivery standards.
+- Achievements: Mentored engineers and contributed to delivery standards.
 - Leadership: Set technical direction and delivery expectations.
 - Technologies: Databricks, Spark, AWS, Terraform
 - Business impact: Helped teams ship reliable data products.

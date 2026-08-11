@@ -11,6 +11,7 @@ import { generateAllSections, containsBlockedPhrase } from "./section-generator"
 import { validateAndRepairSections } from "./validator";
 import { assembleSources } from "./source-assembler";
 import { createUsageTracker } from "./usage-tracker";
+import { responseTitle } from "./response-titles";
 
 function voiceSummary(context: ReasoningContext, _strategy: ReasoningStrategy, density: "concise" | "detailed" = "concise") {
   const v = context.mode === "interview" ? "Let's" : context.mode === "ask" ? "I would" : "I'd";
@@ -48,9 +49,14 @@ function voiceSummary(context: ReasoningContext, _strategy: ReasoningStrategy, d
         ? "Here's what I can share from documented project notes—I won't invent details that aren't in the portfolio."
         : `${v} answer from documented project context where available, and state clearly if details are missing.`;
     case "PERSONAL_EXPERIENCE":
-      if (/\bwhy did you (use|choose)\b/i.test(context.question) && context.analysis.subject) {
-        const tech = context.analysis.subject;
-        return `${v} answer why I chose ${tech} from documented project and platform context—without inventing details.`;
+      if (context.mode === "ask") {
+        if (/\b(difficult|hard|challenging|tough)\b/i.test(context.question) && /\bdecision\b/i.test(context.question)) {
+          return "One difficult decision that stands out for me is separating operational serving from analytical workloads — reframing the problem from 'which database' to 'which access pattern'.";
+        }
+        if (/\b(learned|lesson)\b/i.test(context.question)) {
+          return "The biggest lessons I've taken from production are about workload fit, operational boundaries, and not forcing one tool to do everything.";
+        }
+        return "I can share what I actually did and learned from documented project work — without inventing details.";
       }
       return `${v} answer from mentoring and leadership experience where the knowledge base supports it.`;
     case "CAREER":
@@ -80,8 +86,17 @@ function voiceSummary(context: ReasoningContext, _strategy: ReasoningStrategy, d
       return /\bspark\b/i.test(context.question)
         ? `${v} reduce Spark cost by cutting shuffle bytes, idle cluster time, and expensive stages—not one-off config tweaks.`
         : `${v} locate the bottleneck stage first, then apply targeted fixes.`;
-    default:
-      return `${v} answer the specific question asked, using retrieved context only where it helps.`;
+    default: {
+      const modeDefault: Record<string, string> = {
+        ask: "I'll answer from what I can share from my documented project and engineering experience.",
+        architecture: `${v} assess the architecture question directly and map trade-offs to the workload described.`,
+        pipeline: `${v} review what you supplied and call out production gaps with clear severity.`,
+        sql: `${v} focus on query shape, scan cost, and execution strategy for this SQL.`,
+        cloud: `${v} break down likely cost drivers and practical optimization paths.`,
+        interview: `${v} coach this as a senior interviewer would — clear, structured, and actionable.`,
+      };
+      return modeDefault[context.mode] || `${v} address the question with mode-appropriate engineering depth.`;
+    }
   }
 }
 
@@ -137,51 +152,6 @@ function buildRelatedExperience(context: ReasoningContext): RelatedExperienceIte
     });
   }
   return items.slice(0, 2);
-}
-
-function responseTitle(context: ReasoningContext) {
-  switch (context.questionType) {
-    case "ARCHITECTURE_DESIGN":
-      return isIot(context) ? "IoT streaming architecture" : "Architecture design";
-    case "ARCHITECTURE_PLACEMENT": {
-      const subject = context.analysis.subject || "Technology";
-      return `${subject} in the reference architecture`;
-    }
-    case "COMPONENT_PLACEMENT": {
-      return `${context.analysis.subject || "Component"} in the pipeline`;
-    }
-    case "ARCHITECTURE_REVIEW":
-      return "Architecture review";
-    case "EXPLANATION":
-      return context.entities.technologies[0]?.label || context.analysis.technologies[0] || "Technology explanation";
-    case "COMPARISON":
-      return "Technology comparison";
-    case "PROJECT_QUESTION": {
-      const q = context.question;
-      if (/\bamc\b/i.test(q) || /\bdatalake\b/i.test(q)) {
-        const amc = context.documents.find((d) => d.category === "project" && /\bamc\b/i.test(d.title));
-        if (amc) return amc.title;
-        return "AMC Datalake Solution";
-      }
-      return context.documents.find((d) => d.category === "project")?.title || "Project overview";
-    }
-    case "COST_ANALYSIS":
-      return "Cloud cost review";
-    case "SQL_OPTIMIZATION":
-      return "SQL optimization";
-    case "OPTIMIZATION":
-      return "Performance optimization";
-    case "INTERVIEW":
-      return "Interview coaching";
-    case "PERSONAL_EXPERIENCE":
-      return "Mentoring & experience";
-    case "PORTFOLIO_OVERVIEW":
-      return context.mode === "ask" ? "Projects I've worked on" : "Portfolio projects";
-    case "TECHNOLOGIES_OVERVIEW":
-      return context.mode === "ask" ? "Technologies I've worked with" : "Technology overview";
-    default:
-      return context.documents[0]?.title || "Response";
-  }
 }
 
 export function buildResponse(

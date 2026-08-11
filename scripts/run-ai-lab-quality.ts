@@ -24,8 +24,9 @@ function wordCount(response) {
   return text.split(/\s+/).filter(Boolean).length;
 }
 
+async function run() {
 for (const test of CASES) {
-  const response = generateAIResponse({ mode: test.mode, question: test.q, density: "concise" });
+  const response = await generateAIResponse({ mode: test.mode, question: test.q, density: "concise" });
   const headings = (response.sections || []).map((s) => s.heading).join(" ");
   const wc = wordCount(response);
   let result = "Pass";
@@ -46,3 +47,9 @@ for (const test of CASES) {
 }
 
 console.log("\nDone.");
+}
+
+run().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

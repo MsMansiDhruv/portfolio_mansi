@@ -33,7 +33,7 @@ const INITIAL_AWARDS = [
     org: "SG Analytics",
     year: "Jul 2024",
     summary:
-      "Played pivotal role in establishing the foundation for a client. This instilled confidence in client leading them to bring new business.",
+      "Recognized for technical leadership and delivery quality on a confidential client engagement.",
     sourceUrl: "https://ca.linkedin.com/in/mansidhruv/details/honors-awards/",
   },
   {

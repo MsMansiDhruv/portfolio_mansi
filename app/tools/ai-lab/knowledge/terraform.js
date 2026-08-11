@@ -5,7 +5,7 @@ export const terraformKnowledge = {
   kind: "technology",
   tags: ["terraform", "iac", "automation", "infrastructure"],
   technologies: ["aws", "azure"],
-  projects: ["project/amc-datalake"],
+  projects: ["project/amc-datalake", "project/automated-intelligence-pipeline", "experience/media-entertainment-devops", "experience/enterprise-data-extraction"],
   topics: ["infrastructure as code", "automation", "governance"],
   summary: "I use Terraform to make the platform reproducible, reviewable, and less dependent on manual setup work.",
   businessContext: "Infrastructure that cannot be recreated reliably becomes a delivery and support risk as soon as the team or environment grows.",
@@ -41,7 +41,7 @@ export const terraformKnowledge = {
     "I make sure automation has guardrails, not just speed."
   ],
   relatedTechnologies: ["AWS", "Azure", "Databricks"],
-  relatedProjects: ["AMC - Datalake Solution"],
+  relatedProjects: ["Legacy Data Modernization & ETL", "Automated Web Intelligence Pipeline", "Media & Entertainment CI/CD"],
   followUps: [
     "Show how I would structure modules and state",
     "Explain the governance controls I would put around Terraform",

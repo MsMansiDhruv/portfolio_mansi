@@ -101,6 +101,33 @@ export type FollowUpSuggestion = {
   targetIntent?: ReasoningIntent;
   targetQuestionType?: QuestionType;
   parentTopic?: string;
+  targetMode?: string;
+  preservedQuestion?: string;
+};
+
+export type ModeRedirect = {
+  targetMode: string;
+  label: string;
+  preserveQuestion: string;
+  reason?: string;
+};
+
+export type RelatedProjectLink = {
+  title: string;
+  slug: string;
+  href: string;
+  reason: string;
+  relevance: "high" | "medium";
+};
+
+export type SiteLink = {
+  title: string;
+  href: string;
+  label: string;
+  reason: string;
+  primary?: boolean;
+  /** Open in a new tab (external URLs, mailto) */
+  external?: boolean;
 };
 
 export type ResponseSources = {
@@ -173,6 +200,9 @@ export type BuiltResponse = ComposedResponse & {
   secondaryIntents: ReasoningIntent[];
   confidence: ConfidenceAssessment;
   relatedExperience?: RelatedExperienceItem[];
+  relatedProjects?: RelatedProjectLink[];
+  siteLinks?: SiteLink[];
+  modeRedirect?: ModeRedirect;
   sources?: ResponseSources;
   pipelineTrace?: PipelineTrace;
   conversationState?: import("./question-semantics").ConversationState;

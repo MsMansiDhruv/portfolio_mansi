@@ -51,9 +51,28 @@ export function assessConfidence(context: ReasoningContext, strategy: ReasoningS
   if (!context.primaryDocuments.length) missingPieces.push("grounded source documents");
   if (context.intent.primary === "technology-comparison" && context.entities.entities.length < 2) missingPieces.push("second comparison target");
   if (context.intent.primary === "project-discussion" && context.entities.projects.length === 0) missingPieces.push("project name");
-  if (context.intent.primary === "architecture-review" && context.entities.flowEntities.length < 2) missingPieces.push("explicit system flow");
+  if (context.intent.primary === "architecture-review" && context.entities.flowEntities.length < 2) {
+    missingPieces.push("explicit system flow");
+  }
+  if (
+    context.mode === "pipeline" &&
+    (context.questionType === "ARCHITECTURE_REVIEW" || context.intent.primary === "pipeline-review") &&
+    !context.analysis.signals.includes("flow-chain") &&
+    context.analysis.architectureComponents.length < 2 &&
+    context.question.length < 280
+  ) {
+    missingPieces.push("pipeline architecture, DAG, or flow to review");
+  }
   if (context.intent.primary === "cloud-cost-review") missingPieces.push("usage volumes or environment size");
   if (context.intent.primary === "sql-review") missingPieces.push("query text or schema details");
+  if (
+    context.mode === "sql" &&
+    /\b(this |my )?(query|sql|join)\b/i.test(context.question) &&
+    context.question.length < 200 &&
+    !/\bselect\b[\s\S]{0,200}\bfrom\b/i.test(context.question)
+  ) {
+    missingPieces.push("SQL query text");
+  }
 
   score = clamp(score);
 

@@ -58,5 +58,5 @@ Related Technologies
 - CUDA, profiling, benchmarking
 
 Related Projects
-- AMC - Datalake Solution, OLAP Workload Architecture
+- Legacy Data Modernization & ETL, OLAP Workload Architecture
 

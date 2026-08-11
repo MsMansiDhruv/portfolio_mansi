@@ -6,9 +6,7 @@ import { ChevronDown } from "lucide-react";
 import {
   BRAIN_CASE_STUDY,
   BRAIN_CASE_STUDY_SLUG,
-  BRAIN_ARCH_PRODUCTION_IMAGE,
 } from "@/lib/data/brain-case-study";
-import { ArchitectureDiagramViewer } from "@/components/projects/ArchitectureDiagramViewer";
 import { ProjectCaseStudyNav } from "@/components/projects/ProjectCaseStudyNav";
 import { cn } from "@/lib/cn";
 
@@ -495,6 +493,34 @@ function RequestPathStrip({ steps, reduced }) {
   );
 }
 
+function BrainProductionArchSchematic({ reduced }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.3 });
+  const play = inView && !reduced;
+
+  return (
+    <div ref={ref} className="min-w-0 rounded-2xl border border-slate-200/90 bg-white p-4 dark:border-slate-700 dark:bg-slate-900/90 sm:p-5">
+      <svg viewBox="0 0 420 300" className="w-full" role="img" aria-label="Conceptual production architecture: client apps through API and allocation layers to ML infrastructure">
+        <motion.text x="210" y="22" textAnchor="middle" fontSize="9" fontWeight="700" fill="#64748b" initial={{ opacity: 0 }} animate={play ? { opacity: 1 } : { opacity: 1 }}>
+          PRODUCTION ARCHITECTURE · CONCEPTUAL
+        </motion.text>
+        <motion.rect x="155" y="36" width="110" height="26" fill="none" stroke="#334155" strokeWidth="1" initial={{ opacity: 0.4 }} animate={play ? { opacity: 1 } : { opacity: 1 }} transition={{ delay: 0.1 }} />
+        <text x="210" y="53" textAnchor="middle" fontSize="10" fontWeight="700" fill="#0f172a">CLIENT APPS</text>
+        <motion.path d="M 210 62 L 210 78" stroke="#94a3b8" strokeWidth="1" initial={{ pathLength: 0 }} animate={play ? { pathLength: 1 } : { pathLength: 1 }} transition={{ delay: 0.2, duration: 0.35 }} />
+        <text x="210" y="92" textAnchor="middle" fontSize="10" fontWeight="700" fill="#0f172a">GRAPHQL API</text>
+        <motion.path d="M 210 98 L 210 114" stroke="#94a3b8" strokeWidth="1" initial={{ pathLength: 0 }} animate={play ? { pathLength: 1 } : { pathLength: 1 }} transition={{ delay: 0.28, duration: 0.35 }} />
+        <motion.rect x="130" y="118" width="160" height="52" fill="none" stroke="#0f766e" strokeWidth="1.25" initial={{ opacity: 0.4 }} animate={play ? { opacity: 1 } : { opacity: 1 }} transition={{ delay: 0.35 }} />
+        <text x="210" y="136" textAnchor="middle" fontSize="9" fontWeight="700" fill="#0f766e">ALLOCATION / DECISIONING</text>
+        <text x="210" y="152" textAnchor="middle" fontSize="8" fill="#475569">Prediction · Logic · Processing</text>
+        <motion.path d="M 210 170 L 210 186" stroke="#94a3b8" strokeWidth="1" initial={{ pathLength: 0 }} animate={play ? { pathLength: 1 } : { pathLength: 1 }} transition={{ delay: 0.45, duration: 0.35 }} />
+        <motion.rect x="95" y="192" width="230" height="44" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1" initial={{ opacity: 0.4 }} animate={play ? { opacity: 1 } : { opacity: 1 }} transition={{ delay: 0.52 }} />
+        <text x="210" y="210" textAnchor="middle" fontSize="8" fontWeight="700" fill="#64748b">ML + DATA INFRASTRUCTURE</text>
+        <text x="210" y="226" textAnchor="middle" fontSize="8" fill="#475569">S3 · Databricks · MLflow · ECR · EC2</text>
+      </svg>
+    </div>
+  );
+}
+
 export function ProductionArchitectureSection() {
   const reduced = useReducedMotion();
   const a = C.productionArch;
@@ -547,15 +573,8 @@ export function ProductionArchitectureSection() {
         </div>
 
         <div className="min-w-0 lg:sticky lg:top-[calc(4rem+env(safe-area-inset-top,0px))] lg:self-start">
-          <ArchitectureDiagramViewer
-            src={BRAIN_ARCH_PRODUCTION_IMAGE}
-            alt={a.detailImageAlt}
-            modalTitle="Production architecture"
-            className="w-full"
-            previewAspect="aspect-[4/3]"
-            previewClassName="min-h-[280px] max-h-[min(78vh,760px)] sm:min-h-[340px] md:min-h-[400px] lg:min-h-[460px] xl:min-h-[520px]"
-          />
-          <p className="mt-2 text-center text-[10px] uppercase tracking-wide text-slate-500">Reference diagram · click to enlarge</p>
+          <BrainProductionArchSchematic reduced={reduced} />
+          <p className="mt-2 text-center text-[10px] uppercase tracking-wide text-slate-500">Conceptual diagram · anonymized</p>
         </div>
       </motion.div>
 

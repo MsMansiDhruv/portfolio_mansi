@@ -5,7 +5,7 @@ export const cloudKnowledge = {
   kind: "cloud",
   tags: ["cloud", "cost", "spend", "optimization"],
   technologies: ["aws", "azure", "databricks"],
-  projects: ["project/amc-datalake", "project/gpu-benchmark"],
+  projects: ["project/amc-datalake", "project/olap-workload-architecture", "experience/fintech-ml-platform", "project/gpu-benchmark"],
   topics: ["cost control", "capacity planning", "platform economics"],
   summary: "I treat cloud cost as an architecture problem, not a late-stage cleanup exercise.",
   businessContext: "The business rarely wants lower cost in isolation. It wants lower cost without losing reliability, speed, or governance.",
@@ -41,7 +41,7 @@ export const cloudKnowledge = {
     "I tie savings work back to business impact instead of generic tuning advice."
   ],
   relatedTechnologies: ["AWS", "Databricks", "Terraform"],
-  relatedProjects: ["GPU Benchmark Pod", "AMC - Datalake Solution"],
+  relatedProjects: ["OLAP Workload Architecture", "Financial Technology ML Platform", "GPU Benchmark Pod", "Legacy Data Modernization & ETL"],
   followUps: [
     "Estimate the main cost drivers in this architecture",
     "Show where I would cut spend first",

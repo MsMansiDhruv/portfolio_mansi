@@ -18,6 +18,6 @@ Best Engineering Decision
 - TODO: Add the decision that had the strongest downstream impact.
 
 Related Experience
-- AMC - Datalake Solution
+- Legacy Data Modernization & ETL
 - GPU Benchmark Pod
 

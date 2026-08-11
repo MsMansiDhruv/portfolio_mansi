@@ -630,5 +630,5 @@ export function ClosingSection() {
 
 /** Engineering takeaway + stacked project navigation */
 export function CaseStudyFooter() {
-  return <ProjectCaseStudyNav slug={OLAP_CASE_STUDY_SLUG} takeaway={C.takeaway} />;
+  return <ProjectCaseStudyNav slug={OLAP_CASE_STUDY_SLUG} />;
 }

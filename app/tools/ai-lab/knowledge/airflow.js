@@ -5,7 +5,7 @@ export const airflowKnowledge = {
   kind: "technology",
   tags: ["airflow", "orchestration", "workflow", "scheduler"],
   technologies: ["python", "sql"],
-  projects: [],
+  projects: ["experience/fintech-ml-platform"],
   topics: ["workflow orchestration", "dependency management"],
   summary: "I use Airflow when orchestration needs to be explicit, observable, and easy for operators to reason about.",
   businessContext: "Most pipeline failures are not caused by the transform itself. They come from scheduling, dependency, or recovery gaps.",
@@ -40,7 +40,8 @@ export const airflowKnowledge = {
     "I monitor freshness, failures, and alert quality rather than raw task noise.",
     "I keep recovery paths documented and testable."
   ],
-  relatedTechnologies: ["Python", "SQL"],
+  relatedTechnologies: ["Python", "SQL", "Databricks", "MLflow"],
+  relatedProjects: ["Financial Technology ML Platform", "ML-Driven Allocation Engine"],
   followUps: [
     "Show how I would harden an Airflow DAG",
     "Explain the recovery strategy I would use",

@@ -21,7 +21,7 @@ What I Would Highlight
 - TODO: Explain why this project mattered most to me.
 
 Related Experience
-- AMC - Datalake Solution
+- Legacy Data Modernization & ETL
 - GPU Benchmark Pod
 - OLAP Workload Architecture
 

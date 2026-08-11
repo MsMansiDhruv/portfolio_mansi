@@ -4,17 +4,21 @@ import { useState } from "react";
 import { PageHeader } from "@/components/portfolio/primitives";
 import { Reveal } from "@/components/portfolio/motion";
 
+const CONTACT_EMAIL = "mansi.p.dhruv@gmail.com";
+
 export default function Contact() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
   const [done, setDone] = useState(false);
   const [error, setError] = useState(null);
+  const [mailtoFallback, setMailtoFallback] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
     setError(null);
+    setMailtoFallback(null);
     setSubmitting(true);
     try {
       const res = await fetch("/api/contact", {
@@ -22,10 +26,18 @@ export default function Contact() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ name, email, msg }),
       });
-      if (!res.ok) throw new Error("Request failed");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || "Something went wrong while sending your message.");
+        if (data.mailto) setMailtoFallback(data.mailto);
+        return;
+      }
       setDone(true);
     } catch {
-      setError("Something went wrong while sending your message. Please try again or email directly.");
+      setError("Something went wrong while sending your message.");
+      setMailtoFallback(
+        `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Website contact from ${name}`)}&body=${encodeURIComponent(`${msg}\n\n— ${name}\n${email}`)}`
+      );
     } finally {
       setSubmitting(false);
     }
@@ -42,6 +54,16 @@ export default function Contact() {
       </Reveal>
 
       <Reveal delay={0.05}>
+        <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
+          Prefer email directly?{" "}
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            className="font-medium text-teal-700 underline-offset-2 hover:underline dark:text-teal-400"
+          >
+            {CONTACT_EMAIL}
+          </a>
+        </p>
+
         {done ? (
           <p className="mt-8 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
             Thanks — your message was sent. I will reply when I can.
@@ -80,9 +102,24 @@ export default function Contact() {
               />
             </label>
             {error ? (
-              <p className="text-sm text-red-600 dark:text-red-400" role="alert">
-                {error}
-              </p>
+              <div className="rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-950/30" role="alert">
+                <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+                {mailtoFallback ? (
+                  <a
+                    href={mailtoFallback}
+                    className="mt-2 inline-flex min-h-[36px] items-center rounded-full bg-teal-700 px-4 py-1.5 text-xs font-medium text-white transition hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
+                  >
+                    Open email with your message →
+                  </a>
+                ) : (
+                  <a
+                    href={`mailto:${CONTACT_EMAIL}`}
+                    className="mt-2 inline-block text-sm font-medium text-teal-700 hover:underline dark:text-teal-400"
+                  >
+                    Email {CONTACT_EMAIL} directly
+                  </a>
+                )}
+              </div>
             ) : null}
             <button
               type="submit"

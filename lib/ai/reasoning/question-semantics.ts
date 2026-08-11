@@ -126,7 +126,7 @@ export function resolveExplicitSubject(text: string, technologies: string[] = []
     [/\btableau\b/i, "Tableau"],
     [/\bdatabricks\b/i, "Databricks"],
     [/\bsnowflake\b/i, "Snowflake"],
-    [/\bamc\b/i, "AMC"],
+    [/\blegacy data\b|\bdatalake modernization\b/i, "Legacy Data Modernization"],
     [/\biot\b/i, "IoT"],
   ];
   for (const [re, label] of patterns) {

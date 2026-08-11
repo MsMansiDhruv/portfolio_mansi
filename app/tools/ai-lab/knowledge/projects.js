@@ -1,54 +1,318 @@
 export const projectKnowledge = [
   {
     id: "project/amc-datalake",
-    title: "AMC - Datalake Solution",
+    title: "Legacy Data Modernization & ETL",
     category: "project",
     kind: "project",
-    tags: ["amc", "datalake", "lakehouse", "asset management"],
-    technologies: ["s3", "iceberg", "pyspark", "terraform", "redshift", "sql"],
-    projects: ["gpu-benchmark", "olap-workload-architecture"],
-    topics: ["enterprise analytics", "migration", "governed lakehouse"],
-    summary: "I built a reusable cloud analytics foundation that replaced fragmented on-prem reporting paths with a more reliable and cost-aware lakehouse pattern.",
-    businessContext: "The client needed a single analytics foundation that could unify legacy sources, improve trust in reporting, and reduce the operational burden of the old platform.",
-    problemStatement: "The main problem was not just moving data. It was creating a platform that downstream teams could trust, operate, and reuse without paying the cost of repeated full reloads.",
-    myRole: "I owned the architecture conversation, the ingestion and validation patterns, and the delivery discipline around infrastructure and CI/CD.",
+    tags: ["datalake", "data engineering", "aws", "etl", "modernization", "asset management"],
+    technologies: [
+      "aws",
+      "s3",
+      "redshift",
+      "redshift spectrum",
+      "aws glue",
+      "pyspark",
+      "lambda",
+      "dms",
+      "eventbridge",
+      "step functions",
+      "cloudwatch",
+      "terraform",
+      "power bi",
+      "python",
+      "sql",
+    ],
+    projects: [
+      "project/olap-workload-architecture",
+      "project/brain-mvp",
+      "project/automated-intelligence-pipeline",
+      "project/gpu-benchmark",
+    ],
+    skills: ["data engineering", "data architecture", "etl", "elt", "iac", "observability"],
+    topics: ["data lake modernization", "migration", "bronze silver gold", "incremental processing", "production pipelines"],
+    difficulty: ["intermediate", "advanced"],
+    relatedDocuments: [
+      "technology/terraform",
+      "technology/spark",
+      "technology/sql",
+      "technology/power-bi",
+      "architecture/principles",
+      "philosophy/engineering",
+    ],
+    summary:
+      "I contributed to modernizing legacy shell-script ETL and fragmented analytics for a confidential asset-management client — centralizing data on AWS with layered Bronze/Silver/Gold processing, Glue/PySpark workflows, Redshift serving, and improved BI and self-service consumption.",
+    businessContext:
+      "A leading asset-management organization needed to move off fragile legacy ETL, unify siloed transactional and portfolio data, and give internal teams a more reliable path from ingestion to reporting.",
+    problemStatement:
+      "Legacy shell-script workflows were hard to maintain, data lived across siloed systems, dashboard performance suffered, and internal users had limited self-service access. The work was not a lift-and-shift — it required clearer boundaries between ingestion, transformation, analytical storage, and consumption.",
+    myRole:
+      "I contributed to ETL modernization, data lake architecture, data modeling, Glue/PySpark workflow design, analytical storage patterns, reporting integration, pipeline quality and deployment, and self-service data workflows — alongside delivery teams, not as sole owner of every stream.",
     architecture: [
-      "I used durable landing storage, incremental processing, and separate serving layers so the platform could evolve without breaking consumers.",
-      "I kept transformation logic close to the data and pushed business-facing logic toward curated outputs.",
-      "I treated validation and repeatability as core platform concerns instead of bolt-ons."
+      "Sources (partner feeds, Oracle, SQL Server, MySQL, files) land in S3 Bronze via ingestion patterns including DMS and orchestration (EventBridge, Step Functions).",
+      "AWS Glue and PySpark transform data through Silver (clean/standardize) and Gold (curated marts).",
+      "Redshift and Redshift Spectrum serve analytical queries; Power BI and internal self-service tooling sit at the consumption layer.",
+      "IAM, KMS, Secrets Manager, and CloudWatch support security and observability for production workflows.",
     ],
     decisions: [
-      "I chose incremental processing over repeated full reloads because the data volume and operational cost made brute-force refreshes a bad long-term bet.",
-      "I chose open table storage so the team could support downstream reuse without locking the platform into one narrow consumption path.",
-      "I invested in Terraform and CI/CD early because manual environment management becomes technical debt very quickly."
+      "I supported moving from legacy shell ETL to AWS Glue + PySpark because managed, repeatable workflows reduced fragility and maintenance risk.",
+      "I supported separating S3 (durable lake storage) from Redshift (query-optimized serving) because storage and analytics consumption have different scaling and cost profiles.",
+      "I supported Bronze → Silver → Gold layering because raw, standardized, and curated zones create clearer ownership and downstream reuse.",
+      "I supported improving self-service tooling and Power BI consumption because internal users needed lower friction between the platform and day-to-day reporting.",
     ],
     tradeoffs: [
-      "Incremental design added engineering discipline, but it gave us a platform that was much easier to trust and scale.",
-      "Open table storage improved flexibility, but it required stronger governance around file sizing, layout, and ownership.",
-      "Automation increased the upfront design effort, but it removed a lot of future drift and hand-built environment work."
+      "Layered architecture added modeling and orchestration overhead but made the platform easier to extend and operate at scale.",
+      "Separating lake and warehouse increased platform surface area but improved clarity between durable storage and analytical serving.",
+      "Migration effort was significant up front; the trade was long-term operability over fastest possible lift-and-shift.",
     ],
     outcomes: [
-      "The platform unified customer, transaction, and portfolio data into a more consistent source of truth.",
-      "The design improved reliability for downstream BI usage.",
-      "The operating model was simpler to extend than the original fragmented setup."
+      "Centralized and scalable data management through an S3-based data lake.",
+      "Legacy shell-script ETL migrated toward AWS Glue jobs.",
+      "Improved dashboard and reporting performance through an optimized analytical backend.",
+      "Internal self-service data workflows for operational updates and discovery.",
     ],
     lessonsLearned: [
-      "The best architecture decisions are the ones that reduce future onboarding and support cost.",
-      "Data quality checks matter more when the platform is shared across teams.",
-      "A clean deployment model is a force multiplier for every later change."
+      "The biggest shift was not simply moving ETL to AWS — it was creating clearer boundaries between ingestion, transformation, analytical storage, and consumption.",
+      "Data quality checks and deployment discipline matter more when the platform is shared across teams.",
+      "A reproducible infrastructure and deployment model pays off on every later change.",
     ],
-    scale: "Large enough that repeated full reloads and manual operations were no longer defensible.",
+    scale:
+      "Large-scale financial and transactional data across multiple legacy source systems. TODO: Verify exact published volume figures — portfolio case study does not state a specific TB metric.",
     whatIWouldImproveToday: [
-      "I would add explicit quality SLAs and richer lineage automation.",
-      "I would formalize consumer contracts earlier so downstream dependencies are visible sooner."
+      "Formalize consumer contracts earlier between lake, warehouse, and BI layers.",
+      "Expand automated lineage and replay documentation across Glue workflows.",
     ],
-    relatedTechnologies: ["Databricks", "Delta Lake", "SQL", "Terraform"],
-    relatedProjects: ["GPU Benchmark Pod", "OLAP Workload Architecture"],
+    relatedTechnologies: ["AWS Glue", "PySpark", "Redshift", "S3", "Terraform", "Power BI", "SQL"],
+    relatedProjects: ["OLAP Workload Architecture", "Automated Web Intelligence Pipeline", "ML-Driven Allocation Engine"],
     followUps: [
-      "Walk through the ingestion and validation flow",
-      "Explain the trade-offs versus a warehouse-first design",
-      "Show how I would make the platform easier to operate"
-    ]
+      "Walk through the Bronze/Silver/Gold ingestion flow",
+      "Explain why I would separate S3 and Redshift",
+      "Describe how I approach data lake modernization incrementally",
+    ],
+  },
+  {
+    id: "project/olap-workload-architecture",
+    title: "OLAP → Workload-Specific Data Architecture",
+    category: "project",
+    kind: "project",
+    tags: ["data architecture", "redshift", "dynamodb", "benchmark", "cost", "workload separation"],
+    technologies: [
+      "aws",
+      "redshift serverless",
+      "s3 tables",
+      "aurora postgresql",
+      "dynamodb",
+      "athena",
+      "presto",
+    ],
+    projects: ["project/amc-datalake", "project/gpu-benchmark"],
+    skills: ["data architecture", "performance engineering", "cost analysis", "benchmarking"],
+    topics: [
+      "workload-first architecture",
+      "operational vs analytical workloads",
+      "database selection",
+      "hybrid architecture",
+      "cost-driven investigation",
+    ],
+    difficulty: ["advanced"],
+    relatedDocuments: [
+      "philosophy/engineering",
+      "architecture/principles",
+      "technology/redshift",
+      "technology/dynamodb",
+      "story/cost-driven-architecture-investigation",
+    ],
+    summary:
+      "I contributed to separating application serving from analytical workloads for a confidential financial services client — triggered by a warehouse cost signal from high-frequency point lookups, informed by PoC benchmarks across Redshift Serverless, Aurora, S3 Tables, and DynamoDB.",
+    businessContext:
+      "An analytical warehouse was also serving high-frequency application point lookups. A sustained increase in warehouse serving cost triggered investigation into whether the workload matched the storage engine — not whether Redshift was 'bad,' but whether one engine should serve two fundamentally different access patterns.",
+    problemStatement:
+      "The application generated continuous small point-lookups against Redshift Serverless. That operational-style access pattern created an architectural mismatch: an analytical warehouse was being asked to perform as an application serving layer, with cost and scale implications.",
+    myRole:
+      "I contributed to the architecture investigation, benchmark design, and comparison of operational versus analytical workload fit across candidate stores.",
+    architecture: [
+      "Before: App → API/backend → point lookup → Redshift Serverless for both serving and analytics.",
+      "Investigation: PoC benchmarks on representative workloads (Redshift Serverless 4–8 RPUs; Aurora PostgreSQL 4–8 ACUs).",
+      "Target direction: separate serving path (DynamoDB for key-based, high-frequency access) from analytics path (S3 Tables → Athena/Presto for bulk and aggregation workloads).",
+      "Redshift remains strong for scans and BI; the insight was workload separation, not universal replacement.",
+    ],
+    decisions: [
+      "We reframed the question from 'which database is best?' to 'which storage engine fits each workload?'",
+      "PoC benchmark evidence drove decisions instead of assumptions — verdict: no universal winner; performance depended on workload shape.",
+      "Hybrid architecture: DynamoDB for serving, S3 Tables + Athena/Presto for analytics, with Aurora evaluated for relational CRUD workloads.",
+    ],
+    tradeoffs: [
+      "DynamoDB: excellent for key-based serving; tradeoffs include access-pattern-driven modeling and synchronization complexity.",
+      "Aurora: strong for CRUD/relational patterns; poor analytical aggregation in this benchmark (e.g., aggregation row ~42s vs Redshift ~5.3s).",
+      "S3 Tables: strong for bulk insert and aggregation in benchmarks; poor interactive point lookup (e.g., read workloads up to ~10s).",
+      "Redshift: strong for scans and BI; poor economic fit for continuous high-frequency point lookups in this engagement.",
+    ],
+    outcomes: [
+      "Reframed the problem from replacing Redshift to separating workloads by access pattern.",
+      "Identified a hybrid direction: dedicated serving layer plus S3-based analytics rather than one universal database.",
+      "Production migration toward workload-specific data stores aligned to access patterns (per portfolio case study).",
+    ],
+    challenges: [
+      "Still-open engineering areas include complex joins, stored procedure migration, query rewrites, DynamoDB modeling, data synchronization, and migration effort validation.",
+    ],
+    performance:
+      "PoC benchmark samples (representative workloads): reads — Redshift 117–267 ms vs Aurora 571–967 ms vs S3 up to ~10s; single-row insert — Redshift ~9s vs Aurora ~834 ms; bulk insert — S3 ~50 sec vs Redshift/Aurora ~4 min; aggregation — Redshift ~5.3s vs Aurora ~42s vs S3 ~2.6s.",
+    lessonsLearned: [
+      "Architecture is not about choosing the 'best' database — it is about matching the storage engine to the workload.",
+      "Performance and cost depended on how the system accessed data, not simply which database was in use.",
+      "Do not present Redshift as universally wrong or DynamoDB as universally superior — each engine had clear strengths and limits in the benchmark.",
+    ],
+    scale: "High-frequency application point lookups against an analytical warehouse; cost signal from sustained serving spend.",
+    whatIWouldImproveToday: [
+      "TODO: Add the specific production migration sequencing and rollback strategy if verified for public discussion.",
+      "Run benchmarks closer to production query shapes where safe and anonymized.",
+    ],
+    relatedTechnologies: ["Redshift Serverless", "DynamoDB", "S3 Tables", "Aurora PostgreSQL", "Athena"],
+    relatedProjects: ["Legacy Data Modernization & ETL", "GPU Benchmark Pod"],
+    followUps: [
+      "Why would you separate OLTP-style serving from OLAP?",
+      "What did you learn from the workload architecture PoC?",
+      "How do you think about database selection?",
+    ],
+  },
+  {
+    id: "project/brain-mvp",
+    title: "Productionizing an ML-Driven Allocation Engine",
+    category: "project",
+    kind: "project",
+    tags: ["mlops", "machine learning", "data engineering", "productionization", "fintech"],
+    technologies: [
+      "amazon s3",
+      "databricks",
+      "delta",
+      "mlflow",
+      "amazon ecr",
+      "ec2",
+      "graphql",
+      "aws",
+    ],
+    projects: ["project/amc-datalake", "project/automated-intelligence-pipeline", "experience/fintech-ml-platform"],
+    skills: ["ml pipeline integration", "production engineering", "data engineering", "deployment", "orchestration"],
+    topics: ["ml productionization", "model integration", "allocation logic", "separation of concerns"],
+    difficulty: ["advanced"],
+    relatedDocuments: [
+      "technology/mlflow",
+      "technology/databricks",
+      "philosophy/engineering",
+      "story/productionizing-ml-pipelines",
+    ],
+    summary:
+      "I helped productionize an ML-driven allocation system for a confidential fintech engagement — connecting persona classification models (developed by Data Scientists) to eligibility-based allocation logic and an end-to-end deployment pipeline from data through serving.",
+    businessContext:
+      "Users signed up for paid tiers but did not consistently adopt the broader product stack available to them. The team needed a decisioning layer — not another funnel — to translate user eligibility and behavioral signals into relevant product recommendations.",
+    problemStatement:
+      "Classification models existed for different user personas, but predictions alone do not drive product adoption. The engineering challenge was building the production path: data pipelines, model tracking, containerization, deployment, API serving, and clear separation between prediction signals and allocation decisions.",
+    myRole:
+      "I contributed to ML allocation architecture and the production deployment pipeline — model tracking (MLflow), containerization (ECR), deployment (EC2), serving integration (GraphQL), and separation of prediction versus allocation decision logic. I did not build or own the classification models; Data Scientists developed those.",
+    architecture: [
+      "Data layer: S3 and Databricks/Delta for feature and training data paths.",
+      "Model lifecycle: MLflow for tracking; ECR for container images; EC2 for deployment.",
+      "Serving: GraphQL API → Allocation API → prediction/processing → allocation logic → recommendation back to mobile/web.",
+      "The model supplies the signal; the system owns the decision — prediction, allocation logic, processing, API serving, and infrastructure remain distinct components.",
+    ],
+    decisions: [
+      "Decoupled allocation processing from the user-facing experience so decisioning could evolve independently.",
+      "Separated prediction, allocation logic, processing, API serving, and infrastructure as distinct concerns.",
+      "End-to-end pipeline: model development (DS) → tracking → containerization → deployment → serving.",
+    ],
+    tradeoffs: [
+      "More moving parts than a single monolithic scorer, but clearer ownership boundaries and safer production evolution.",
+      "Containerized serving adds operational overhead but improves reproducibility and deployment control.",
+    ],
+    outcomes: [
+      "Delivered an end-to-end path from model development through production serving.",
+      "Separated classification signals, allocation logic, processing, and API layers.",
+    ],
+    lessonsLearned: [
+      "A model creates predictions; a production system turns them into decisions — the engineering challenge is connecting the two.",
+      "My contribution was pipeline engineering and productionization around models I did not train.",
+      "Working with Data Scientists requires crisp handoffs: they own model quality; engineering owns reliability, deployment, and integration.",
+    ],
+    scale: "Production ML decisioning for paid-tier user allocation across mobile and web surfaces.",
+    whatIWouldImproveToday: [
+      "TODO: Add verified staging vs production promotion gates if safe to describe publicly.",
+      "TODO: Add measurable impact metrics if approved for portfolio publication.",
+    ],
+    relatedTechnologies: ["MLflow", "Databricks", "Delta", "ECR", "GraphQL", "S3"],
+    relatedProjects: ["Automated Web Intelligence Pipeline", "Financial Technology ML Platform"],
+    followUps: [
+      "What was your role in the Brain project?",
+      "Did you build the classification model?",
+      "How have you productionized machine learning?",
+    ],
+  },
+  {
+    id: "project/automated-intelligence-pipeline",
+    title: "Automated Web Intelligence Pipeline",
+    category: "project",
+    kind: "project",
+    tags: ["data engineering", "automation", "web scraping", "aws", "etl", "intelligence"],
+    technologies: [
+      "python",
+      "scrapy",
+      "selenium",
+      "aws lambda",
+      "amazon s3",
+      "ec2",
+      "terraform",
+      "bitbucket pipelines",
+    ],
+    projects: ["project/amc-datalake", "project/brain-mvp"],
+    skills: ["data extraction", "etl", "pipeline engineering", "iac", "ci/cd", "monitoring"],
+    topics: ["automated source tracking", "model integration", "pipeline reliability", "web extraction"],
+    difficulty: ["intermediate", "advanced"],
+    relatedDocuments: [
+      "technology/terraform",
+      "technology/lambda",
+      "philosophy/engineering",
+      "story/productionizing-ml-pipelines",
+    ],
+    summary:
+      "I engineered a production pipeline for a confidential client engagement that discovers, extracts, processes, and surfaces business-relevant content from distributed public web sources — integrating a Data Science-owned classifier without claiming model ownership.",
+    businessContext:
+      "Relevant content was distributed across inconsistent page structures and feeds (RSS, publisher pages, dynamic sites). Manual monitoring, extraction, deduplication, and delivery to internal teams did not scale.",
+    problemStatement:
+      "The classification model was developed by the Data Science team. The hard engineering problem was reliability: source discovery, heterogeneous extraction, normalization, deduplication, scheduled processing, model inference hookup, persistence, monitoring, and automated reporting.",
+    myRole:
+      "I built crawlers and extraction (RSS, generic, site-specific), normalized and deduplicated data, persisted on AWS, integrated DS model inference into the production path, automated execution with Terraform-managed infrastructure, CI/CD (Bitbucket Pipelines), monitoring, and downstream reporting. I did not build, train, or design the classification algorithm.",
+    architecture: [
+      "Discover (RSS / crawlers) → Extract (Scrapy / Selenium) → Process (normalize / deduplicate) → Store (S3) → Model inference (DS-owned classifier) → Report (filtered relevant content).",
+      "AWS: S3 for persistence, Lambda for serverless processing, EC2 for crawler/batch workloads, Terraform for IaC, Bitbucket Pipelines for CI/CD.",
+      "Operations: scheduled jobs, monitoring, alerting, and visible failure handling — not manual one-off runs.",
+    ],
+    decisions: [
+      "Different sources required different extraction strategies (RSS vs generic crawler vs site-specific logic) feeding one downstream pipeline.",
+      "Engineering owned reliability and orchestration; Data Science owned classifier quality — clear lane separation.",
+      "Infrastructure as code and CI/CD from the start so environments were repeatable, not hand-built.",
+    ],
+    tradeoffs: [
+      "Site-specific extractors add maintenance cost but handle heterogeneous sources generic crawlers miss.",
+      "EC2 for heavy crawl workloads vs Lambda for lighter processing — trade operational complexity for fit.",
+    ],
+    outcomes: [
+      "Automated intelligence workflow from web discovery through reporting.",
+      "Connected engineering pipeline stages with DS-owned model inference.",
+      "Internal teams received filtered, relevant content instead of raw crawl noise.",
+    ],
+    lessonsLearned: [
+      "Good data engineering does not stop at collecting data — it turns unreliable, fragmented inputs into a system people can depend on.",
+      "The model was not the hard part; making every stage run on a schedule and fail visibly when it did not was.",
+    ],
+    scale: "Multiple public web source types with heterogeneous structures; scheduled production processing.",
+    whatIWouldImproveToday: [
+      "TODO: Add specific incident or recovery examples if verified for public sharing.",
+    ],
+    relatedTechnologies: ["Scrapy", "Lambda", "S3", "Terraform", "Bitbucket Pipelines"],
+    relatedProjects: ["Legacy Data Modernization & ETL", "ML-Driven Allocation Engine"],
+    followUps: [
+      "How do you integrate models built by Data Scientists?",
+      "Tell me about building production crawlers",
+      "How do you design observable pipelines?",
+    ],
   },
   {
     id: "project/gpu-benchmark",
@@ -57,45 +321,46 @@ export const projectKnowledge = [
     kind: "project",
     tags: ["gpu", "benchmark", "performance", "cuda"],
     technologies: ["cuda", "python", "linux", "profiling"],
-    projects: ["amc-datalake"],
-    topics: ["performance tuning", "benchmarking", "compute selection"],
-    summary: "I used this work to validate whether a GPU-backed workflow actually justified its cost and operational overhead.",
-    businessContext: "When teams add GPU compute, they usually need a business case, not just enthusiasm for faster runs.",
-    problemStatement: "The problem was to separate real performance gain from expensive overprovisioning so the team could make a rational compute decision.",
-    myRole: "I designed the benchmark approach, interpreted the results, and translated the findings into a platform recommendation.",
+    projects: ["project/amc-datalake", "project/olap-workload-architecture"],
+    skills: ["performance engineering", "benchmarking"],
+    topics: ["performance tuning", "compute selection", "cost-aware engineering"],
+    difficulty: ["intermediate"],
+    relatedDocuments: ["cloud/cost", "philosophy/engineering"],
+    summary: "I used controlled CUDA microbenchmarks to validate whether GPU compute justified its cost and operational overhead for representative workloads.",
+    businessContext: "When teams add GPU compute, they need a business case — not enthusiasm for faster runs disconnected from workload shape and cost.",
+    problemStatement: "Separate real performance gain from expensive overprovisioning so the team could make a rational compute decision.",
+    myRole: "I designed the benchmark approach, interpreted results, and translated findings into platform recommendations.",
     architecture: [
-      "I isolated the benchmark workload so hardware effects were easier to measure.",
-      "I compared compute behavior against the expected workload pattern instead of chasing peak numbers in a vacuum.",
-      "I focused on repeatability so the numbers could be discussed with confidence."
+      "Isolated benchmark harness with CUDA kernels and shared-memory tuning.",
+      "Profiling for occupancy, memory throughput, and kernel behavior — not just wall-clock time.",
+      "Repeatability over one-off peak numbers.",
     ],
     decisions: [
-      "I favored a controlled benchmark harness over ad hoc testing because repeatability mattered more than one-off speed wins.",
-      "I looked at memory movement and kernel behavior, not just wall-clock time, because the bottleneck is often not where people assume it is.",
-      "I treated the benchmark as a decision tool for capacity planning, not as a vanity performance demo."
+      "Controlled harness over ad hoc testing because repeatability mattered more than vanity speed wins.",
+      "Memory movement and kernel behavior analysis because bottlenecks are often not where teams assume.",
     ],
     tradeoffs: [
-      "A more rigorous benchmark takes longer to set up, but it produces decisions people can defend.",
-      "Narrow tests are faster to run, but they can mislead if they do not represent the real workload shape."
+      "Rigorous benchmarks take longer to set up but produce decisions people can defend.",
+      "Narrow tests run faster but can mislead if they do not represent real workload shape.",
     ],
     outcomes: [
-      "The exercise gave a clearer view of where GPU acceleration was worth the cost.",
-      "It created a more evidence-based conversation around performance and budget."
+      "Clearer view of where GPU acceleration was worth the cost.",
+      "More evidence-based conversation around performance and budget.",
     ],
     lessonsLearned: [
       "Benchmarking without a business question is usually wasted effort.",
-      "Hardware selection should be anchored in the actual workload profile."
+      "Hardware selection should anchor in actual workload profile.",
     ],
-    scale: "Useful for workload evaluation and platform sizing discussions.",
+    scale: "Workload evaluation and platform sizing discussions.",
     whatIWouldImproveToday: [
-      "I would add more automated profiling capture so comparisons are easier to reproduce.",
-      "I would tie the benchmark results more directly to cost-per-run analysis."
+      "Add automated profiling capture so comparisons are easier to reproduce.",
+      "Tie benchmark results more directly to cost-per-run analysis.",
     ],
     relatedTechnologies: ["CUDA", "Python", "Spark"],
-    relatedProjects: ["AMC - Datalake Solution", "OLAP Workload Architecture"],
+    relatedProjects: ["Legacy Data Modernization & ETL", "OLAP Workload Architecture"],
     followUps: [
-      "Show how I would turn this into a production sizing model",
-      "Explain when GPU compute is actually worth the spend",
-      "Compare this approach with CPU-first tuning"
-    ]
-  }
+      "Explain when GPU compute is worth the spend",
+      "Compare this approach with CPU-first tuning",
+    ],
+  },
 ];

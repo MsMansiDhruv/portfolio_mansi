@@ -38,23 +38,23 @@ Lead Data Engineer
 - Dates: 2025
 - Company: TODO
 - Responsibilities: Led a cross-functional data team and architecture decisions.
-- Achievements: Mentored four engineers and owned delivery standards.`,
+- Achievements: Mentored engineers and contributed to delivery standards.`,
   },
   {
     id: "project/amc-datalake",
-    title: "AMC - Datalake Solution",
+    title: "Legacy Data Modernization & ETL",
     category: "project",
-    tags: ["project", "amc", "datalake", "lakehouse"],
+    tags: ["project", "datalake", "lakehouse"],
     technologies: ["s3", "iceberg", "pyspark", "terraform", "redshift"],
     projects: ["gpu-benchmark", "olap-workload-architecture"],
     skills: ["architecture", "automation", "governance"],
     topics: ["enterprise", "analytics"],
     difficulty: ["advanced"],
     relatedDocuments: ["technologies/databricks.md", "stories/optimization-wins.md"],
-    source: `# AMC - Datalake Solution
+    source: `# Legacy Data Modernization & ETL
 
 Business Context
-- Built a reusable, cost-efficient cloud-native analytics foundation for an asset management client.
+- Built a reusable, cost-efficient cloud-native analytics foundation for a confidential asset-management client.
 
 Problem Statement
 - Multiple on-prem sources needed to be unified with better reliability, lower cost, and faster analytics access.`,

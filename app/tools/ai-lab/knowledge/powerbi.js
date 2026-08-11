@@ -6,6 +6,7 @@ export const powerBiKnowledge = {
   tags: ["power bi", "bi", "semantic layer", "reporting"],
   technologies: ["sql", "azure"],
   projects: ["project/amc-datalake"],
+  relatedDocuments: ["project/amc-datalake"],
   topics: ["business intelligence", "semantic modeling"],
   summary: "I use Power BI when the business needs a governed semantic layer and self-service reporting that sits cleanly on top of the data platform.",
   businessContext: "The reporting layer is where platform decisions become visible to the business, so semantics and trust matter more than dashboard polish.",
@@ -41,7 +42,7 @@ export const powerBiKnowledge = {
     "I avoid letting every report become a special case."
   ],
   relatedTechnologies: ["SQL", "Azure"],
-  relatedProjects: ["AMC - Datalake Solution"],
+  relatedProjects: ["Legacy Data Modernization & ETL"],
   followUps: [
     "Explain why I would choose Power BI over Tableau",
     "Show the semantic modeling trade-offs",
