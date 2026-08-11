@@ -17,12 +17,12 @@ const EASE = [0.22, 1, 0.36, 1];
 function Section({ children, className, id, pad = "md" }) {
   const padding =
     pad === "hero"
-      ? "pt-6 pb-9 md:pt-8 md:pb-11"
+      ? "pt-5 pb-7 md:pt-7 md:pb-9"
       : pad === "lg"
-        ? "py-12 md:py-16"
+        ? "py-10 md:py-12"
         : pad === "sm"
-          ? "py-8 md:py-10"
-          : "py-10 md:py-12";
+          ? "py-7 md:py-8"
+          : "py-8 md:py-10";
   return (
     <section id={id} className={cn("min-w-0", padding, className)}>
       {children}
@@ -118,8 +118,8 @@ function PipelineArchitectureTrack({ pipeline, reduced }) {
   const play = inView && !reduced;
 
   return (
-    <div ref={ref} className="relative mt-10 min-w-0 w-full">
-      <div className="mb-4 flex flex-wrap gap-x-6 gap-y-1 text-[10px] font-bold uppercase tracking-[0.2em]">
+    <div ref={ref} className="relative mt-7 min-w-0 w-full">
+      <div className="mb-3 flex flex-wrap gap-x-6 gap-y-1 text-[10px] font-bold uppercase tracking-[0.2em]">
         <span className="text-teal-800 dark:text-teal-400">Engineering pipeline</span>
         <span className="text-slate-400">·</span>
         <span className="text-slate-500">Data Science · inference only</span>
@@ -198,8 +198,8 @@ function FragmentationDiagram({ fragments, friction, reduced }) {
   const play = inView && !reduced;
 
   return (
-    <div ref={ref} className="relative mt-10 min-w-0">
-      <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center md:gap-6">
+    <div ref={ref} className="relative mt-7 min-w-0">
+      <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center md:gap-5">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
           {fragments.map((label, i) => (
             <motion.div
@@ -258,7 +258,7 @@ function TransformColumn({ steps, reduced, accentFromIndex = 2 }) {
   const play = inView && !reduced;
 
   return (
-    <div ref={ref} className="mx-auto mt-10 max-w-xs min-w-0">
+    <div ref={ref} className="mx-auto mt-7 max-w-xs min-w-0">
       {steps.map((step, i) => (
         <React.Fragment key={step}>
           <motion.p
@@ -274,7 +274,7 @@ function TransformColumn({ steps, reduced, accentFromIndex = 2 }) {
           </motion.p>
           {i < steps.length - 1 ? (
             <motion.div
-              className="my-2 flex justify-center overflow-hidden"
+              className="my-1.5 flex justify-center overflow-hidden"
               initial={{ opacity: 0, scaleY: 0 }}
               animate={play ? { opacity: 1, scaleY: 1 } : { opacity: 1, scaleY: 1 }}
               transition={{ delay: i * 0.1 + 0.05, duration: 0.3 }}
@@ -297,11 +297,11 @@ function ModelIntegrationFlow({ flow, reduced }) {
   const play = inView && !reduced;
 
   return (
-    <div ref={ref} className="relative mt-10 min-w-0">
+    <div ref={ref} className="relative mt-7 min-w-0">
       <div className="grid gap-0 md:grid-cols-[1fr_auto_1fr] md:items-stretch">
-        <div className="border-t border-teal-800/25 pt-6 md:border-t-0 md:border-r md:pr-8 md:pt-0 dark:border-teal-500/25">
+        <div className="border-t border-teal-800/25 pt-4 md:border-t-0 md:border-r md:pr-6 md:pt-0 dark:border-teal-500/25">
           <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-teal-800 dark:text-teal-400">Engineering</p>
-          <div className="mt-4 space-y-2">
+          <div className="mt-3 space-y-2">
             {[flow[0]].map((label) => (
               <p key={label} className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-900 dark:text-white">
                 {label}
@@ -311,14 +311,14 @@ function ModelIntegrationFlow({ flow, reduced }) {
         </div>
 
         <motion.div
-          className="relative flex flex-col items-center justify-center py-6 md:px-6 md:py-0"
+          className="relative flex flex-col items-center justify-center py-4 md:px-5 md:py-0"
           initial={{ opacity: 0.4 }}
           animate={play ? { opacity: 1 } : { opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
           <div className="hidden h-full w-px bg-slate-200 md:block dark:bg-slate-700" aria-hidden />
           <motion.div
-            className="my-4 w-full border-y border-dashed border-slate-300 py-4 text-center md:my-0 md:w-auto md:border-x md:border-y-0 md:px-5 md:py-6 dark:border-slate-600"
+            className="my-3 w-full border-y border-dashed border-slate-300 py-3 text-center md:my-0 md:w-auto md:border-x md:border-y-0 md:px-4 md:py-5 dark:border-slate-600"
             animate={play && !reduced ? { borderColor: ["rgba(148,163,184,0.5)", "rgba(20,184,166,0.35)", "rgba(148,163,184,0.5)"] } : {}}
             transition={play ? { duration: 2.4, delay: 0.6, repeat: Infinity, repeatDelay: 2.5 } : {}}
           >
@@ -327,9 +327,9 @@ function ModelIntegrationFlow({ flow, reduced }) {
           </motion.div>
         </motion.div>
 
-        <div className="border-t border-slate-200 pt-6 md:border-t-0 md:border-l md:pl-8 md:pt-0 dark:border-slate-700">
+        <div className="border-t border-slate-200 pt-4 md:border-t-0 md:border-l md:pl-6 md:pt-0 dark:border-slate-700">
           <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-slate-500">Downstream</p>
-          <div className="mt-4 space-y-3">
+          <div className="mt-3 space-y-2.5">
             {flow.slice(2).map((label, i) => (
               <motion.p
                 key={label}
@@ -354,7 +354,7 @@ function AwsServiceStrip({ services, reduced }) {
   const play = inView && !reduced;
 
   return (
-    <div ref={ref} className="mt-10 min-w-0 overflow-x-auto">
+    <div ref={ref} className="mt-7 min-w-0 overflow-x-auto">
       <div className="flex min-w-min flex-col gap-0 border-t border-slate-300 dark:border-slate-600 md:min-w-0 md:flex-row">
         {services.map((svc, i) => (
           <motion.div
@@ -379,10 +379,10 @@ function OperationsDiagram({ scheduleFlow, opsLayer, reduced }) {
   const play = inView && !reduced;
 
   return (
-    <div ref={ref} className="relative mt-10 min-w-0 space-y-10">
+    <div ref={ref} className="relative mt-7 min-w-0 space-y-7">
       <div>
         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Execution loop</p>
-        <div className="relative mt-4 flex flex-col gap-0 md:flex-row md:items-center md:gap-0">
+        <div className="relative mt-3 flex flex-col gap-0 md:flex-row md:items-center md:gap-0">
           {play && !reduced ? (
             <motion.div
               className="pointer-events-none absolute left-0 top-1/2 hidden h-px w-full bg-slate-200 md:block dark:bg-slate-700"
@@ -418,9 +418,9 @@ function OperationsDiagram({ scheduleFlow, opsLayer, reduced }) {
         </div>
       </div>
 
-      <div className="border-t border-dashed border-slate-200 pt-8 dark:border-slate-700">
+      <div className="border-t border-dashed border-slate-200 pt-6 dark:border-slate-700">
         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800 dark:text-teal-400">Operational layer</p>
-        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+        <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
           {opsLayer.map((item, i) => (
             <motion.span
               key={item}
@@ -443,22 +443,22 @@ export function HeroSection() {
 
   return (
     <Section pad="hero">
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:items-end lg:gap-14">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:items-end lg:gap-10">
         <motion.div {...motionProps(reduced)}>
           <p className="text-[10px] font-bold uppercase tracking-[0.26em] text-teal-800 dark:text-teal-400">{C.eyebrow}</p>
-          <h1 className="mt-4 text-[clamp(2rem,4.6vw,3rem)] font-semibold leading-[1.05] tracking-tight text-slate-950 dark:text-white">
+          <h1 className="mt-3 text-[clamp(2rem,4.6vw,3rem)] font-semibold leading-[1.05] tracking-tight text-slate-950 dark:text-white">
             {C.title}
           </h1>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-600 dark:text-slate-400">{C.subtitle}</p>
-          <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">{C.engagementLabel}</p>
+          <p className="mt-3 max-w-xl text-base leading-relaxed text-slate-600 dark:text-slate-400">{C.subtitle}</p>
+          <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">{C.engagementLabel}</p>
         </motion.div>
 
         <motion.div
-          className="border-t border-slate-200 pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0 dark:border-slate-800"
+          className="border-t border-slate-200 pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0 dark:border-slate-800"
           {...motionProps(reduced, 0.06)}
         >
           <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-slate-500">{C.heroThesis}</p>
-          <div className="mt-6">
+          <div className="mt-5">
             <FlowRail steps={C.heroFlow} reduced={reduced} emphasizeLast className="sm:justify-start" />
           </div>
         </motion.div>
@@ -473,17 +473,17 @@ export function ProblemSection() {
 
   return (
     <Section className="border-t border-slate-200 dark:border-slate-800" pad="lg">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14 lg:items-start">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-10 lg:items-start">
         <motion.div {...motionProps(reduced)}>
           <NumEyebrow n="01" label="The problem" />
-          <h2 className="mt-3 text-[clamp(1.85rem,3.8vw,2.85rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
+          <h2 className="mt-2 text-[clamp(1.85rem,3.8vw,2.85rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
             {p.headline.map((line) => (
               <span key={line} className="block">
                 {line}
               </span>
             ))}
           </h2>
-          <p className="mt-5 max-w-lg text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{p.body}</p>
+          <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{p.body}</p>
         </motion.div>
 
         <motion.div {...motionProps(reduced, 0.08)}>
@@ -502,11 +502,11 @@ export function EngineeringChallengeSection() {
     <Section className="border-t border-slate-200 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-900/20" pad="md">
       <motion.div className="mx-auto max-w-3xl text-center" {...motionProps(reduced)}>
         <NumEyebrow n="02" label="The engineering challenge" />
-        <h2 className="mt-4 text-[clamp(1.85rem,4vw,3rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
+        <h2 className="mt-3 text-[clamp(1.85rem,4vw,3rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
           {e.headline[0]}
-          <span className="mt-2 block text-teal-900 dark:text-teal-300">{e.headline[1]}</span>
+          <span className="mt-1.5 block text-teal-900 dark:text-teal-300">{e.headline[1]}</span>
         </h2>
-        <p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{e.body}</p>
+        <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{e.body}</p>
       </motion.div>
     </Section>
   );
@@ -519,7 +519,7 @@ export function PipelineArchitectureSection() {
     <Section className="border-t border-slate-200 dark:border-slate-800" pad="lg">
       <motion.div className="max-w-2xl" {...motionProps(reduced)}>
         <NumEyebrow n="03" label="Pipeline architecture" />
-        <h2 className="mt-3 text-[clamp(1.7rem,3.4vw,2.5rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
+        <h2 className="mt-2 text-[clamp(1.7rem,3.4vw,2.5rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
           From discovery to reporting — one continuous flow.
         </h2>
       </motion.div>
@@ -537,23 +537,23 @@ export function SourceDiscoverySection() {
     <Section className="border-t border-slate-200 dark:border-slate-800" pad="md">
       <motion.div className="max-w-xl" {...motionProps(reduced)}>
         <NumEyebrow n="04" label="Source discovery" />
-        <h2 className="mt-3 text-[clamp(1.65rem,3.2vw,2.35rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
+        <h2 className="mt-2 text-[clamp(1.65rem,3.2vw,2.35rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
           {s.headline}
         </h2>
       </motion.div>
 
-      <div className="mt-10 grid gap-0 divide-y divide-slate-200 dark:divide-slate-800 md:grid-cols-3 md:divide-x md:divide-y-0">
+      <div className="mt-7 grid gap-0 divide-y divide-slate-200 dark:divide-slate-800 md:grid-cols-3 md:divide-x md:divide-y-0">
         {s.approaches.map((item, i) => (
           <motion.div
             key={item.title}
-            className="px-0 py-7 md:px-6 md:py-8 first:md:pl-0"
+            className="px-0 py-5 md:px-5 md:py-6 first:md:pl-0"
             initial={{ opacity: 0.4, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.35 }}
             transition={{ duration: 0.45, delay: reduced ? 0 : i * 0.08, ease: EASE }}
           >
             <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800 dark:text-teal-400">{item.title}</p>
-            <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{item.body}</p>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{item.body}</p>
           </motion.div>
         ))}
       </div>
@@ -567,13 +567,13 @@ export function ExtractionSection() {
 
   return (
     <Section className="border-t border-slate-200 bg-slate-50/40 dark:border-slate-800 dark:bg-slate-900/15" pad="md">
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,280px)] lg:items-start lg:gap-14">
+      <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,280px)] lg:items-start lg:gap-10">
         <motion.div {...motionProps(reduced)}>
           <NumEyebrow n="05" label="Extraction & processing" />
-          <h2 className="mt-3 text-[clamp(1.65rem,3.2vw,2.35rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
+          <h2 className="mt-2 text-[clamp(1.65rem,3.2vw,2.35rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
             {e.headline}
           </h2>
-          <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{e.body}</p>
+          <p className="mt-3 max-w-lg text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{e.body}</p>
         </motion.div>
 
         <motion.div {...motionProps(reduced, 0.08)}>
@@ -592,11 +592,11 @@ export function ModelIntegrationSection() {
     <Section className="border-t border-slate-200 dark:border-slate-800" pad="lg">
       <motion.div className="mx-auto max-w-2xl text-center" {...motionProps(reduced)}>
         <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">{m.eyebrow}</p>
-        <h2 className="mt-4 text-[clamp(1.85rem,4vw,3rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
+        <h2 className="mt-3 text-[clamp(1.85rem,4vw,3rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
           {m.headline[0]}
-          <span className="mt-2 block text-teal-900 dark:text-teal-300">{m.headline[1]}</span>
+          <span className="mt-1.5 block text-teal-900 dark:text-teal-300">{m.headline[1]}</span>
         </h2>
-        <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{m.body}</p>
+        <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{m.body}</p>
       </motion.div>
 
       <ModelIntegrationFlow flow={m.flow} reduced={reduced} />
@@ -610,14 +610,14 @@ export function AwsInfrastructureSection() {
 
   return (
     <Section className="border-t border-slate-200 dark:border-slate-800" pad="md">
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,380px)] lg:items-start lg:gap-12">
+      <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(300px,380px)] lg:items-start lg:gap-9">
         <div>
           <motion.div {...motionProps(reduced)}>
             <NumEyebrow n="06" label="Production infrastructure" />
-            <h2 className="mt-3 text-[clamp(1.65rem,3.2vw,2.35rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
+            <h2 className="mt-2 text-[clamp(1.65rem,3.2vw,2.35rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
               {a.headline}
             </h2>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{a.body}</p>
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{a.body}</p>
           </motion.div>
 
           <AwsServiceStrip services={a.services} reduced={reduced} />
@@ -630,7 +630,7 @@ export function AwsInfrastructureSection() {
             modalTitle="Pipeline architecture reference"
             className="w-full"
             previewAspect="aspect-[4/3]"
-            previewClassName="min-h-[220px] max-h-[min(70vh,560px)] sm:min-h-[280px]"
+            previewClassName="min-h-[200px] max-h-[min(70vh,520px)] sm:min-h-[240px]"
           />
           <p className="mt-2 text-center text-[10px] uppercase tracking-wide text-slate-500">Reference diagram · optional · click to enlarge</p>
         </motion.div>
@@ -647,7 +647,7 @@ export function OperationsSection() {
     <Section className="border-t border-slate-200 bg-slate-50/40 dark:border-slate-800 dark:bg-slate-900/15" pad="md">
       <motion.div className="max-w-xl" {...motionProps(reduced)}>
         <NumEyebrow n="07" label="Automation & operations" />
-        <h2 className="mt-3 text-[clamp(1.65rem,3.2vw,2.35rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
+        <h2 className="mt-2 text-[clamp(1.65rem,3.2vw,2.35rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
           {o.headline}
         </h2>
       </motion.div>
@@ -663,14 +663,14 @@ export function OutputSection() {
 
   return (
     <Section className="border-t border-slate-200 dark:border-slate-800" pad="lg">
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)] lg:items-center lg:gap-14">
+      <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)] lg:items-center lg:gap-10">
         <motion.div {...motionProps(reduced)}>
           <NumEyebrow n="08" label="Output & value" />
-          <h2 className="mt-3 text-[clamp(1.85rem,3.6vw,2.75rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
+          <h2 className="mt-2 text-[clamp(1.85rem,3.6vw,2.75rem)] font-semibold leading-[1.06] tracking-tight text-slate-950 dark:text-white">
             {o.headline[0]}
             <span className="mt-1 block text-teal-900 dark:text-teal-300">{o.headline[1]}</span>
           </h2>
-          <p className="mt-5 max-w-lg text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{o.body}</p>
+          <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{o.body}</p>
         </motion.div>
 
         <motion.div {...motionProps(reduced, 0.08)}>
@@ -688,7 +688,7 @@ function ScopeStrip({ items, reduced }) {
   const play = inView && !reduced;
 
   return (
-    <div ref={ref} className="mx-auto mt-8 grid max-w-2xl gap-6 sm:grid-cols-3 sm:gap-0">
+    <div ref={ref} className="mx-auto mt-6 grid max-w-2xl gap-5 sm:grid-cols-3 sm:gap-0">
       {items.map((item, i) => (
         <motion.div
           key={item.label}
@@ -716,16 +716,16 @@ export function ConclusionSection() {
     <Section className="border-t border-slate-200 dark:border-slate-800" pad="lg">
       <motion.div className="mx-auto max-w-3xl text-center" {...motionProps(reduced)}>
         <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">{c.eyebrow}</p>
-        <p className="mt-8 text-sm font-semibold uppercase tracking-[0.1em] text-slate-600 dark:text-slate-400 md:text-base">
+        <p className="mt-6 text-sm font-semibold uppercase tracking-[0.1em] text-slate-600 dark:text-slate-400 md:text-base">
           {c.line1}
         </p>
-        <h2 className="mx-auto mt-4 max-w-2xl text-[clamp(1.75rem,4vw,2.85rem)] font-semibold leading-[1.1] tracking-tight text-slate-950 dark:text-white">
+        <h2 className="mx-auto mt-3 max-w-2xl text-[clamp(1.75rem,4vw,2.85rem)] font-semibold leading-[1.1] tracking-tight text-slate-950 dark:text-white">
           {c.headline}
         </h2>
-        <p className="mx-auto mt-8 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{c.supporting}</p>
+        <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-slate-600 dark:text-slate-400 md:text-base">{c.supporting}</p>
       </motion.div>
 
-      <p className="mx-auto mt-14 max-w-lg text-center text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800/90 dark:text-teal-400/90">
+      <p className="mx-auto mt-10 max-w-lg text-center text-[10px] font-bold uppercase tracking-[0.22em] text-teal-800/90 dark:text-teal-400/90">
         My contribution
       </p>
       <ScopeStrip items={C.contributions} reduced={reduced} />
