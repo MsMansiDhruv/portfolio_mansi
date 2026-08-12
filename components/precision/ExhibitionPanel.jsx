@@ -19,7 +19,7 @@ export default function ExhibitionPanel({
   if (!activeExhibit && progress < 0.04) return null;
 
   if (!activeExhibit) {
-    if (!nearExhibit || progress < 0.05) return null;
+    if (!nearExhibit || progress < 0.68) return null;
     return (
       <div className="mp-exhibition-ui" data-theme={theme}>
         <div className="mp-info-plane mp-info-plane--hall mp-info-plane--compact">
@@ -87,18 +87,18 @@ export default function ExhibitionPanel({
 }
 
 export function nearestExhibitFromProgress(progress) {
-  if (progress < 0.05) return EXHIBITION_EXHIBITS[0] || null;
+  if (progress < 0.68) return null;
   let best = null;
   let bestDist = Infinity;
   for (const ex of EXHIBITION_EXHIBITS) {
-    const at = ex.appearAt ?? 0.2;
-    const dist = Math.abs(progress - (at + 0.06));
-    if (progress >= at - 0.08 && dist < bestDist) {
+    const at = ex.appearAt ?? 0.75;
+    const dist = Math.abs(progress - (at + 0.04));
+    if (progress >= at - 0.06 && dist < bestDist) {
       bestDist = dist;
       best = ex;
     }
   }
-  return best || EXHIBITION_EXHIBITS[0] || null;
+  return best;
 }
 
 export function hallPresence(progress) {

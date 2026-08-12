@@ -1,22 +1,34 @@
 "use client";
 
-import Link from "next/link";
 import ConvergenceMark from "./ConvergenceMark";
 import { NAV_LINKS } from "@/lib/data/precision";
 
-export default function PrecisionNav({ theme, onToggleTheme }) {
+/**
+ * Persistent nav — WORLD destinations travel in-world; external pages
+ * journey to an aperture progress then route.
+ */
+export default function PrecisionNav({ theme, onToggleTheme, onTravel }) {
   return (
     <nav className="mp-nav" aria-label="Mansi Precision">
-      <Link href="/" className="mp-brand">
+      <button
+        type="button"
+        className="mp-brand mp-brand--btn"
+        onClick={() => onTravel?.({ id: "world", progress: 0, href: null })}
+      >
         <ConvergenceMark size={18} />
         <span>Mansi</span>
-      </Link>
+      </button>
 
       <div className="mp-nav-links">
         {NAV_LINKS.map((link) => (
-          <Link key={link.href} href={link.href}>
+          <button
+            key={link.id}
+            type="button"
+            className="mp-nav-link-btn"
+            onClick={() => onTravel?.(link)}
+          >
             {link.label}
-          </Link>
+          </button>
         ))}
       </div>
 

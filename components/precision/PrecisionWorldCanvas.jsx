@@ -12,6 +12,7 @@ export default function PrecisionWorldCanvas({
   activeSlug,
   nearSlug,
   onSelectExhibit,
+  activeExhibit,
 }) {
   const [mounted, setMounted] = useState(false);
 
@@ -27,21 +28,18 @@ export default function PrecisionWorldCanvas({
     <div className="mp-stage mp-stage--world">
       <Canvas
         dpr={[1, 1.5]}
-        camera={{ fov: 40, near: 0.1, far: 120, position: [0.35, 1.55, 22.5] }}
+        camera={{ fov: 38, near: 0.1, far: 120, position: [0.2, 1.65, 22] }}
         gl={{
           antialias: true,
           alpha: false,
           powerPreference: "high-performance",
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.05,
+          toneMappingExposure: 1.02,
         }}
         shadows
         style={{ width: "100%", height: "100%" }}
         onCreated={({ gl }) => {
-          gl.setClearColor("#0e1520");
-        }}
-        onPointerMissed={() => {
-          document.body.style.cursor = "auto";
+          gl.setClearColor("#0c121c");
         }}
       >
         <Suspense fallback={null}>
@@ -52,6 +50,7 @@ export default function PrecisionWorldCanvas({
             activeSlug={activeSlug}
             nearSlug={nearSlug}
             onSelectExhibit={onSelectExhibit}
+            activeExhibit={activeExhibit}
           />
         </Suspense>
       </Canvas>

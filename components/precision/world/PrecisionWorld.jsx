@@ -1,13 +1,14 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
 import Architecture from "./Architecture";
 import CameraRig from "./CameraRig";
-import Convergence from "./Convergence";
-import EnvironmentalPlates from "./EnvironmentalPlates";
+import CursorBridge from "./CursorBridge";
+import DataField from "./DataField";
 import ExhibitionHall from "./ExhibitionHall";
 import MansiFigure from "./MansiFigure";
 import WorldLighting from "./WorldLighting";
+import Convergence from "./Convergence";
 
 export default function PrecisionWorld({
   theme,
@@ -16,28 +17,46 @@ export default function PrecisionWorld({
   activeSlug,
   nearSlug,
   onSelectExhibit,
+  activeExhibit,
 }) {
+  const cursorRef = useRef({ x: 0, y: 1.25, z: 12 });
+
   return (
     <>
       <WorldLighting theme={theme} />
       <CameraRig progressRef={progressRef} exhibitRef={exhibitRef} />
+      <CursorBridge cursorRef={cursorRef} />
       <Architecture theme={theme} />
+
       <Suspense fallback={null}>
-        <MansiFigure theme={theme} progressRef={progressRef} />
+        <DataField
+          progressRef={progressRef}
+          theme={theme}
+          cursorRef={cursorRef}
+          activeSlug={activeSlug}
+        />
       </Suspense>
 
       <Suspense fallback={null}>
-        <EnvironmentalPlates theme={theme} />
+        <MansiFigure
+          theme={theme}
+          progressRef={progressRef}
+          activeSlug={activeSlug}
+        />
       </Suspense>
+
       <Suspense fallback={null}>
         <Convergence theme={theme} progressRef={progressRef} />
       </Suspense>
+
       <Suspense fallback={null}>
         <ExhibitionHall
           theme={theme}
           activeSlug={activeSlug}
           nearSlug={nearSlug}
           onSelectExhibit={onSelectExhibit}
+          cursorRef={cursorRef}
+          activeExhibit={activeExhibit}
         />
       </Suspense>
     </>
