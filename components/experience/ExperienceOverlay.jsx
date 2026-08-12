@@ -8,11 +8,11 @@ import {
   EXPERIENCE_WINDOWS,
   EXPERIENCE_PROJECTS,
   EXPERIENCE_CONTACT,
+  EXPERIENCE_PIPELINE,
 } from "@/lib/data/mansi-experience";
-import { STORY_IDENTITY, STORY_TRAVEL, STORY_LEADERSHIP } from "@/lib/data/anime-story";
 
 function Panel({ progress, win, align = "left", children, id }) {
-  const opacity = windowOpacity(progress, win.start, win.end, 0.045);
+  const opacity = windowOpacity(progress, win.start, win.end, 0.04);
   if (opacity <= 0.01) return null;
 
   return (
@@ -26,79 +26,38 @@ export default function ExperienceOverlay({ progress }) {
   return (
     <div className="mx-overlay">
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.hero} align="center">
-        <h1 className="mx-statement mx-statement--hero">{EXPERIENCE_OPENING.name}</h1>
-        <p className="mx-mono mt-8 text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.tagline}</p>
-        <p className="mx-mono mt-6 opacity-50">{EXPERIENCE_OPENING.enter}</p>
+        <p className="mx-mono text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.role}</p>
+        <h1 className="mx-statement mx-statement--hero mt-6">{EXPERIENCE_OPENING.name}</h1>
+        <p className="mx-statement--whisper mt-8 max-w-2xl text-2xl sm:text-3xl">{EXPERIENCE_OPENING.line}</p>
+        <p className="mx-mono mt-10 opacity-50">{EXPERIENCE_OPENING.cta}</p>
       </Panel>
 
-      <Panel progress={progress} win={EXPERIENCE_WINDOWS.worldLine} align="center">
-        <p className="mx-statement">{EXPERIENCE_COPY.curious.headline}</p>
-        <p className="mx-mono mt-8 opacity-70">{EXPERIENCE_COPY.curious.sub}</p>
+      <Panel progress={progress} win={EXPERIENCE_WINDOWS.systems} align="center" id="systems">
+        <p className="mx-mono text-[var(--mx-teal)]">{EXPERIENCE_COPY.systems.headline}</p>
+        <p className="mx-statement mt-6 text-3xl sm:text-4xl">Interactive architecture</p>
+        <p className="mx-mono mt-6 opacity-60">{EXPERIENCE_COPY.systems.sub}</p>
       </Panel>
 
-      <Panel progress={progress} win={EXPERIENCE_WINDOWS.globe} align="center" id="world">
-        <p className="mx-statement text-3xl sm:text-4xl">{EXPERIENCE_COPY.sky.headline}</p>
-        <p className="mx-mono mt-8 opacity-60">{EXPERIENCE_COPY.sky.sub}</p>
-      </Panel>
-
-      <Panel progress={progress} win={EXPERIENCE_WINDOWS.personal} align="center">
-        <p className="mx-statement">{EXPERIENCE_COPY.personal.headline}</p>
-        <p className="mx-mono mt-6 opacity-70">{EXPERIENCE_COPY.personal.sub}</p>
-      </Panel>
-
-      <Panel progress={progress} win={EXPERIENCE_WINDOWS.play} align="left">
-        <p className="mx-statement text-3xl sm:text-4xl">{EXPERIENCE_COPY.play.headline}</p>
-        <p className="mx-mono mt-6">{EXPERIENCE_COPY.play.sub}</p>
-      </Panel>
-
-      <Panel progress={progress} win={EXPERIENCE_WINDOWS.stories} align="right">
-        <p className="mx-statement">{EXPERIENCE_COPY.stories.headline}</p>
-        <p className="mx-mono mt-6">{EXPERIENCE_COPY.stories.sub}</p>
-      </Panel>
-
-      <Panel progress={progress} win={EXPERIENCE_WINDOWS.badminton} align="center">
-        <p className="mx-mono">Movement</p>
-        <p className="mx-statement--whisper mt-6 text-2xl">Court lines. Rhythm. Reading the next move.</p>
-      </Panel>
-
-      <Panel progress={progress} win={EXPERIENCE_WINDOWS.travel} align="left">
-        <p className="mx-mono">Travel</p>
-        {STORY_TRAVEL.lines.slice(0, 2).map((line) => (
-          <p key={line} className="mx-statement--whisper mt-4 text-2xl first:mt-6">
-            {line}
-          </p>
-        ))}
-      </Panel>
-
-      <Panel progress={progress} win={EXPERIENCE_WINDOWS.community} align="center">
-        <p className="mx-statement max-w-2xl">{EXPERIENCE_COPY.community.headline}</p>
-        <p className="mx-mono mt-6">{EXPERIENCE_COPY.community.sub}</p>
-        <Link href="/credentials#recommendations" className="mx-mono mt-8 inline-block opacity-70 hover:opacity-100">
-          Voices →
-        </Link>
-      </Panel>
-
-      <Panel progress={progress} win={EXPERIENCE_WINDOWS.leadership} align="right">
-        <p className="mx-mono">Leadership</p>
-        <p className="mx-statement--whisper mt-6 max-w-sm text-2xl">{STORY_LEADERSHIP.line}</p>
-      </Panel>
-
-      <Panel progress={progress} win={EXPERIENCE_WINDOWS.engineering} align="left">
-        <p className="mx-mono text-[var(--mx-teal)]">Engineering</p>
-        <p className="mx-statement mt-6 text-3xl sm:text-4xl">{EXPERIENCE_COPY.engineering.headline}</p>
-        <p className="mx-mono mt-4">{EXPERIENCE_COPY.engineering.sub}</p>
+      <Panel progress={progress} win={EXPERIENCE_WINDOWS.pipeline} align="left">
+        <p className="mx-mono text-[var(--mx-teal)]">{EXPERIENCE_COPY.pipeline.headline}</p>
+        <p className="mx-statement mt-6 text-3xl sm:text-4xl">{EXPERIENCE_COPY.pipeline.sub}</p>
+        <div className="mx-pipeline mt-8">
+          {EXPERIENCE_PIPELINE.map((n) => (
+            <span key={n.stage} className="mx-pipeline-step">
+              {n.stage}
+            </span>
+          ))}
+        </div>
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.streams} align="right">
-        <p className="mx-mono text-[var(--mx-teal)]">Data in motion</p>
-        <p className="mx-statement--whisper mt-6 max-w-md text-2xl sm:text-3xl">
-          {EXPERIENCE_COPY.streams.headline}
-        </p>
+        <p className="mx-mono text-[var(--mx-teal)]">Runtime behaviour</p>
+        <p className="mx-statement--whisper mt-6 max-w-md text-2xl sm:text-3xl">{EXPERIENCE_COPY.streams.headline}</p>
         <p className="mx-mono mt-4 opacity-70">{EXPERIENCE_COPY.streams.sub}</p>
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.city} align="left">
-        <p className="mx-mono text-[var(--mx-teal)]">Architecture</p>
+        <p className="mx-mono text-[var(--mx-teal)]">Platform</p>
         <p className="mx-statement mt-6 text-3xl sm:text-4xl">{EXPERIENCE_COPY.city.headline}</p>
         <p className="mx-mono mt-4">{EXPERIENCE_COPY.city.sub}</p>
       </Panel>
@@ -109,17 +68,17 @@ export default function ExperienceOverlay({ progress }) {
         <div className="mt-8 space-y-0">
           {EXPERIENCE_PROJECTS.map((p, i) => (
             <article key={p.slug} className="mx-project-row">
-              <p className="mx-mono opacity-60">Installation {String(i + 1).padStart(2, "0")}</p>
-              <h3 className="mt-2 font-medium text-lg">{p.title}</h3>
-              <p className="mt-2 text-sm opacity-70 leading-relaxed max-w-md">{p.problem}</p>
+              <p className="mx-mono opacity-60">{String(i + 1).padStart(2, "0")}</p>
+              <h3 className="mt-2 text-lg font-medium">{p.title}</h3>
+              <p className="mt-2 max-w-md text-sm leading-relaxed opacity-70">{p.problem}</p>
               <Link href={`/projects/${p.slug}`} className="mx-mono mt-3 inline-block opacity-60 hover:opacity-100">
-                Enter →
+                Case study →
               </Link>
             </article>
           ))}
         </div>
         <Link href="/projects" className="mx-mono mt-8 inline-block opacity-60 hover:opacity-100">
-          Full gallery →
+          All projects →
         </Link>
       </Panel>
 
@@ -130,32 +89,23 @@ export default function ExperienceOverlay({ progress }) {
           href="/tools/ai-lab"
           className="mx-mono mt-8 inline-block border border-[var(--mx-vermilion)]/40 px-5 py-2.5 text-[var(--mx-vermilion)] hover:bg-[var(--mx-vermilion)]/10"
         >
-          Enter the lab →
+          Open AI Lab →
         </Link>
       </Panel>
 
-      <Panel progress={progress} win={EXPERIENCE_WINDOWS.about} align="left" id="about">
-        <p className="mx-mono text-[var(--mx-teal)]">{EXPERIENCE_COPY.learned}</p>
-        <p className="mx-statement mt-6 text-3xl">{STORY_IDENTITY.name}</p>
-        <div className="mt-8 space-y-4 max-w-lg">
-          {STORY_IDENTITY.fragments.slice(0, 4).map((f) => (
-            <div key={f.id}>
-              <p className="font-medium">{f.label}</p>
-              <p className="mt-1 text-sm opacity-70 leading-relaxed">{f.detail}</p>
-            </div>
-          ))}
-        </div>
+      <Panel progress={progress} win={EXPERIENCE_WINDOWS.beyond} align="center">
+        <p className="mx-mono">{EXPERIENCE_COPY.beyond.headline}</p>
+        <p className="mx-mono mt-4 opacity-70">{EXPERIENCE_COPY.beyond.sub}</p>
         <Link href="/credentials" className="mx-mono mt-8 inline-block opacity-60 hover:opacity-100">
-          Full archive →
+          Experience & credentials →
         </Link>
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.final} align="center">
-        <p className="mx-mono mb-8 opacity-60">{EXPERIENCE_COPY.final.next}</p>
-        <p className="mx-statement text-3xl sm:text-5xl">{EXPERIENCE_COPY.final.line1}</p>
-        <p className="mx-statement mt-4 text-3xl sm:text-5xl text-[var(--mx-vermilion)]">{EXPERIENCE_COPY.final.line2}</p>
-        <p className="mx-statement mx-statement--hero mt-12">{EXPERIENCE_COPY.final.name}</p>
-        <p className="mx-mono mt-6 opacity-70">{EXPERIENCE_COPY.final.roles}</p>
+        <p className="mx-statement mx-statement--hero">{EXPERIENCE_COPY.final.name}</p>
+        <p className="mx-mono mt-8 text-[var(--mx-vermilion)]">{EXPERIENCE_COPY.final.line1}</p>
+        <p className="mx-mono mt-3">{EXPERIENCE_COPY.final.line2}</p>
+        <p className="mx-statement--whisper mt-10 max-w-xl text-xl sm:text-2xl">{EXPERIENCE_COPY.final.line3}</p>
         <div className="mt-12 flex flex-wrap justify-center gap-4 text-sm">
           <a href={`mailto:${EXPERIENCE_CONTACT.email}`} className="mx-mono opacity-70 hover:opacity-100">
             Email

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useTheme } from "@/components/design-system-v2";
-import { createDhruvaSky } from "./engine/createDhruvaSky";
+import { createCinematicWorld } from "./engine/createCinematicWorld";
 
 export default function ExperienceGlobe({ progress, visible, onTerritoryHover, onTerritoryClick }) {
   const canvasRef = useRef(null);
@@ -26,7 +26,7 @@ export default function ExperienceGlobe({ progress, visible, onTerritoryHover, o
     if (!visible || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
-    const world = createDhruvaSky(canvas, {
+    const world = createCinematicWorld(canvas, {
       isDark: mountedThemeRef.current ?? isDark,
       onTerritoryHover: (idx) => hoverRef.current?.(idx),
     });

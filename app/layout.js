@@ -3,8 +3,8 @@ import "@/components/design-system-v2/styles/index.css";
 import AppShell from "@/components/AppShell";
 
 export const metadata = {
-  title: "Mansi Dhruv — Enter My World",
-  description: "An interactive portrait. Builder, explorer, engineer.",
+  title: "Mansi Dhruv — Lead Data Engineer · Solution Architect",
+  description: "Interactive systems portfolio. Data platforms, pipelines, architecture, AI lab.",
 };
 
 export default function RootLayout({ children }) {

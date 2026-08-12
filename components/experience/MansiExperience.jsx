@@ -8,9 +8,7 @@ import ExperienceNav from "./ExperienceNav";
 import ExperienceGlobe from "./ExperienceGlobe";
 import ExperienceOverlay from "./ExperienceOverlay";
 import ExperienceFallback from "./ExperienceFallback";
-import CinematicBackdrop from "./CinematicBackdrop";
 import QuickViewPanel from "@/components/universe/QuickViewPanel";
-import StoryCursor from "@/components/world/StoryCursor";
 import { useExperienceScroll } from "./hooks/useExperienceScroll";
 import { EXPERIENCE_SCROLL_VH, EXPERIENCE_TERRITORIES } from "@/lib/data/mansi-experience";
 import "@/styles/mansi-experience.css";
@@ -47,7 +45,7 @@ export default function MansiExperience() {
     const top = dest.scrollTo * (trackRef.current.offsetHeight - window.innerHeight);
     if (lenisRef.current) {
       lenisRef.current.scrollTo(top, {
-        duration: 2.6,
+        duration: 1.8,
         easing: (x) => 1 - Math.pow(1 - x, 3),
       });
     } else {
@@ -63,7 +61,6 @@ export default function MansiExperience() {
     <div className="mx-root" data-theme={isDark ? "dark" : "light"}>
       {!ready ? <WorldLoader onReady={handleReady} /> : null}
 
-      <StoryCursor />
       <ExperienceNav onQuickView={() => setQuickOpen(true)} />
       <QuickViewPanel open={quickOpen} onClose={() => setQuickOpen(false)} />
 
@@ -73,18 +70,14 @@ export default function MansiExperience() {
 
       <div ref={trackRef} className="mx-track" style={{ height: `${EXPERIENCE_SCROLL_VH}vh` }}>
         <div className="mx-fixed">
-          {ready ? <CinematicBackdrop progress={progress} /> : null}
           <ExperienceGlobe
             progress={progress}
             visible={ready}
             onTerritoryHover={handleTerritoryHover}
             onTerritoryClick={handleTerritoryClick}
           />
-          <div className="mx-vignette pointer-events-none" aria-hidden />
         </div>
       </div>
-
-      <div className="mx-grain" aria-hidden />
 
       <div className={`mx-territory ${territory ? "is-visible" : ""}`} aria-live="polite">
         {territory ? (

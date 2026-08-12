@@ -1,12 +1,9 @@
 import * as THREE from "three";
 
 /**
- * Cinematic data world — scroll drives a camera journey through:
- *   void → constellation (person) → descent → data streams → computation city
- *   → project monoliths → final connected reveal.
- *
- * Data behaviour is literal: records flow along stream curves, a validation
- * gate drops bad records, survivors converge into the storage lattice.
+ * Systems engine — interactive technical portfolio world.
+ * void → systems map → live pipelines → architecture lattice → project installs → reveal.
+ * Data behaviour is literal: records flow, validation drops bad records, survivors assemble.
  */
 
 const DUST_COUNT = 900;
@@ -45,23 +42,17 @@ function palette(dark) {
       };
 }
 
-/**
- * Camera keyframes over master scroll progress.
- * Phases: 0–15 entry (near-still) · 15–30 world orbit · 30–45 personal drift ·
- * 45–65 engineering descent · 65–80 gallery · 80–90 lab · 90–100 pull-back.
- */
+/** Camera — engineer journey: systems overview → dive into pipelines → gallery → pullback */
 const CAM_KEYS = [
-  { t: 0.0, pos: [0, 0.55, 12.5], look: [0, 0, 0], fov: 36 },
-  { t: 0.13, pos: [0, 0.45, 10], look: [0, 0.1, 0], fov: 38 },
-  { t: 0.22, pos: [2.3, 0.9, 7], look: [0, 0.2, 0], fov: 42 },
-  { t: 0.3, pos: [-1.8, 1.1, 6.4], look: [0.2, 0.1, 0], fov: 43 },
-  { t: 0.42, pos: [-2.8, 1.3, 5.6], look: [0.3, 0, 0], fov: 44 },
-  { t: 0.5, pos: [-0.6, 0.2, 4.6], look: [0, -0.8, -1.5], fov: 46 },
-  { t: 0.6, pos: [1.4, -1.2, 3.4], look: [0, -2, -3.5], fov: 50 },
-  { t: 0.7, pos: [0.2, -2, 1.2], look: [0, -2.4, -5.5], fov: 54 },
-  { t: 0.82, pos: [-1.6, -1.9, -2.4], look: [0.5, -2.2, -8], fov: 52 },
-  { t: 0.91, pos: [1.2, -1.6, -6], look: [0, -2, -10], fov: 48 },
-  { t: 1.0, pos: [0, 3.2, 13], look: [0, -1.2, -3], fov: 38 },
+  { t: 0.0, pos: [0, 0.4, 11.5], look: [0, 0, 0], fov: 38 },
+  { t: 0.12, pos: [0, 0.5, 9.2], look: [0, 0.1, 0], fov: 40 },
+  { t: 0.22, pos: [2.2, 0.9, 7.2], look: [0, 0.15, 0], fov: 42 },
+  { t: 0.32, pos: [-0.4, 0.1, 5.2], look: [0, -0.6, -1.2], fov: 46 },
+  { t: 0.45, pos: [1.2, -1.1, 3.6], look: [0, -2, -3.2], fov: 50 },
+  { t: 0.58, pos: [0.2, -2, 1.4], look: [0, -2.4, -5.2], fov: 52 },
+  { t: 0.72, pos: [-1.4, -1.9, -1.8], look: [0.4, -2.2, -7.5], fov: 50 },
+  { t: 0.86, pos: [1.0, -1.5, -4.8], look: [0, -1.8, -9], fov: 46 },
+  { t: 1.0, pos: [0, 2.8, 12], look: [0, -1, -2.5], fov: 38 },
 ];
 
 function smoothstep(t) {
@@ -104,15 +95,13 @@ function mulberry(seed) {
   };
 }
 
-/** Clear alpha < 1 lets the cinematic environment plates show through the scene. */
-const CLEAR_ALPHA = 0.46;
 const TERRITORY_COUNT = 6;
 
 export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) {
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: true,
-    alpha: true,
+    alpha: false,
     powerPreference: "high-performance",
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6));
@@ -122,11 +111,11 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
   let from = cur;
   let themeMix = 1;
   let themeStart = 0;
-  const THEME_MS = 1200;
+  const THEME_MS = 1000;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(cur.bg.getHex(), 0.055);
-  renderer.setClearColor(cur.bg, CLEAR_ALPHA);
+  scene.fog = new THREE.FogExp2(cur.bg.getHex(), 0.05);
+  renderer.setClearColor(cur.bg, 1);
 
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 60);
   const camState = { pos: new THREE.Vector3(), look: new THREE.Vector3(), fov: 38 };
@@ -223,9 +212,6 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
       ])
     );
   }
-  /** Scene-space stream origins — targets for the constellation-to-data morph */
-  const streamHeads = streamCurves.map((c) => c.getPoint(0));
-
   const streamTotal = STREAM_COUNT * PARTICLES_PER_STREAM;
   const streamPos = new Float32Array(streamTotal * 3);
   const streamCol = new Float32Array(streamTotal * 3);
@@ -331,8 +317,6 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
   const tmpColor = new THREE.Color();
   const streamColor = new THREE.Color();
   const badCol = new THREE.Color(0xa84848);
-  const invMat = new THREE.Matrix4();
-  const morphTarget = new THREE.Vector3();
 
   /* ---------- Pointer: parallax + territory raycast ---------- */
   const raycaster = new THREE.Raycaster();
@@ -352,7 +336,7 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
 
   function pickTerritory() {
     if (!pointerActive) return -1;
-    const active = Math.max(seg(0.15, 0.23) * (1 - seg(0.29, 0.38)), seg(0.9, 1));
+    const active = Math.max(seg(0.12, 0.2) * (1 - seg(0.28, 0.36)), seg(0.9, 1));
     if (active < 0.25) return -1;
     raycaster.setFromCamera(pointerNdc, camera);
     const hits = raycaster.intersectObjects(hitMeshes, false);
@@ -390,7 +374,7 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
   function applyTheme(mix) {
     const k = smoothstep(mix);
     tmpColor.lerpColors(from.bg, cur.bg, k);
-    renderer.setClearColor(tmpColor, CLEAR_ALPHA);
+    renderer.setClearColor(tmpColor, 1);
     scene.fog.color.copy(tmpColor);
     dustMat.color.lerpColors(from.dust, cur.dust, k);
     nodeMats.forEach((m) => {
@@ -452,34 +436,17 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
       onTerritoryHover?.(hovered);
     }
 
-    /* Phase intensities — derived from the master timeline.
-       The personal phase (0.30–0.45) is intentionally quiet: only dust. */
-    const constellationT = seg(0.15, 0.23) * (1 - seg(0.29, 0.38));
-    const streamsT = seg(0.46, 0.56) * (1 - seg(0.66, 0.74));
-    const cityT = seg(0.56, 0.67);
-    const galleryT = seg(0.65, 0.8);
+    /* Phase intensities — systems map → pipelines → architecture → gallery → reveal */
+    const constellationT = seg(0.1, 0.18) * (1 - seg(0.3, 0.4));
+    const streamsT = seg(0.3, 0.42) * (1 - seg(0.58, 0.68));
+    const cityT = seg(0.45, 0.58);
+    const galleryT = seg(0.55, 0.74);
     const finaleT = seg(0.9, 1);
 
-    /* Constellation wake-up (returns for finale) */
-    /* Personal → professional transformation: the connected lights of the
-       world travel down and become the sources of the data streams. */
-    const morphT = seg(0.42, 0.52);
-    const handoffT = seg(0.5, 0.56);
-    if (morphT > 0 && finaleT <= 0) {
-      nodeGroup.updateMatrixWorld();
-      invMat.copy(nodeGroup.matrixWorld).invert();
-      const k = smoothstep(morphT);
-      nodeMeshes.forEach((mesh, i) => {
-        morphTarget.copy(streamHeads[i % STREAM_COUNT]).applyMatrix4(invMat);
-        mesh.position.lerpVectors(nodePositions[i], morphTarget, k);
-      });
-    } else {
-      nodeMeshes.forEach((mesh, i) => mesh.position.copy(nodePositions[i]));
-    }
-
-    const nodeVis = Math.max(constellationT, finaleT, morphT * (1 - handoffT));
+    const nodeVis = Math.max(constellationT, finaleT);
+    nodeMeshes.forEach((mesh, i) => mesh.position.copy(nodePositions[i]));
     nodeMats.forEach((m, i) => {
-      const local = Math.min(1, Math.max(0, nodeVis * NODE_COUNT - i) );
+      const local = Math.min(1, Math.max(0, nodeVis * NODE_COUNT - i));
       m.opacity = local * 0.95;
       m.emissiveIntensity = local * (0.5 + (i === hovered ? 0.9 : 0));
     });
@@ -489,10 +456,10 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
       mesh.scale.setScalar(s);
     });
     threadMats.forEach((m, i) => {
-      const base = Math.max(constellationT * 0.28, finaleT * 0.4) * (i / NODE_COUNT < nodeVis ? 1 : 0);
+      const base = Math.max(constellationT * 0.35, finaleT * 0.4) * (i / NODE_COUNT < nodeVis ? 1 : 0);
       m.opacity = i === hovered ? Math.min(1, base * 3 + 0.25) : base;
     });
-    nodeGroup.rotation.y = time * 0.00008;
+    nodeGroup.rotation.y = time * 0.0001;
 
     /* Data streams — records flow, validation drops the bad ones */
     streamMat.opacity = streamsT * 0.9;
