@@ -10,8 +10,13 @@ import OlapWorkloadCaseStudy from "@/components/projects/OlapWorkloadCaseStudy";
 import BrainMvpCaseStudy from "@/components/projects/BrainMvpCaseStudy";
 import IntelligencePipelineCaseStudy from "@/components/projects/IntelligencePipelineCaseStudy";
 import { ProjectCaseStudyNav } from "@/components/projects/ProjectCaseStudyNav";
+import InstallationRoom from "@/components/work/InstallationRoom";
+import { getInstallation } from "@/lib/data/work-exhibition";
+import ExperienceNav from "@/components/experience/ExperienceNav";
 import { getRelatedProjects } from "@/lib/data/project-meta";
 import { cn } from "@/lib/cn";
+import "@/styles/mansi-experience.css";
+import "@/styles/mansi-work.css";
 
 function Section({ title, children, className }) {
   if (!children) return null;
@@ -52,6 +57,10 @@ function ArchitecturePanel({ layers, notes, className }) {
 
 export default function ProjectDetails({ project }) {
   const p = project;
+  const exhibition = getInstallation(p.slug);
+  if (exhibition) {
+    return <InstallationRoom slug={p.slug} />;
+  }
   if (p.slug === "project-amc-datalake-solution" || p.caseStudy === "amc") {
     return <AmcCaseStudy />;
   }
@@ -68,7 +77,9 @@ export default function ProjectDetails({ project }) {
   const hasArchitecture = Boolean(p.architectureLayers?.length);
 
   return (
-    <div className="min-w-0 w-full max-w-6xl animate-fadeIn xl:max-w-7xl">
+    <div className="mx-root wk-root min-h-screen" data-theme="dark">
+      <ExperienceNav onQuickView={() => {}} />
+      <div className="mx-auto min-w-0 w-full max-w-6xl animate-fadeIn px-5 pb-20 pt-28 xl:max-w-7xl">
       <div
         className={cn(
           "min-w-0",
@@ -222,6 +233,7 @@ export default function ProjectDetails({ project }) {
             </div>
           </aside>
         ) : null}
+      </div>
       </div>
     </div>
   );

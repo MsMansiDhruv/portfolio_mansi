@@ -8,10 +8,10 @@
   --mx-charcoal: #141820;
   --mx-graphite: #1c222c;
   --mx-steel: #2a3340;
-  --mx-ivory: #ece8e1;
-  --mx-stone: #9a958c;
-  --mx-signal: #5b7c8a;
-  --mx-amber: #c4a06a;
+  --mx-ivory: #f5f1ea;
+  --mx-stone: #c4beb4;
+  --mx-signal: #7a9eac;
+  --mx-amber: #d4b07a;
   --mx-green: #2a3d36;
   --mx-muted-blue: #3d5a73;
   --mx-panel: rgba(10, 12, 16, 0.42);
@@ -35,15 +35,15 @@
   --mx-ink: #f3efe7;
   --mx-charcoal: #e8e2d8;
   --mx-graphite: #ddd6ca;
-  --mx-steel: #6a7380;
-  --mx-ivory: #16181e;
-  --mx-stone: #5a564e;
-  --mx-signal: #5a7588;
-  --mx-amber: #b8925c;
-  --mx-green: #6d8578;
-  --mx-muted-blue: #7d9aab;
-  --mx-panel: rgba(243, 239, 231, 0.55);
-  --mx-panel-border: rgba(22, 24, 30, 0.1);
+  --mx-steel: #4a5560;
+  --mx-ivory: #12141a;
+  --mx-stone: #3a3e46;
+  --mx-signal: #3d5f70;
+  --mx-amber: #9a7040;
+  --mx-green: #4a6358;
+  --mx-muted-blue: #5a7a8c;
+  --mx-panel: rgba(243, 239, 231, 0.72);
+  --mx-panel-border: rgba(22, 24, 30, 0.14);
 }
 
 .mx-root {
@@ -625,4 +625,92 @@
   .mx-progress {
     display: none;
   }
+}
+
+
+/* Readability pass — larger, higher-contrast type */
+.mx-root .mx-nav-links a {
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  opacity: 0.9;
+  font-weight: 500;
+}
+.mx-root .mx-theme-btn,
+.mx-root .mx-quick-btn {
+  font-size: 0.78rem;
+  opacity: 0.95;
+  font-weight: 500;
+}
+.mx-root .mx-coord {
+  font-size: 0.82rem;
+  letter-spacing: 0.2em;
+  opacity: 1;
+  font-weight: 500;
+}
+.mx-root .mx-statement--hero {
+  font-size: clamp(5rem, 16vw, 10.5rem);
+}
+.mx-root .mx-statement--word {
+  font-size: clamp(3.25rem, 9vw, 6.25rem);
+}
+.mx-root .mx-enter {
+  font-size: 0.9rem;
+  letter-spacing: 0.24em;
+  font-weight: 500;
+}
+.mx-root .mx-whisper {
+  font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+  font-weight: 500;
+  opacity: 1;
+  max-width: 28rem;
+}
+.mx-root .mx-hold {
+  font-size: clamp(1.4rem, 2.8vw, 1.95rem);
+  opacity: 1;
+}
+.mx-root .mx-body-soft {
+  font-size: clamp(1.25rem, 2.3vw, 1.55rem);
+}
+.mx-root .mx-install-title {
+  font-size: clamp(1.9rem, 4.2vw, 2.9rem);
+}
+.mx-root .mx-reveal-key {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.mx-root .mx-reveal-text {
+  font-size: 1.15rem;
+  font-weight: 500;
+  opacity: 1;
+  line-height: 1.65;
+}
+.mx-root .mx-link-quiet {
+  font-size: 0.82rem;
+  opacity: 1;
+  font-weight: 500;
+}
+.mx-root .mx-chamber-label {
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+.mx-root .mx-chamber-hint {
+  font-size: 1rem;
+  font-weight: 500;
+}
+.mx-root .mx-person-links a {
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.mx-root .mx-loader-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.mx-root .mx-mono {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+}
+.mx-root .mx-quick-list a {
+  font-size: 0.8rem;
+  font-weight: 500;
 }

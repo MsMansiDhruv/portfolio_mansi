@@ -18,7 +18,8 @@ export default function AppShell({ children }) {
   const isAiLab = pathname?.startsWith("/tools/ai-lab");
   const isHome = pathname === "/";
   const isSister = pathname === "/sister";
-  const isFullBleed = isHome || isAiLab;
+  const isWork = pathname === "/projects" || pathname?.startsWith("/projects/");
+  const isFullBleed = isHome || isAiLab || isWork;
 
   useEffect(() => {
     document.getElementById("gpu-sparks-canvas")?.remove();
@@ -31,7 +32,7 @@ export default function AppShell({ children }) {
   return (
     <DSv2ThemeProvider defaultTheme="system" storageKey="theme">
       <div className="story-page mansi-world flex min-h-screen min-w-0 flex-col overflow-x-hidden bg-[var(--story-midnight)] text-[var(--story-ivory)]">
-        {!isHome && <Header onCommandOpen={() => setCommandOpen(true)} cinematic />}
+        {!isHome && !isWork && <Header onCommandOpen={() => setCommandOpen(true)} cinematic />}
 
         <main className="min-w-0 flex-grow w-full">
           <div className={cn("min-w-0", isFullBleed ? "max-w-none px-0 py-0" : "max-w-none px-0 py-0")}>
@@ -39,7 +40,7 @@ export default function AppShell({ children }) {
           </div>
         </main>
 
-        {!isHome && <Footer cinematic />}
+        {!isHome && !isWork && <Footer cinematic />}
       </div>
 
       <CommandPalette
