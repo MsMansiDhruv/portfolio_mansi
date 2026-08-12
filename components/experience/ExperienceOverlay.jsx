@@ -5,23 +5,45 @@ import {
   EXPERIENCE_OPENING,
   EXPERIENCE_COPY,
   EXPERIENCE_WINDOWS,
-  EXPERIENCE_PROJECTS,
+  EXPERIENCE_INSTALLATIONS,
+  EXPERIENCE_CHAMBERS,
   EXPERIENCE_CONTACT,
-  EXPERIENCE_PIPELINE,
 } from "@/lib/data/mansi-experience";
 
-/** Exclusive chapter — only one panel visible so text never stacks. */
 function activeKey(progress) {
   const entries = Object.entries(EXPERIENCE_WINDOWS).filter(([k]) => k !== "void");
   for (const [key, win] of entries) {
     if (progress >= win.start && progress < win.end) return key;
   }
-  return "final";
+  return "person";
 }
 
-function Panel({ children, id, align = "left" }) {
+/** Progressive reveal within exhibition based on local progress */
+function installationIndex(progress) {
+  const win = EXPERIENCE_WINDOWS.exhibition;
+  const local = (progress - win.start) / Math.max(1e-6, win.end - win.start);
+  const n = EXPERIENCE_INSTALLATIONS.length;
+  return Math.min(n - 1, Math.max(0, Math.floor(local * n)));
+}
+
+function stepIndex(progress, installIdx) {
+  const win = EXPERIENCE_WINDOWS.exhibition;
+  const span = (win.end - win.start) / EXPERIENCE_INSTALLATIONS.length;
+  const start = win.start + installIdx * span;
+  const local = (progress - start) / Math.max(1e-6, span);
+  // title first, then steps
+  if (local < 0.18) return -1;
+  const steps = EXPERIENCE_INSTALLATIONS[installIdx]?.steps?.length || 6;
+  return Math.min(steps - 1, Math.floor(((local - 0.18) / 0.82) * steps));
+}
+
+function Panel({ children, id, align = "left", tone = "default" }) {
   return (
-    <div id={id} className={`mx-panel mx-panel--${align} mx-panel--active`} aria-live="polite">
+    <div
+      id={id}
+      className={`mx-panel mx-panel--${align} mx-panel--active mx-panel--${tone}`}
+      aria-live="polite"
+    >
       <div className="mx-panel-inner">{children}</div>
     </div>
   );
@@ -29,119 +51,97 @@ function Panel({ children, id, align = "left" }) {
 
 export default function ExperienceOverlay({ progress }) {
   const key = activeKey(progress);
+  const installIdx = installationIndex(progress);
+  const install = EXPERIENCE_INSTALLATIONS[installIdx];
+  const step = install ? stepIndex(progress, installIdx) : -1;
+  const clarifyHold = progress >= 0.46 && progress < 0.52;
 
   return (
     <div className="mx-overlay">
-      {key === "hero" ? (
-        <Panel align="center">
+      {key === "unknown" ? (
+        <Panel align="center" tone="cinema">
+          <p className="mx-coord">01 · UNKNOWN</p>
           <h1 className="mx-statement mx-statement--hero">{EXPERIENCE_OPENING.name}</h1>
-          <p className="mx-mono mt-10 text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.enter}</p>
+          <p className="mx-enter">{EXPERIENCE_OPENING.enter}</p>
         </Panel>
       ) : null}
 
-      {key === "systems" ? (
-        <Panel align="center" id="systems">
-          <p className="mx-mono text-[var(--mx-teal)]">{EXPERIENCE_COPY.systems.headline}</p>
-          <p className="mx-statement mt-6 text-3xl sm:text-4xl">Pipeline stages as icons</p>
-          <p className="mx-mono mt-6 opacity-80">{EXPERIENCE_COPY.systems.sub}</p>
-          <Link
-            href="/tools/ai-lab"
-            className="mx-mono mt-8 inline-block border border-[var(--mx-vermilion)]/50 px-5 py-2.5 text-[var(--mx-vermilion)] hover:bg-[var(--mx-vermilion)]/10"
-          >
-            Open AI Lab →
+      {key === "flow" ? (
+        <Panel align="left" tone="cinema">
+          <p className="mx-coord">{EXPERIENCE_COPY.flow.mark} · SYSTEM</p>
+          <p className="mx-statement mx-statement--word">{EXPERIENCE_COPY.flow.word}</p>
+          <p className="mx-whisper">{EXPERIENCE_COPY.flow.line}</p>
+        </Panel>
+      ) : null}
+
+      {key === "structure" ? (
+        <Panel align="right" tone="cinema">
+          <p className="mx-coord">{EXPERIENCE_COPY.structure.mark} · SYSTEM</p>
+          <p className="mx-statement mx-statement--word">{EXPERIENCE_COPY.structure.word}</p>
+          <p className="mx-whisper">{EXPERIENCE_COPY.structure.line}</p>
+        </Panel>
+      ) : null}
+
+      {key === "clarification" ? (
+        <Panel align="center" tone="hold">
+          <p className="mx-coord">{EXPERIENCE_COPY.clarification.mark} · SIGNATURE</p>
+          <p className="mx-statement mx-statement--word">{EXPERIENCE_COPY.clarification.word}</p>
+          {clarifyHold ? (
+            <p className="mx-hold">{EXPERIENCE_COPY.clarification.hold}</p>
+          ) : null}
+        </Panel>
+      ) : null}
+
+      {key === "exhibition" && install ? (
+        <Panel align="left" tone="exhibit" id="work">
+          <p className="mx-coord">
+            {EXPERIENCE_COPY.exhibition.mark} · INSTRUMENT {String(installIdx + 1).padStart(2, "0")}
+          </p>
+          <h2 className="mx-install-title">{install.title}</h2>
+          {step >= 0 ? (
+            <div className="mx-reveal">
+              <p className="mx-reveal-key">{install.steps[step].key}</p>
+              <p className="mx-reveal-text">{install.steps[step].text}</p>
+            </div>
+          ) : (
+            <p className="mx-whisper">Approach the installation.</p>
+          )}
+          <Link href={install.href} className="mx-link-quiet">
+            Case study →
           </Link>
         </Panel>
       ) : null}
 
-      {key === "pipeline" ? (
-        <Panel align="left">
-          <p className="mx-mono text-[var(--mx-teal)]">{EXPERIENCE_COPY.pipeline.headline}</p>
-          <p className="mx-statement mt-6 text-3xl sm:text-4xl">{EXPERIENCE_COPY.pipeline.sub}</p>
-          <div className="mx-pipeline mt-8">
-            {EXPERIENCE_PIPELINE.map((n) => (
-              <span key={n.stage} className="mx-pipeline-step">
-                {n.stage}
-              </span>
+      {key === "mind" ? (
+        <Panel align="right" tone="mind" id="lab">
+          <p className="mx-coord">{EXPERIENCE_COPY.mind.mark} · REASONING</p>
+          <p className="mx-statement mx-statement--word">{EXPERIENCE_COPY.mind.word}</p>
+          <p className="mx-whisper">{EXPERIENCE_COPY.mind.line}</p>
+          <div className="mx-chambers">
+            {EXPERIENCE_CHAMBERS.map((c) => (
+              <Link key={c.id} href={c.href} className="mx-chamber">
+                <span className="mx-chamber-label">{c.label}</span>
+                <span className="mx-chamber-hint">{c.hint}</span>
+              </Link>
             ))}
           </div>
         </Panel>
       ) : null}
 
-      {key === "streams" ? (
-        <Panel align="right">
-          <p className="mx-mono text-[var(--mx-teal)]">Runtime behaviour</p>
-          <p className="mx-body mt-6 max-w-md text-xl sm:text-2xl">{EXPERIENCE_COPY.streams.headline}</p>
-          <p className="mx-mono mt-4 opacity-80">{EXPERIENCE_COPY.streams.sub}</p>
-        </Panel>
-      ) : null}
-
-      {key === "city" ? (
-        <Panel align="left">
-          <p className="mx-mono text-[var(--mx-teal)]">Platform</p>
-          <p className="mx-statement mt-6 text-3xl sm:text-4xl">{EXPERIENCE_COPY.city.headline}</p>
-          <p className="mx-mono mt-4 opacity-80">{EXPERIENCE_COPY.city.sub}</p>
-        </Panel>
-      ) : null}
-
-      {key === "projects" ? (
-        <Panel align="left">
-          <p className="mx-mono">{EXPERIENCE_COPY.projects.headline}</p>
-          <p className="mx-mono mt-2 opacity-80">{EXPERIENCE_COPY.projects.sub}</p>
-          <div className="mt-8 space-y-0">
-            {EXPERIENCE_PROJECTS.map((p, i) => (
-              <article key={p.slug} className="mx-project-row">
-                <p className="mx-mono opacity-70">{String(i + 1).padStart(2, "0")}</p>
-                <h3 className="mt-2 text-lg font-medium">{p.title}</h3>
-                <p className="mx-body mt-2 max-w-md text-sm">{p.problem}</p>
-                <Link href={`/projects/${p.slug}`} className="mx-mono mt-3 inline-block opacity-80 hover:opacity-100">
-                  Case study →
-                </Link>
-              </article>
-            ))}
-          </div>
-          <Link href="/projects" className="mx-mono mt-8 inline-block opacity-80 hover:opacity-100">
-            All projects →
-          </Link>
-        </Panel>
-      ) : null}
-
-      {key === "lab" ? (
-        <Panel align="right">
-          <p className="mx-statement text-3xl sm:text-4xl">{EXPERIENCE_COPY.lab.headline}</p>
-          <p className="mx-mono mt-4 opacity-80">{EXPERIENCE_COPY.lab.sub}</p>
-          <Link
-            href="/tools/ai-lab"
-            className="mx-mono mt-8 inline-block border border-[var(--mx-vermilion)]/40 px-5 py-2.5 text-[var(--mx-vermilion)] hover:bg-[var(--mx-vermilion)]/10"
-          >
-            Open AI Lab →
-          </Link>
-        </Panel>
-      ) : null}
-
-      {key === "beyond" ? (
-        <Panel align="center">
-          <p className="mx-mono">{EXPERIENCE_COPY.beyond.headline}</p>
-          <p className="mx-mono mt-4 opacity-80">{EXPERIENCE_COPY.beyond.sub}</p>
-          <Link href="/credentials" className="mx-mono mt-8 inline-block opacity-80 hover:opacity-100">
-            Experience & credentials →
-          </Link>
-        </Panel>
-      ) : null}
-
-      {key === "final" ? (
-        <Panel align="center">
-          <p className="mx-statement mx-statement--hero">{EXPERIENCE_COPY.final.name}</p>
-          <p className="mx-mono mt-8 text-[var(--mx-vermilion)]">{EXPERIENCE_COPY.final.line1}</p>
-          <p className="mx-mono mt-3">{EXPERIENCE_COPY.final.line2}</p>
-          <p className="mx-body mt-10 max-w-xl text-xl">{EXPERIENCE_COPY.final.line3}</p>
-          <div className="mt-12 flex flex-wrap justify-center gap-4 text-sm">
-            <a href={`mailto:${EXPERIENCE_CONTACT.email}`} className="mx-mono opacity-80 hover:opacity-100">
-              Email
-            </a>
-            <a href={EXPERIENCE_CONTACT.linkedIn} target="_blank" rel="noopener noreferrer" className="mx-mono opacity-80 hover:opacity-100">
+      {key === "person" ? (
+        <Panel align="center" tone="dawn">
+          <p className="mx-coord">{EXPERIENCE_COPY.person.mark} · AUTHOR</p>
+          <p className="mx-statement mx-statement--hero">{EXPERIENCE_COPY.person.word}</p>
+          <p className="mx-enter mt-8">{EXPERIENCE_COPY.person.line1}</p>
+          <p className="mx-whisper mt-3">{EXPERIENCE_COPY.person.line2}</p>
+          <p className="mx-body-soft mt-10">{EXPERIENCE_COPY.person.line3}</p>
+          <div className="mx-person-links">
+            <Link href="/credentials">About & credentials</Link>
+            <a href={`mailto:${EXPERIENCE_CONTACT.email}`}>Email</a>
+            <a href={EXPERIENCE_CONTACT.linkedIn} target="_blank" rel="noopener noreferrer">
               LinkedIn
             </a>
-            <Link href="/contact" className="mx-mono text-[var(--mx-vermilion)]">
+            <Link href="/contact" className="mx-link-accent">
               Contact →
             </Link>
           </div>

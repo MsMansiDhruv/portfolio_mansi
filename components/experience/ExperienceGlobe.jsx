@@ -4,18 +4,13 @@ import { useEffect, useRef } from "react";
 import { useTheme } from "@/components/design-system-v2";
 import { createCinematicWorld } from "./engine/createCinematicWorld";
 
-export default function ExperienceGlobe({ progress, visible, onTerritoryHover, onTerritoryClick }) {
+export default function ExperienceGlobe({ progress, visible }) {
   const canvasRef = useRef(null);
   const worldRef = useRef(null);
   const rafRef = useRef(null);
   const progressRef = useRef(0);
   const mountedThemeRef = useRef(null);
-  const hoverRef = useRef(onTerritoryHover);
-  const clickRef = useRef(onTerritoryClick);
   const { isDark } = useTheme();
-
-  hoverRef.current = onTerritoryHover;
-  clickRef.current = onTerritoryClick;
 
   useEffect(() => {
     progressRef.current = progress;
@@ -28,7 +23,6 @@ export default function ExperienceGlobe({ progress, visible, onTerritoryHover, o
     const canvas = canvasRef.current;
     const world = createCinematicWorld(canvas, {
       isDark: mountedThemeRef.current ?? isDark,
-      onTerritoryHover: (idx) => hoverRef.current?.(idx),
     });
     mountedThemeRef.current = isDark;
     worldRef.current = world;
@@ -45,12 +39,6 @@ export default function ExperienceGlobe({ progress, visible, onTerritoryHover, o
     };
     window.addEventListener("pointermove", onMove, { passive: true });
 
-    const onClick = () => {
-      const idx = world.click();
-      if (idx >= 0) clickRef.current?.(idx);
-    };
-    canvas.addEventListener("click", onClick);
-
     const loop = (now) => {
       world.setProgress(progressRef.current);
       world.render(now);
@@ -62,7 +50,6 @@ export default function ExperienceGlobe({ progress, visible, onTerritoryHover, o
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("pointermove", onMove);
-      canvas.removeEventListener("click", onClick);
       world.dispose();
       worldRef.current = null;
     };

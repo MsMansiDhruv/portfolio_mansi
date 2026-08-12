@@ -1,94 +1,69 @@
 import * as THREE from "three";
 
 /**
- * Systems engine — interactive technical portfolio world.
- * void → systems map → live pipelines → architecture lattice → project installs → reveal.
- * Data behaviour is literal: records flow, validation drops bad records, survivors assemble.
+ * THE LIVING SYSTEM — Quiet Instrument
+ * Classy tech cinema: physical data, Clarification, exhibition halls, reasoning chamber.
+ * Materials + light + depth — not neon.
  */
 
-const DUST_COUNT = 900;
-const STREAM_COUNT = 4;
-const PARTICLES_PER_STREAM = 110;
-const LATTICE_COUNT = 220;
-const MONOLITH_COUNT = 5;
+const FLOW_COUNT = 5;
+const PARTICLES_PER = 90;
+const DUST = 280;
 
 function palette(dark) {
   return dark
     ? {
-        bg: new THREE.Color(0x08090c),
-        dust: new THREE.Color(0x6a7488),
-        node: new THREE.Color(0x5a9ea8),
-        thread: new THREE.Color(0x5a9ea8),
-        stream: new THREE.Color(0x6faeb8),
-        lattice: new THREE.Color(0x1c2430),
-        latticeEdge: new THREE.Color(0x5a9ea8),
-        monolith: new THREE.Color(0x14181f),
-        monolithEdge: new THREE.Color(0x5a9ea8),
-        ambient: 0.18,
-        key: 0.42,
+        bg: new THREE.Color(0x0a0c10),
+        fog: new THREE.Color(0x0a0c10),
+        steel: new THREE.Color(0x2a3340),
+        graphite: new THREE.Color(0x141820),
+        signal: new THREE.Color(0x5b7c8a),
+        amber: new THREE.Color(0xc4a06a),
+        ivory: new THREE.Color(0xece8e1),
+        noise: new THREE.Color(0x6a5040),
+        green: new THREE.Color(0x2a3d36),
+        ambient: 0.22,
+        key: 0.38,
+        fogNear: 6,
+        fogFar: 28,
       }
     : {
-        bg: new THREE.Color(0xf3efe6),
-        dust: new THREE.Color(0x7a7468),
-        node: new THREE.Color(0x3d7a84),
-        thread: new THREE.Color(0x4a7a84),
-        stream: new THREE.Color(0x3d7a84),
-        lattice: new THREE.Color(0xd4cec2),
-        latticeEdge: new THREE.Color(0x3d7a84),
-        monolith: new THREE.Color(0xe4ded2),
-        monolithEdge: new THREE.Color(0x8c3838),
-        ambient: 0.62,
-        key: 0.35,
+        bg: new THREE.Color(0xf3efe7),
+        fog: new THREE.Color(0xe8e2d8),
+        steel: new THREE.Color(0x6a7380),
+        graphite: new THREE.Color(0xd8d2c6),
+        signal: new THREE.Color(0x5a7588),
+        amber: new THREE.Color(0xb8925c),
+        ivory: new THREE.Color(0x16181e),
+        noise: new THREE.Color(0xa08060),
+        green: new THREE.Color(0x6d8578),
+        ambient: 0.7,
+        key: 0.32,
+        fogNear: 8,
+        fogFar: 36,
       };
 }
 
-/** Data-engineering icon geometries for the systems map nodes */
-const NODE_SPECS = [
-  { icon: "funnel", color: 0x3d8b9e }, // INGEST
-  { icon: "octa", color: 0xb89858 }, // TRANSFORM
-  { icon: "cylinder", color: 0x5a7a9e }, // STORE
-  { icon: "box", color: 0x4a9e7a }, // SERVE
-  { icon: "ring", color: 0x7a6a9e }, // OBSERVE
-  { icon: "icosa", color: 0xa84848 }, // AI LAB
-];
-
-function makeIconGeometry(icon) {
-  switch (icon) {
-    case "funnel":
-      return new THREE.ConeGeometry(0.12, 0.22, 6);
-    case "octa":
-      return new THREE.OctahedronGeometry(0.13, 0);
-    case "cylinder":
-      return new THREE.CylinderGeometry(0.1, 0.1, 0.2, 12);
-    case "box":
-      return new THREE.BoxGeometry(0.18, 0.18, 0.18);
-    case "ring":
-      return new THREE.TorusGeometry(0.1, 0.035, 8, 18);
-    case "icosa":
-      return new THREE.IcosahedronGeometry(0.13, 0);
-    default:
-      return new THREE.SphereGeometry(0.1, 12, 12);
-  }
-}
-
-/** Camera — engineer journey: systems overview → dive into pipelines → gallery → pullback */
 const CAM_KEYS = [
-  { t: 0.0, pos: [0, 0.4, 11.5], look: [0, 0, 0], fov: 38 },
-  { t: 0.12, pos: [0, 0.5, 9.2], look: [0, 0.1, 0], fov: 40 },
-  { t: 0.22, pos: [2.2, 0.9, 7.2], look: [0, 0.15, 0], fov: 42 },
-  { t: 0.32, pos: [-0.4, 0.1, 5.2], look: [0, -0.6, -1.2], fov: 46 },
-  { t: 0.45, pos: [1.2, -1.1, 3.6], look: [0, -2, -3.2], fov: 50 },
-  { t: 0.58, pos: [0.2, -2, 1.4], look: [0, -2.4, -5.2], fov: 52 },
-  { t: 0.72, pos: [-1.4, -1.9, -1.8], look: [0.4, -2.2, -7.5], fov: 50 },
-  { t: 0.86, pos: [1.0, -1.5, -4.8], look: [0, -1.8, -9], fov: 46 },
-  { t: 1.0, pos: [0, 2.8, 12], look: [0, -1, -2.5], fov: 38 },
+  { t: 0.0, pos: [0.2, 1.2, 14], look: [0, 0.2, 0], fov: 36 },
+  { t: 0.08, pos: [0.1, 0.9, 12], look: [0, 0.1, -1], fov: 38 },
+  { t: 0.18, pos: [1.4, 0.5, 8.5], look: [0, -0.2, -2], fov: 40 },
+  { t: 0.3, pos: [-0.8, 0.2, 5.5], look: [0.2, -0.4, -4], fov: 42 },
+  { t: 0.4, pos: [0.3, 0.1, 3.2], look: [0, -0.2, -6], fov: 40 },
+  { t: 0.48, pos: [0, 0.4, 1.5], look: [0, 0, -8], fov: 34 },
+  { t: 0.56, pos: [2.2, -0.2, -2], look: [1.5, -0.5, -6], fov: 42 },
+  { t: 0.64, pos: [-1.8, -0.4, -5], look: [-1, -0.6, -9], fov: 42 },
+  { t: 0.7, pos: [1.6, -0.3, -8], look: [0.5, -0.5, -12], fov: 40 },
+  { t: 0.78, pos: [0, 0.6, -11], look: [0, 0.2, -16], fov: 38 },
+  { t: 0.88, pos: [0, 1.8, -8], look: [0, 0, -12], fov: 36 },
+  { t: 1.0, pos: [0, 3.5, 6], look: [0, -0.5, -6], fov: 34 },
 ];
 
 function smoothstep(t) {
   return t * t * (3 - 2 * t);
 }
 
-function sampleCamera(progress, out) {
+function sampleCam(progress, out) {
   let a = CAM_KEYS[0];
   let b = CAM_KEYS[CAM_KEYS.length - 1];
   for (let i = 0; i < CAM_KEYS.length - 1; i++) {
@@ -98,8 +73,7 @@ function sampleCamera(progress, out) {
       break;
     }
   }
-  const span = Math.max(1e-6, b.t - a.t);
-  const k = smoothstep(Math.min(1, Math.max(0, (progress - a.t) / span)));
+  const k = smoothstep(Math.min(1, Math.max(0, (progress - a.t) / Math.max(1e-6, b.t - a.t))));
   out.pos.set(
     a.pos[0] + (b.pos[0] - a.pos[0]) * k,
     a.pos[1] + (b.pos[1] - a.pos[1]) * k,
@@ -113,319 +87,401 @@ function sampleCamera(progress, out) {
   out.fov = a.fov + (b.fov - a.fov) * k;
 }
 
-function mulberry(seed) {
-  let s = seed;
-  return () => {
-    s |= 0;
-    s = (s + 0x6d2b79f5) | 0;
-    let x = Math.imul(s ^ (s >>> 15), 1 | s);
-    x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
-    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
-  };
+/** Tiny back-facing scale mark — never a portrait */
+function createSilhouette(mat) {
+  const g = new THREE.Group();
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.06, 6, 6), mat);
+  head.position.y = 0.48;
+  g.add(head);
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.22, 2, 6), mat);
+  body.position.y = 0.22;
+  g.add(body);
+  const legL = new THREE.Mesh(new THREE.CapsuleGeometry(0.03, 0.18, 2, 4), mat);
+  legL.position.set(-0.04, -0.12, 0);
+  g.add(legL);
+  const legR = new THREE.Mesh(new THREE.CapsuleGeometry(0.03, 0.18, 2, 4), mat);
+  legR.position.set(0.04, -0.12, 0);
+  g.add(legR);
+  return g;
 }
 
-const TERRITORY_COUNT = 6;
+function makeFlowCurve(i, clarified) {
+  const side = i % 2 === 0 ? -1 : 1;
+  const spread = clarified ? 0.15 : 1.1 + i * 0.25;
+  const yOff = clarified ? 0 : (i - 2) * 0.35;
+  const pts = [
+    new THREE.Vector3(side * spread * 1.8, yOff + 0.8, 10),
+    new THREE.Vector3(side * spread * 1.2, yOff * 0.6, 6),
+    new THREE.Vector3(side * (clarified ? 0.08 : spread * 0.7), clarified ? 0 : yOff * 0.3, 2),
+    new THREE.Vector3(0, clarified ? -0.1 : yOff * 0.1, -2),
+    new THREE.Vector3(0, 0, -8),
+  ];
+  return new THREE.CatmullRomCurve3(pts);
+}
 
-export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) {
+export function createCinematicWorld(canvas, { isDark = true, onTerritoryHover } = {}) {
+  let cur = palette(isDark);
+  let from = null;
+  let themeMix = 1;
+  let themeT0 = 0;
+
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: true,
     alpha: false,
     powerPreference: "high-performance",
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(cur.bg, 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-  let cur = palette(isDark);
-  let from = cur;
-  let themeMix = 1;
-  let themeStart = 0;
-  const THEME_MS = 1000;
-
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(cur.bg.getHex(), 0.05);
-  renderer.setClearColor(cur.bg, 1);
+  scene.fog = new THREE.Fog(cur.fog, cur.fogNear, cur.fogFar);
+  scene.background = cur.bg.clone();
 
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 60);
-  const camState = { pos: new THREE.Vector3(), look: new THREE.Vector3(), fov: 38 };
+  const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 80);
+  const camState = { pos: new THREE.Vector3(), look: new THREE.Vector3(), fov: 36 };
+  const lookTarget = new THREE.Vector3();
 
   const ambient = new THREE.AmbientLight(0xffffff, cur.ambient);
   scene.add(ambient);
-  const key = new THREE.DirectionalLight(0xffffff, cur.key);
-  key.position.set(3, 5, 4);
+  const key = new THREE.DirectionalLight(0xf0ebe3, cur.key);
+  key.position.set(4, 8, 6);
   scene.add(key);
-  const accent = new THREE.PointLight(cur.node.getHex(), 0.6, 18);
-  accent.position.set(0, -2, -5);
-  scene.add(accent);
+  const fill = new THREE.DirectionalLight(0x5b7c8a, 0.12);
+  fill.position.set(-5, 2, -3);
+  scene.add(fill);
+  const amberPoint = new THREE.PointLight(0xc4a06a, 0.35, 18);
+  amberPoint.position.set(0, 1.5, -6);
+  scene.add(amberPoint);
 
-  const rand = mulberry(20260812);
+  /* Ground plane — instrument floor */
+  const floorMat = new THREE.MeshStandardMaterial({
+    color: cur.graphite,
+    metalness: 0.35,
+    roughness: 0.75,
+  });
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 60), floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -1.8;
+  scene.add(floor);
 
-  /* ---------- Atmospheric dust ---------- */
-  const dustPos = new Float32Array(DUST_COUNT * 3);
-  for (let i = 0; i < DUST_COUNT; i++) {
-    dustPos[i * 3] = (rand() - 0.5) * 34;
-    dustPos[i * 3 + 1] = (rand() - 0.5) * 20 - 1;
-    dustPos[i * 3 + 2] = (rand() - 0.5) * 40 - 4;
+  /* Fine structural rails */
+  const railMat = new THREE.MeshStandardMaterial({
+    color: cur.steel,
+    metalness: 0.55,
+    roughness: 0.45,
+  });
+  const rails = new THREE.Group();
+  scene.add(rails);
+  for (let i = 0; i < 4; i++) {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 22), railMat);
+    rail.position.set((i - 1.5) * 2.2, -1.55, -2);
+    rails.add(rail);
   }
+
+  /* Sparse dust */
   const dustGeo = new THREE.BufferGeometry();
+  const dustPos = new Float32Array(DUST * 3);
+  for (let i = 0; i < DUST; i++) {
+    dustPos[i * 3] = (Math.random() - 0.5) * 24;
+    dustPos[i * 3 + 1] = (Math.random() - 0.5) * 10;
+    dustPos[i * 3 + 2] = (Math.random() - 0.5) * 30;
+  }
   dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPos, 3));
   const dustMat = new THREE.PointsMaterial({
-    color: cur.dust,
-    size: 0.03,
+    color: cur.signal,
+    size: 0.025,
     transparent: true,
-    opacity: 0.35,
+    opacity: 0.22,
     depthWrite: false,
   });
   scene.add(new THREE.Points(dustGeo, dustMat));
 
-  /* ---------- Systems map — DE icon nodes ---------- */
-  const NODE_COUNT = NODE_SPECS.length;
-  const nodeGroup = new THREE.Group();
-  scene.add(nodeGroup);
-  const nodePositions = [];
-  const nodeMats = [];
-  const nodeMeshes = [];
-  const nodeBaseColors = NODE_SPECS.map((s) => new THREE.Color(s.color));
+  /* Physical flows — weight, velocity, noise until Clarification */
+  const flowCurvesChaos = [];
+  const flowCurvesClear = [];
+  for (let i = 0; i < FLOW_COUNT; i++) {
+    flowCurvesChaos.push(makeFlowCurve(i, false));
+    flowCurvesClear.push(makeFlowCurve(i, true));
+  }
 
-  for (let i = 0; i < NODE_COUNT; i++) {
-    const angle = (i / NODE_COUNT) * Math.PI * 2 - Math.PI / 2;
-    const r = 2.15;
-    const p = new THREE.Vector3(Math.cos(angle) * r, Math.sin(angle) * r * 0.55, Math.sin(angle * 2) * 0.35);
-    nodePositions.push(p);
+  const flowTotal = FLOW_COUNT * PARTICLES_PER;
+  const flowGeo = new THREE.BufferGeometry();
+  const flowPos = new Float32Array(flowTotal * 3);
+  const flowCol = new Float32Array(flowTotal * 3);
+  const flowT = new Float32Array(flowTotal);
+  const flowSpeed = new Float32Array(flowTotal);
+  const flowNoise = new Float32Array(flowTotal);
+  for (let i = 0; i < flowTotal; i++) {
+    flowT[i] = Math.random();
+    flowSpeed[i] = 0.0008 + Math.random() * 0.0018;
+    flowNoise[i] = Math.random() > 0.72 ? 1 : 0;
+  }
+  flowGeo.setAttribute("position", new THREE.BufferAttribute(flowPos, 3));
+  flowGeo.setAttribute("color", new THREE.BufferAttribute(flowCol, 3));
+  const flowMat = new THREE.PointsMaterial({
+    size: 0.045,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+    sizeAttenuation: true,
+  });
+  scene.add(new THREE.Points(flowGeo, flowMat));
 
-    const color = nodeBaseColors[i];
-    const mat = new THREE.MeshStandardMaterial({
-      color: color.clone(),
-      emissive: color.clone(),
-      emissiveIntensity: 0,
-      metalness: 0.25,
+  /* Channel tubes (architectural, not neon) */
+  const channelGroup = new THREE.Group();
+  scene.add(channelGroup);
+  const channelMats = [];
+  for (let i = 0; i < FLOW_COUNT; i++) {
+    const curve = flowCurvesChaos[i];
+    const tube = new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 48, 0.035, 5, false),
+      new THREE.MeshStandardMaterial({
+        color: cur.steel,
+        metalness: 0.5,
+        roughness: 0.55,
+        transparent: true,
+        opacity: 0,
+      })
+    );
+    channelMats.push(tube.material);
+    channelGroup.add(tube);
+  }
+
+  /* Core instrument mass — clarified architecture */
+  const coreGroup = new THREE.Group();
+  scene.add(coreGroup);
+  const coreMat = new THREE.MeshStandardMaterial({
+    color: cur.graphite,
+    metalness: 0.45,
+    roughness: 0.5,
+    transparent: true,
+    opacity: 0,
+  });
+  const core = new THREE.Mesh(new THREE.BoxGeometry(1.8, 2.4, 1.2), coreMat);
+  core.position.set(0, -0.2, -8);
+  coreGroup.add(core);
+  const coreEdge = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(1.8, 2.4, 1.2)),
+    new THREE.LineBasicMaterial({ color: cur.signal, transparent: true, opacity: 0 })
+  );
+  coreEdge.position.copy(core.position);
+  coreGroup.add(coreEdge);
+  const coreEdgeMat = coreEdge.material;
+
+  /* Four exhibition installations */
+  const installGroup = new THREE.Group();
+  scene.add(installGroup);
+  const installMats = [];
+
+  function addInstall(buildFn, x, z) {
+    const g = new THREE.Group();
+    g.position.set(x, -0.8, z);
+    const mats = buildFn(g, cur);
+    installMats.push(...mats);
+    installGroup.add(g);
+    return g;
+  }
+
+  /* A — Strata (modernization) */
+  addInstall((g, pal) => {
+    const mats = [];
+    for (let i = 0; i < 3; i++) {
+      const m = new THREE.MeshStandardMaterial({
+        color: i === 0 ? pal.steel : i === 1 ? pal.signal : pal.amber,
+        metalness: 0.4,
+        roughness: 0.55,
+        transparent: true,
+        opacity: 0,
+      });
+      mats.push(m);
+      const slab = new THREE.Mesh(new THREE.BoxGeometry(1.4 - i * 0.15, 0.12, 0.9), m);
+      slab.position.y = i * 0.35;
+      slab.rotation.y = (1 - i * 0.2) * 0.35;
+      slab.userData.baseRot = slab.rotation.y;
+      slab.userData.layer = i;
+      g.add(slab);
+    }
+    return mats;
+  }, 2.4, -5.5);
+
+  /* B — Decision spine */
+  addInstall((g, pal) => {
+    const mats = [];
+    const spineM = new THREE.MeshStandardMaterial({
+      color: pal.signal,
+      metalness: 0.5,
+      roughness: 0.4,
+      transparent: true,
+      opacity: 0,
+    });
+    mats.push(spineM);
+    g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.8, 8), spineM));
+    for (let i = 0; i < 6; i++) {
+      const m = new THREE.MeshStandardMaterial({
+        color: pal.steel,
+        metalness: 0.4,
+        roughness: 0.5,
+        transparent: true,
+        opacity: 0,
+      });
+      mats.push(m);
+      const thread = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.02, 0.02), m);
+      thread.position.set(-0.5, 0.6 - i * 0.22, (i - 2.5) * 0.08);
+      thread.rotation.z = 0.35;
+      g.add(thread);
+    }
+    return mats;
+  }, -2.6, -8.2);
+
+  /* C — Harvest atrium */
+  addInstall((g, pal) => {
+    const mats = [];
+    const gateM = new THREE.MeshStandardMaterial({
+      color: pal.amber,
+      metalness: 0.45,
       roughness: 0.45,
       transparent: true,
       opacity: 0,
     });
-    nodeMats.push(mat);
-    const mesh = new THREE.Mesh(makeIconGeometry(NODE_SPECS[i].icon), mat);
-    mesh.position.copy(p);
-    if (NODE_SPECS[i].icon === "cylinder") mesh.rotation.x = Math.PI / 2;
-    nodeGroup.add(mesh);
-    nodeMeshes.push(mesh);
-  }
+    mats.push(gateM);
+    const gate = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.04, 8, 24), gateM);
+    gate.rotation.x = Math.PI / 2;
+    g.add(gate);
+    const crystalM = new THREE.MeshStandardMaterial({
+      color: pal.signal,
+      metalness: 0.55,
+      roughness: 0.35,
+      transparent: true,
+      opacity: 0,
+    });
+    mats.push(crystalM);
+    const crystal = new THREE.Mesh(new THREE.OctahedronGeometry(0.28, 0), crystalM);
+    crystal.position.y = -0.15;
+    g.add(crystal);
+    return mats;
+  }, 2.2, -11);
 
-  /* Invisible hit targets — generous so icons are easy to click */
-  const hitMat = new THREE.MeshBasicMaterial({ visible: false });
-  const hitMeshes = [];
-  for (let i = 0; i < TERRITORY_COUNT; i++) {
-    const hit = new THREE.Mesh(new THREE.SphereGeometry(0.48, 10, 10), hitMat);
-    hit.position.copy(nodePositions[i]);
-    hit.userData.index = i;
-    nodeGroup.add(hit);
-    hitMeshes.push(hit);
-  }
+  /* D — Split volume */
+  addInstall((g, pal) => {
+    const mats = [];
+    const leftM = new THREE.MeshStandardMaterial({
+      color: pal.steel,
+      metalness: 0.5,
+      roughness: 0.4,
+      transparent: true,
+      opacity: 0,
+    });
+    const rightM = new THREE.MeshStandardMaterial({
+      color: pal.signal,
+      metalness: 0.4,
+      roughness: 0.5,
+      transparent: true,
+      opacity: 0,
+    });
+    mats.push(leftM, rightM);
+    const left = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.2, 0.55), leftM);
+    left.position.x = -0.45;
+    left.userData.split = -1;
+    g.add(left);
+    const right = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.85, 0.7), rightM);
+    right.position.x = 0.45;
+    right.userData.split = 1;
+    g.add(right);
+    return mats;
+  }, -2.0, -13.5);
 
-  /* Pipeline ring connecting the stages (teal, not red) */
-  const threadMats = [];
-  for (let i = 0; i < NODE_COUNT; i++) {
-    const next = (i + 1) % NODE_COUNT;
-    const mat = new THREE.LineBasicMaterial({ color: cur.thread, transparent: true, opacity: 0 });
-    threadMats.push(mat);
-    const geo = new THREE.BufferGeometry().setFromPoints([nodePositions[i], nodePositions[next]]);
-    nodeGroup.add(new THREE.Line(geo, mat));
-  }
-
-  /* ---------- Data streams (descent) ---------- */
-  const streamCurves = [];
-  for (let s = 0; s < STREAM_COUNT; s++) {
-    const xOff = (s - (STREAM_COUNT - 1) / 2) * 1.1;
-    streamCurves.push(
-      new THREE.CatmullRomCurve3([
-        new THREE.Vector3(xOff * 1.6, 0.4, 0.5),
-        new THREE.Vector3(xOff * 1.2, -0.8, -1.2),
-        new THREE.Vector3(xOff * 0.8, -1.8, -3),
-        new THREE.Vector3(xOff * 0.5, -2.3, -4.6),
-        new THREE.Vector3(xOff * 0.25, -2.45, -6),
-      ])
-    );
-  }
-  const streamTotal = STREAM_COUNT * PARTICLES_PER_STREAM;
-  const streamPos = new Float32Array(streamTotal * 3);
-  const streamCol = new Float32Array(streamTotal * 3);
-  const streamT = new Float32Array(streamTotal);
-  const streamSpeed = new Float32Array(streamTotal);
-  const streamDropped = new Uint8Array(streamTotal);
-  for (let i = 0; i < streamTotal; i++) {
-    streamT[i] = rand();
-    streamSpeed[i] = 0.0016 + rand() * 0.0022;
-    // roughly 1 in 8 records fails validation
-    streamDropped[i] = rand() < 0.13 ? 1 : 0;
-  }
-  const streamGeo = new THREE.BufferGeometry();
-  streamGeo.setAttribute("position", new THREE.BufferAttribute(streamPos, 3));
-  streamGeo.setAttribute("color", new THREE.BufferAttribute(streamCol, 3));
-  const streamMat = new THREE.PointsMaterial({
-    size: 0.045,
-    transparent: true,
-    opacity: 0,
-    vertexColors: true,
-    depthWrite: false,
-  });
-  scene.add(new THREE.Points(streamGeo, streamMat));
-
-  /* ---------- Computation city (lattice) ---------- */
-  const latticeGeo = new THREE.BoxGeometry(0.16, 0.16, 0.16);
-  const latticeMat = new THREE.MeshStandardMaterial({
-    color: cur.lattice,
-    emissive: cur.latticeEdge,
-    emissiveIntensity: 0.08,
-    metalness: 0.35,
+  /* Mind chamber — aperture + filaments */
+  const mindGroup = new THREE.Group();
+  mindGroup.position.set(0, 0.4, -17);
+  scene.add(mindGroup);
+  const mindRingMat = new THREE.MeshStandardMaterial({
+    color: cur.ivory,
+    metalness: 0.2,
     roughness: 0.6,
     transparent: true,
     opacity: 0,
   });
-  const lattice = new THREE.InstancedMesh(latticeGeo, latticeMat, LATTICE_COUNT);
-  lattice.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  scene.add(lattice);
-
-  const scatter = [];
-  const target = [];
-  const gridW = 16;
-  for (let i = 0; i < LATTICE_COUNT; i++) {
-    scatter.push(
-      new THREE.Vector3((rand() - 0.5) * 16, (rand() - 0.5) * 10 - 2, (rand() - 0.5) * 14 - 6)
-    );
-    const gx = i % gridW;
-    const gz = Math.floor(i / gridW);
-    const height = 0.4 + Math.abs(Math.sin(gx * 1.7 + gz * 2.3)) * 1.6;
-    target.push(
-      new THREE.Vector3((gx - gridW / 2) * 0.42, -2.9 + height * 0.5, -4.5 - gz * 0.42)
-    );
+  const mindRing = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.03, 8, 48), mindRingMat);
+  mindGroup.add(mindRing);
+  const filamentMat = new THREE.LineBasicMaterial({ color: cur.ivory, transparent: true, opacity: 0 });
+  const filPts = [];
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2;
+    filPts.push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(Math.cos(a) * 1.4, Math.sin(a) * 0.7, -0.2));
   }
-  const dummy = new THREE.Object3D();
-  const heights = target.map((_, i) => {
-    const gx = i % gridW;
-    const gz = Math.floor(i / gridW);
-    return 0.4 + Math.abs(Math.sin(gx * 1.7 + gz * 2.3)) * 1.6;
+  const filGeo = new THREE.BufferGeometry().setFromPoints(filPts);
+  mindGroup.add(new THREE.LineSegments(filGeo, filamentMat));
+
+  /* Silhouette — sparse scale */
+  const silMat = new THREE.MeshStandardMaterial({
+    color: 0x0a0c10,
+    roughness: 0.95,
+    metalness: 0.05,
+    transparent: true,
+    opacity: 0,
   });
+  const silhouette = createSilhouette(silMat);
+  scene.add(silhouette);
 
-  /* ---------- Project monoliths ---------- */
-  const monolithGroup = new THREE.Group();
-  scene.add(monolithGroup);
-  const monolithMats = [];
-  const monolithEdgeMats = [];
-  for (let i = 0; i < MONOLITH_COUNT; i++) {
-    const h = 1.6 + (i % 3) * 0.5;
-    const geo = new THREE.BoxGeometry(0.55, h, 0.55);
-    const mat = new THREE.MeshStandardMaterial({
-      color: cur.monolith,
-      metalness: 0.45,
-      roughness: 0.55,
-      transparent: true,
-      opacity: 0,
-    });
-    monolithMats.push(mat);
-    const mesh = new THREE.Mesh(geo, mat);
-    const side = i % 2 === 0 ? -1 : 1;
-    mesh.position.set(side * (1.2 + (i % 2) * 0.4), -2.3 + h / 2 - 0.8, -4.5 - i * 1.6);
-    monolithGroup.add(mesh);
-
-    const edgeMat = new THREE.LineBasicMaterial({ color: cur.monolithEdge, transparent: true, opacity: 0 });
-    monolithEdgeMats.push(edgeMat);
-    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), edgeMat);
-    edges.position.copy(mesh.position);
-    monolithGroup.add(edges);
-  }
-
-  /* ---------- Final connective web ---------- */
-  const webMat = new THREE.LineBasicMaterial({ color: cur.thread, transparent: true, opacity: 0 });
-  const webPts = [];
-  for (let i = 0; i < NODE_COUNT; i++) {
-    webPts.push(nodePositions[i].clone(), new THREE.Vector3(0, -2.4, -6));
-  }
+  /* Finale connective web */
+  const webMat = new THREE.LineBasicMaterial({ color: cur.signal, transparent: true, opacity: 0 });
+  const webPts = [
+    new THREE.Vector3(2.4, -0.5, -5.5),
+    new THREE.Vector3(0, -0.2, -8),
+    new THREE.Vector3(-2.6, -0.5, -8.2),
+    new THREE.Vector3(0, -0.2, -8),
+    new THREE.Vector3(2.2, -0.5, -11),
+    new THREE.Vector3(0, -0.2, -8),
+    new THREE.Vector3(-2, -0.5, -13.5),
+    new THREE.Vector3(0, -0.2, -8),
+    new THREE.Vector3(0, 0.4, -17),
+    new THREE.Vector3(0, -0.2, -8),
+  ];
   const webGeo = new THREE.BufferGeometry().setFromPoints(webPts);
   scene.add(new THREE.LineSegments(webGeo, webMat));
 
-  /* ---------- State ---------- */
   let progress = 0;
   let disposed = false;
-  let lastAssembly = -1;
+  const pointer = new THREE.Vector2(0, 0);
+  const tmp = new THREE.Vector3();
+  const tmpB = new THREE.Vector3();
 
-  const tmpColor = new THREE.Color();
-  const streamColor = new THREE.Color();
-  const badCol = new THREE.Color(0xb89858); // amber = dropped records (not all-red scene)
-
-  /* ---------- Pointer: parallax + territory raycast ---------- */
-  const raycaster = new THREE.Raycaster();
-  const pointerNdc = new THREE.Vector2();
-  const parTarget = { x: 0, y: 0 };
-  const par = { x: 0, y: 0 };
-  let pointerActive = false;
-  let hovered = -1;
-
-  /** ndcX/ndcY in NDC space (-1..1, y up). */
-  function setPointer(ndcX, ndcY) {
-    parTarget.x = ndcX;
-    parTarget.y = ndcY;
-    pointerNdc.set(ndcX, ndcY);
-    pointerActive = true;
+  function seg(a, b) {
+    if (progress <= a) return 0;
+    if (progress >= b) return 1;
+    return (progress - a) / (b - a);
   }
 
-  function pickTerritory() {
-    if (!pointerActive) return -1;
-    const active = Math.max(seg(0.08, 0.16) * (1 - seg(0.3, 0.4)), seg(0.88, 1));
-    if (active < 0.25) return -1;
-    raycaster.setFromCamera(pointerNdc, camera);
-    const hits = raycaster.intersectObjects(hitMeshes, false);
-    return hits.length ? hits[0].object.userData.index : -1;
+  function setProgress(p) {
+    progress = Math.min(1, Math.max(0, p));
   }
 
-  /** Returns the hovered territory index (or -1); call on canvas click. */
+  function setPointer(x, y) {
+    pointer.set(x, y);
+  }
+
   function click() {
-    return hovered;
-  }
-
-  function setProgress(t) {
-    progress = Math.max(0, Math.min(1, t));
+    return -1;
   }
 
   function setTheme(dark) {
     from = {
       bg: cur.bg.clone(),
-      dust: cur.dust.clone(),
-      node: cur.node.clone(),
-      thread: cur.thread.clone(),
-      stream: cur.stream.clone(),
-      lattice: cur.lattice.clone(),
-      latticeEdge: cur.latticeEdge.clone(),
-      monolith: cur.monolith.clone(),
-      monolithEdge: cur.monolithEdge.clone(),
+      fog: cur.fog.clone(),
+      steel: cur.steel.clone(),
+      graphite: cur.graphite.clone(),
+      signal: cur.signal.clone(),
+      amber: cur.amber.clone(),
+      ivory: cur.ivory.clone(),
       ambient: ambient.intensity,
       key: key.intensity,
     };
     cur = palette(dark);
     themeMix = 0;
-    themeStart = performance.now();
-  }
-
-  function applyTheme(mix) {
-    const k = smoothstep(mix);
-    tmpColor.lerpColors(from.bg, cur.bg, k);
-    renderer.setClearColor(tmpColor, 1);
-    scene.fog.color.copy(tmpColor);
-    dustMat.color.lerpColors(from.dust, cur.dust, k);
-    nodeMats.forEach((m, i) => {
-      // Keep stage identity colors; only soften slightly toward theme
-      const base = nodeBaseColors[i];
-      m.color.copy(base);
-      m.emissive.copy(base);
-    });
-    threadMats.forEach((m) => m.color.lerpColors(from.thread, cur.thread, k));
-    latticeMat.color.lerpColors(from.lattice, cur.lattice, k);
-    latticeMat.emissive.lerpColors(from.latticeEdge, cur.latticeEdge, k);
-    monolithMats.forEach((m) => m.color.lerpColors(from.monolith, cur.monolith, k));
-    monolithEdgeMats.forEach((m) => m.color.lerpColors(from.monolithEdge, cur.monolithEdge, k));
-    webMat.color.lerpColors(from.thread, cur.thread, k);
-    ambient.intensity = from.ambient + (cur.ambient - from.ambient) * k;
-    key.intensity = from.key + (cur.key - from.key) * k;
-    accent.color.copy(nodeBaseColors[0]);
+    themeT0 = performance.now();
   }
 
   function resize(w, h) {
@@ -434,130 +490,142 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     renderer.setSize(w, h, false);
   }
 
-  function seg(a, b) {
-    if (progress <= a) return 0;
-    if (progress >= b) return 1;
-    return (progress - a) / (b - a);
-  }
-
-  function render(now) {
+  function render(time) {
     if (disposed) return;
-    const time = now ?? performance.now();
 
     if (themeMix < 1) {
-      themeMix = Math.min(1, (time - themeStart) / THEME_MS);
-      applyTheme(themeMix);
+      themeMix = Math.min(1, (time - themeT0) / 1100);
+      const k = smoothstep(themeMix);
+      scene.background.lerpColors(from.bg, cur.bg, k);
+      scene.fog.color.lerpColors(from.fog, cur.fog, k);
+      renderer.setClearColor(scene.background, 1);
+      floorMat.color.lerpColors(from.graphite, cur.graphite, k);
+      railMat.color.lerpColors(from.steel, cur.steel, k);
+      dustMat.color.lerpColors(from.signal, cur.signal, k);
+      channelMats.forEach((m) => m.color.lerpColors(from.steel, cur.steel, k));
+      coreMat.color.lerpColors(from.graphite, cur.graphite, k);
+      coreEdgeMat.color.lerpColors(from.signal, cur.signal, k);
+      webMat.color.lerpColors(from.signal, cur.signal, k);
+      filamentMat.color.lerpColors(from.ivory, cur.ivory, k);
+      mindRingMat.color.lerpColors(from.ivory, cur.ivory, k);
+      ambient.intensity = from.ambient + (cur.ambient - from.ambient) * k;
+      key.intensity = from.key + (cur.key - from.key) * k;
+      scene.fog.near = cur.fogNear;
+      scene.fog.far = cur.fogFar;
     }
 
-    /* Camera journey + damped cursor parallax */
-    par.x += (parTarget.x - par.x) * 0.055;
-    par.y += (parTarget.y - par.y) * 0.055;
-    sampleCamera(progress, camState);
-    camera.position.set(
-      camState.pos.x + par.x * 0.34,
-      camState.pos.y + par.y * 0.2,
-      camState.pos.z
-    );
-    camera.lookAt(camState.look.x - par.x * 0.16, camState.look.y - par.y * 0.1, camState.look.z);
-    if (Math.abs(camera.fov - camState.fov) > 0.05) {
-      camera.fov = camState.fov;
-      camera.updateProjectionMatrix();
+    sampleCam(progress, camState);
+    camera.position.lerp(camState.pos, 0.06);
+    lookTarget.lerp(camState.look, 0.06);
+    camera.lookAt(lookTarget);
+    camera.fov += (camState.fov - camera.fov) * 0.05;
+    camera.position.x += pointer.x * 0.12;
+    camera.position.y += pointer.y * 0.06;
+    camera.updateProjectionMatrix();
+
+    const flowT_ = smoothstep(seg(0.08, 0.18)) * (1 - smoothstep(seg(0.5, 0.58)));
+    const structureT = smoothstep(seg(0.24, 0.36));
+    const clarifyT = smoothstep(seg(0.4, 0.5));
+    const exhibitT = smoothstep(seg(0.52, 0.58));
+    const mindT = smoothstep(seg(0.74, 0.84));
+    const personT = smoothstep(seg(0.88, 0.96));
+
+    /* Channels appear in structure */
+    channelMats.forEach((m, i) => {
+      m.opacity = structureT * (0.35 + (i % 3) * 0.08) * (1 - clarifyT * 0.5);
+    });
+
+    /* Flows — chaos → clarity */
+    flowMat.opacity = Math.max(flowT_, clarifyT * 0.5) * 0.85;
+    const clarify = clarifyT;
+    for (let i = 0; i < flowTotal; i++) {
+      const speedMul = 0.7 + (1 - flowNoise[i] * 0.5) * (0.5 + clarify * 0.8);
+      flowT[i] += flowSpeed[i] * speedMul * (0.85 + (1 - clarify) * 0.4);
+      if (flowT[i] > 1) flowT[i] -= 1;
+
+      const s = Math.floor(i / PARTICLES_PER);
+      const chaos = flowCurvesChaos[s].getPoint(flowT[i], tmp);
+      const clear = flowCurvesClear[s].getPoint(flowT[i], tmpB);
+      const x = chaos.x + (clear.x - chaos.x) * clarify;
+      const y = chaos.y + (clear.y - chaos.y) * clarify;
+      const z = chaos.z + (clear.z - chaos.z) * clarify;
+
+      /* Noise particles fall away during clarification */
+      const noiseDrop = flowNoise[i] * clarify;
+      const fall = noiseDrop * noiseDrop * 1.8;
+      const alive = 1 - noiseDrop;
+
+      flowPos[i * 3] = x + (1 - clarify) * Math.sin(time * 0.001 + i) * 0.08 * flowNoise[i];
+      flowPos[i * 3 + 1] = y - fall;
+      flowPos[i * 3 + 2] = z;
+
+      const isNoise = flowNoise[i] > 0.5 && clarify < 0.85;
+      const c = isNoise ? cur.noise : cur.signal;
+      flowCol[i * 3] = c.r * alive;
+      flowCol[i * 3 + 1] = c.g * alive;
+      flowCol[i * 3 + 2] = c.b * alive;
     }
+    flowGeo.attributes.position.needsUpdate = true;
+    flowGeo.attributes.color.needsUpdate = true;
 
-    /* Territory hover */
-    const nowHovered = pickTerritory();
-    if (nowHovered !== hovered) {
-      hovered = nowHovered;
-      canvas.style.cursor = hovered >= 0 ? "pointer" : "";
-      onTerritoryHover?.(hovered);
+    /* Core resolves at clarification hold */
+    coreMat.opacity = clarifyT * 0.92;
+    coreEdgeMat.opacity = clarifyT * (0.45 + Math.sin(time * 0.0012) * 0.08);
+    core.scale.setScalar(0.85 + clarifyT * 0.15);
+
+    /* Installations wake sequentially */
+    const nInst = installGroup.children.length;
+    installGroup.children.forEach((g, gi) => {
+      const local = Math.min(1, Math.max(0, exhibitT * nInst * 1.35 - gi));
+      g.children.forEach((child) => {
+        if (child.material) {
+          child.material.opacity = local * 0.9;
+        }
+        if (child.userData.baseRot != null) {
+          child.rotation.y = child.userData.baseRot * (1 - local);
+        }
+        if (child.userData.split) {
+          child.position.x = child.userData.split * (0.15 + local * 0.35);
+        }
+        if (child.geometry?.type === "OctahedronGeometry") {
+          child.rotation.y = time * 0.0004;
+        }
+      });
+    });
+
+    /* Mind chamber */
+    mindRingMat.opacity = mindT * 0.75;
+    filamentMat.opacity = mindT * 0.35;
+    mindRing.rotation.z = time * 0.00015;
+    mindGroup.scale.setScalar(0.7 + mindT * 0.3);
+
+    /* Finale web */
+    webMat.opacity = personT * 0.28;
+
+    /* Silhouette — rare scale beats */
+    let silOp = 0;
+    let silPos = [0.9, -1.15, 9.5];
+    if (progress < 0.12) {
+      silOp = smoothstep(seg(0.02, 0.06)) * (1 - smoothstep(seg(0.09, 0.12))) * 0.9;
+      silPos = [0.85, -1.15, 9.2];
+    } else if (progress > 0.48 && progress < 0.54) {
+      silOp = 0.55;
+      silPos = [1.1, -1.2, -6.5];
+    } else if (progress > 0.76 && progress < 0.84) {
+      silOp = 0.4;
+      silPos = [0.7, -0.9, -15.5];
+    } else if (progress > 0.92) {
+      silOp = 0.5;
+      silPos = [1.4, -1.1, -4];
     }
+    silMat.opacity = silOp;
+    silhouette.position.set(silPos[0], silPos[1], silPos[2]);
+    silhouette.rotation.y = Math.PI + 0.15;
+    silhouette.scale.setScalar(0.85);
 
-    /* Phase intensities — systems map → pipelines → architecture → gallery → reveal */
-    const constellationT = Math.max(seg(0.06, 0.14) * (1 - seg(0.32, 0.42)), seg(0.88, 1) * 0.85);
-    const streamsT = seg(0.3, 0.42) * (1 - seg(0.58, 0.68));
-    const cityT = seg(0.45, 0.58);
-    const galleryT = seg(0.55, 0.74);
-    const finaleT = seg(0.9, 1);
+    amberPoint.intensity = 0.2 + clarifyT * 0.35 + mindT * 0.15;
 
-    const nodeVis = Math.max(constellationT, finaleT, 0.15); // keep icons readable early
-    nodeMats.forEach((m, i) => {
-      const local = Math.min(1, Math.max(0.25, nodeVis));
-      m.opacity = local * 0.98;
-      m.emissiveIntensity = local * (0.35 + (i === hovered ? 0.85 : 0.15));
-    });
-    nodeMeshes.forEach((mesh, i) => {
-      const targetScale = i === hovered ? 1.55 : 1;
-      const s = mesh.scale.x + (targetScale - mesh.scale.x) * 0.14;
-      mesh.scale.setScalar(s);
-      mesh.rotation.y = time * 0.0004 + i * 0.4;
-    });
-    threadMats.forEach((m, i) => {
-      const base = Math.max(constellationT * 0.45, finaleT * 0.35, 0.12);
-      m.opacity = i === hovered || i === (hovered - 1 + NODE_COUNT) % NODE_COUNT ? Math.min(1, base * 2.2) : base;
-    });
-    nodeGroup.rotation.y = time * 0.00008;
-
-    /* Data streams — records flow, validation drops the bad ones */
-    streamMat.opacity = streamsT * 0.9;
-    if (streamsT > 0.01) {
-      streamColor.lerpColors(from.stream ?? cur.stream, cur.stream, smoothstep(themeMix));
-      for (let i = 0; i < streamTotal; i++) {
-        streamT[i] += streamSpeed[i];
-        if (streamT[i] > 1) streamT[i] -= 1;
-        const s = Math.floor(i / PARTICLES_PER_STREAM);
-        const p = streamCurves[s].getPoint(streamT[i]);
-        const dropped = streamDropped[i] === 1 && streamT[i] > 0.55;
-        // dropped records fall out of the stream after the validation gate
-        const fall = dropped ? (streamT[i] - 0.55) * 3 : 0;
-        streamPos[i * 3] = p.x;
-        streamPos[i * 3 + 1] = p.y - fall * fall * 1.4;
-        streamPos[i * 3 + 2] = p.z;
-        const c = dropped ? badCol : streamColor;
-        const fade = dropped ? Math.max(0, 1 - fall * 1.2) : 1;
-        streamCol[i * 3] = c.r * fade;
-        streamCol[i * 3 + 1] = c.g * fade;
-        streamCol[i * 3 + 2] = c.b * fade;
-      }
-      streamGeo.attributes.position.needsUpdate = true;
-      streamGeo.attributes.color.needsUpdate = true;
-    }
-
-    /* City assembles from chaos */
-    const assembly = smoothstep(cityT);
-    latticeMat.opacity = Math.min(1, cityT * 2) * 0.92;
-    if (Math.abs(assembly - lastAssembly) > 0.0015 && cityT > 0) {
-      lastAssembly = assembly;
-      for (let i = 0; i < LATTICE_COUNT; i++) {
-        const sc = scatter[i];
-        const tg = target[i];
-        dummy.position.set(
-          sc.x + (tg.x - sc.x) * assembly,
-          sc.y + (tg.y - sc.y) * assembly,
-          sc.z + (tg.z - sc.z) * assembly
-        );
-        const sy = 0.4 + assembly * heights[i] * 2.4;
-        dummy.scale.set(1, sy, 1);
-        dummy.rotation.set((1 - assembly) * sc.x, (1 - assembly) * sc.y, 0);
-        dummy.updateMatrix();
-        lattice.setMatrixAt(i, dummy.matrix);
-      }
-      lattice.instanceMatrix.needsUpdate = true;
-    }
-    latticeMat.emissiveIntensity = 0.06 + assembly * 0.14 + Math.sin(time * 0.001) * 0.03 * assembly;
-
-    /* Monolith gallery wakes as camera passes */
-    monolithMats.forEach((m, i) => {
-      const local = Math.min(1, Math.max(0, galleryT * MONOLITH_COUNT * 1.4 - i));
-      m.opacity = local * 0.95;
-    });
-    monolithEdgeMats.forEach((m, i) => {
-      const local = Math.min(1, Math.max(0, galleryT * MONOLITH_COUNT * 1.4 - i));
-      m.opacity = local * (0.5 + Math.sin(time * 0.0018 + i) * 0.18);
-    });
-
-    /* Final connected reveal */
-    webMat.opacity = finaleT * 0.3;
-
+    onTerritoryHover?.(-1);
     renderer.render(scene, camera);
   }
 
@@ -566,19 +634,20 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     renderer.dispose();
     dustGeo.dispose();
     dustMat.dispose();
-    streamGeo.dispose();
-    streamMat.dispose();
-    latticeGeo.dispose();
-    latticeMat.dispose();
+    flowGeo.dispose();
+    flowMat.dispose();
+    floor.geometry.dispose();
+    floorMat.dispose();
     webGeo.dispose();
     webMat.dispose();
-    nodeGroup.traverse((o) => {
+    filGeo.dispose();
+    filamentMat.dispose();
+    scene.traverse((o) => {
       o.geometry?.dispose?.();
-      o.material?.dispose?.();
-    });
-    monolithGroup.traverse((o) => {
-      o.geometry?.dispose?.();
-      o.material?.dispose?.();
+      if (o.material) {
+        if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose?.());
+        else o.material.dispose?.();
+      }
     });
   }
 
