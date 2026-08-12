@@ -34,7 +34,7 @@ function Rail({ start, end, progressRef, index, color, accent }) {
 
   useFrame(() => {
     if (!ref.current) return;
-    const local = remap(progressRef.current || 0, 0.34, 0.72);
+    const local = remap(progressRef.current || 0, 0.28, 0.6);
     const converge = smoothstep(0.4, 0.65, local);
     const clarified = smoothstep(0.65, 0.85, local);
     const active = local > 0.18;
@@ -129,7 +129,7 @@ export default function Convergence({ theme, progressRef }) {
   }, []);
 
   useFrame(() => {
-    const local = remap(progressRef.current || 0, 0.34, 0.72);
+    const local = remap(progressRef.current || 0, 0.28, 0.6);
     const converge = smoothstep(0.4, 0.65, local);
     const clarified = smoothstep(0.65, 0.85, local);
     const output = smoothstep(0.82, 1, local);

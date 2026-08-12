@@ -8,35 +8,51 @@ import {
 } from "@/lib/data/precision";
 
 /**
- * Editorial typography layered over the persistent world.
- * Appears as composition — not as a webpage hero pasted on top.
+ * Journey typography — sparse, on controlled surfaces where needed.
+ * Exhibition copy lives in ExhibitionPanel (readable info plane).
  */
-export default function PrecisionOverlay({ progress, theme }) {
+export default function PrecisionOverlay({ progress, theme, exhibitActive }) {
   const p = progress;
   const approach = remap(p, PRECISION_BEATS.approach.start, PRECISION_BEATS.approach.end);
   const convLocal = remap(p, PRECISION_BEATS.convergence.start, PRECISION_BEATS.clarity.end);
   const state = getConvergenceState(convLocal);
 
   const titleOp =
-    smoothstep(0.02, 0.1, p) * (1 - smoothstep(0.22, 0.34, p));
+    smoothstep(0.02, 0.1, p) * (1 - smoothstep(0.2, 0.32, p));
   const roleOp =
-    smoothstep(0.06, 0.14, p) * (1 - smoothstep(0.24, 0.36, p));
+    smoothstep(0.05, 0.12, p) * (1 - smoothstep(0.22, 0.34, p));
   const clarityOp =
-    smoothstep(0.58, 0.66, p) * (1 - smoothstep(0.72, 0.8, p));
-  const workHintOp = smoothstep(0.86, 0.94, p);
+    smoothstep(0.48, 0.55, p) * (1 - smoothstep(0.6, 0.68, p));
+
+  if (exhibitActive) {
+    return (
+      <div className="mp-overlay mp-overlay--spatial" aria-hidden>
+        <div className="mp-meta mp-meta--tl">MP-WORLD · EXHIBIT</div>
+        <div className="mp-meta mp-meta--br">
+          {theme === "day" ? "DAY · CLARITY" : "NIGHT · FOCUS"}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="mp-overlay mp-overlay--spatial" aria-hidden={false}>
+    <div className="mp-overlay mp-overlay--spatial">
       <div className="mp-meta mp-meta--tl">MP-WORLD · CONTINUOUS</div>
       <div className="mp-meta mp-meta--bl">
-        {p < 0.34 ? "01 ENTER" : p < 0.7 ? state.label : p < 0.84 ? "05 OUTPUT" : "06 WORK"}
+        {p < 0.3
+          ? "01 ENTER"
+          : p < 0.58
+            ? state.label
+            : p < 0.68
+              ? "05 OUTPUT"
+              : "06 EXHIBITION"}
       </div>
       <div className="mp-meta mp-meta--br">
         {theme === "day" ? "DAY · CLARITY" : "NIGHT · FOCUS"}
       </div>
 
       <div
-        className="mp-copy mp-copy--acti"
+        className="mp-copy mp-copy--acti mp-copy--plane"
         style={{
           opacity: Math.max(titleOp, roleOp),
           transform: `translateY(${(1 - titleOp) * 16}px)`,
@@ -51,7 +67,7 @@ export default function PrecisionOverlay({ progress, theme }) {
       </div>
 
       <div
-        className="mp-copy mp-copy--clarity"
+        className="mp-copy mp-copy--clarity mp-copy--plane"
         style={{
           opacity: clarityOp,
           transform: `translate(-50%, calc(-50% + ${(1 - clarityOp) * 12}px))`,
@@ -62,20 +78,6 @@ export default function PrecisionOverlay({ progress, theme }) {
       </div>
 
       <div
-        className="mp-copy mp-copy--world"
-        style={{
-          opacity: workHintOp,
-          transform: `translateY(${(1 - workHintOp) * 18}px)`,
-        }}
-      >
-        <p className="mp-world-kicker">Same system · Deeper hall</p>
-        <h2 className="mp-world-title">Follow the output.</h2>
-        <p className="mp-world-sub">
-          Work begins as architecture beyond the mechanism — not as the next page.
-        </p>
-      </div>
-
-      <div
         className="mp-scroll-hint"
         style={{ opacity: 1 - smoothstep(0.02, 0.1, p) }}
       >
@@ -83,10 +85,9 @@ export default function PrecisionOverlay({ progress, theme }) {
         <div className="mp-scroll-hint__line" />
       </div>
 
-      {/* Quiet depth cue during approach */}
       <div
         className="mp-depth-cue"
-        style={{ opacity: approach * (1 - smoothstep(0.4, 0.5, p)) * 0.5 }}
+        style={{ opacity: approach * (1 - smoothstep(0.35, 0.45, p)) * 0.45 }}
       />
     </div>
   );

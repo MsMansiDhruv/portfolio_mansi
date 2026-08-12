@@ -29,7 +29,7 @@ export default function PrecisionNav({ theme, onToggleTheme }) {
         >
           <span className="mp-theme-switch__pip" />
           <ConvergenceMark size={14} />
-          <span>{theme === "night" ? "Night" : "Day"}</span>
+          <span suppressHydrationWarning>{theme === "night" ? "Night" : "Day"}</span>
         </button>
       </div>
     </nav>
