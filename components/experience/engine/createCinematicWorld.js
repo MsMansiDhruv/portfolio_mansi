@@ -45,17 +45,22 @@ function palette(dark) {
       };
 }
 
-/** Camera keyframes over scroll progress. */
+/**
+ * Camera keyframes over master scroll progress.
+ * Phases: 0–15 entry (near-still) · 15–30 world orbit · 30–45 personal drift ·
+ * 45–65 engineering descent · 65–80 gallery · 80–90 lab · 90–100 pull-back.
+ */
 const CAM_KEYS = [
-  { t: 0.0, pos: [0, 0.6, 12.5], look: [0, 0, 0], fov: 36 },
-  { t: 0.09, pos: [0, 0.4, 9], look: [0, 0.1, 0], fov: 40 },
-  { t: 0.18, pos: [2.4, 0.9, 6.8], look: [0, 0.2, 0], fov: 42 },
-  { t: 0.3, pos: [-2.6, 1.3, 5.6], look: [0.3, 0, 0], fov: 44 },
-  { t: 0.42, pos: [-0.6, 0.2, 4.6], look: [0, -0.8, -1.5], fov: 46 },
-  { t: 0.54, pos: [1.4, -1.2, 3.4], look: [0, -2, -3.5], fov: 50 },
-  { t: 0.66, pos: [0.2, -2, 1.2], look: [0, -2.4, -5.5], fov: 54 },
-  { t: 0.78, pos: [-1.6, -1.9, -2.4], look: [0.5, -2.2, -8], fov: 52 },
-  { t: 0.88, pos: [1.2, -1.6, -6], look: [0, -2, -10], fov: 48 },
+  { t: 0.0, pos: [0, 0.55, 12.5], look: [0, 0, 0], fov: 36 },
+  { t: 0.13, pos: [0, 0.45, 10], look: [0, 0.1, 0], fov: 38 },
+  { t: 0.22, pos: [2.3, 0.9, 7], look: [0, 0.2, 0], fov: 42 },
+  { t: 0.3, pos: [-1.8, 1.1, 6.4], look: [0.2, 0.1, 0], fov: 43 },
+  { t: 0.42, pos: [-2.8, 1.3, 5.6], look: [0.3, 0, 0], fov: 44 },
+  { t: 0.5, pos: [-0.6, 0.2, 4.6], look: [0, -0.8, -1.5], fov: 46 },
+  { t: 0.6, pos: [1.4, -1.2, 3.4], look: [0, -2, -3.5], fov: 50 },
+  { t: 0.7, pos: [0.2, -2, 1.2], look: [0, -2.4, -5.5], fov: 54 },
+  { t: 0.82, pos: [-1.6, -1.9, -2.4], look: [0.5, -2.2, -8], fov: 52 },
+  { t: 0.91, pos: [1.2, -1.6, -6], look: [0, -2, -10], fov: 48 },
   { t: 1.0, pos: [0, 3.2, 13], look: [0, -1.2, -3], fov: 38 },
 ];
 
@@ -99,11 +104,15 @@ function mulberry(seed) {
   };
 }
 
-export function createCinematicWorld(canvas, { isDark }) {
+/** Clear alpha < 1 lets the cinematic environment plates show through the scene. */
+const CLEAR_ALPHA = 0.46;
+const TERRITORY_COUNT = 6;
+
+export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) {
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: true,
-    alpha: false,
+    alpha: true,
     powerPreference: "high-performance",
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6));
@@ -117,7 +126,7 @@ export function createCinematicWorld(canvas, { isDark }) {
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(cur.bg.getHex(), 0.055);
-  renderer.setClearColor(cur.bg, 1);
+  renderer.setClearColor(cur.bg, CLEAR_ALPHA);
 
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 60);
   const camState = { pos: new THREE.Vector3(), look: new THREE.Vector3(), fov: 38 };
@@ -157,6 +166,7 @@ export function createCinematicWorld(canvas, { isDark }) {
   scene.add(nodeGroup);
   const nodePositions = [];
   const nodeMats = [];
+  const nodeMeshes = [];
   for (let i = 0; i < NODE_COUNT; i++) {
     const phi = Math.acos(1 - (2 * (i + 0.5)) / NODE_COUNT);
     const theta = Math.PI * (1 + Math.sqrt(5)) * i;
@@ -178,6 +188,18 @@ export function createCinematicWorld(canvas, { isDark }) {
     const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 10), mat);
     mesh.position.copy(p);
     nodeGroup.add(mesh);
+    nodeMeshes.push(mesh);
+  }
+
+  /* Invisible hit targets for the first nodes — the world's territories */
+  const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+  const hitMeshes = [];
+  for (let i = 0; i < TERRITORY_COUNT; i++) {
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(0.36, 8, 8), hitMat);
+    hit.position.copy(nodePositions[i]);
+    hit.userData.index = i;
+    nodeGroup.add(hit);
+    hitMeshes.push(hit);
   }
   const threadMats = [];
   for (let i = 0; i < NODE_COUNT; i++) {
@@ -307,6 +329,36 @@ export function createCinematicWorld(canvas, { isDark }) {
   const streamColor = new THREE.Color();
   const badCol = new THREE.Color(0xa84848);
 
+  /* ---------- Pointer: parallax + territory raycast ---------- */
+  const raycaster = new THREE.Raycaster();
+  const pointerNdc = new THREE.Vector2();
+  const parTarget = { x: 0, y: 0 };
+  const par = { x: 0, y: 0 };
+  let pointerActive = false;
+  let hovered = -1;
+
+  /** ndcX/ndcY in NDC space (-1..1, y up). */
+  function setPointer(ndcX, ndcY) {
+    parTarget.x = ndcX;
+    parTarget.y = ndcY;
+    pointerNdc.set(ndcX, ndcY);
+    pointerActive = true;
+  }
+
+  function pickTerritory() {
+    if (!pointerActive) return -1;
+    const active = Math.max(seg(0.15, 0.23) * (1 - seg(0.29, 0.38)), seg(0.9, 1));
+    if (active < 0.25) return -1;
+    raycaster.setFromCamera(pointerNdc, camera);
+    const hits = raycaster.intersectObjects(hitMeshes, false);
+    return hits.length ? hits[0].object.userData.index : -1;
+  }
+
+  /** Returns the hovered territory index (or -1); call on canvas click. */
+  function click() {
+    return hovered;
+  }
+
   function setProgress(t) {
     progress = Math.max(0, Math.min(1, t));
   }
@@ -333,7 +385,7 @@ export function createCinematicWorld(canvas, { isDark }) {
   function applyTheme(mix) {
     const k = smoothstep(mix);
     tmpColor.lerpColors(from.bg, cur.bg, k);
-    renderer.setClearColor(tmpColor, 1);
+    renderer.setClearColor(tmpColor, CLEAR_ALPHA);
     scene.fog.color.copy(tmpColor);
     dustMat.color.lerpColors(from.dust, cur.dust, k);
     nodeMats.forEach((m) => {
@@ -372,31 +424,52 @@ export function createCinematicWorld(canvas, { isDark }) {
       applyTheme(themeMix);
     }
 
-    /* Camera journey */
+    /* Camera journey + damped cursor parallax */
+    par.x += (parTarget.x - par.x) * 0.055;
+    par.y += (parTarget.y - par.y) * 0.055;
     sampleCamera(progress, camState);
-    camera.position.copy(camState.pos);
-    camera.lookAt(camState.look);
+    camera.position.set(
+      camState.pos.x + par.x * 0.34,
+      camState.pos.y + par.y * 0.2,
+      camState.pos.z
+    );
+    camera.lookAt(camState.look.x - par.x * 0.16, camState.look.y - par.y * 0.1, camState.look.z);
     if (Math.abs(camera.fov - camState.fov) > 0.05) {
       camera.fov = camState.fov;
       camera.updateProjectionMatrix();
     }
 
-    /* Phase intensities */
-    const constellationT = seg(0.06, 0.2) * (1 - seg(0.46, 0.58));
-    const streamsT = seg(0.4, 0.56) * (1 - seg(0.9, 0.97));
-    const cityT = seg(0.56, 0.72);
-    const galleryT = seg(0.7, 0.86);
-    const finaleT = seg(0.88, 1);
+    /* Territory hover */
+    const nowHovered = pickTerritory();
+    if (nowHovered !== hovered) {
+      hovered = nowHovered;
+      canvas.style.cursor = hovered >= 0 ? "pointer" : "";
+      onTerritoryHover?.(hovered);
+    }
+
+    /* Phase intensities — derived from the master timeline.
+       The personal phase (0.30–0.45) is intentionally quiet: only dust. */
+    const constellationT = seg(0.15, 0.23) * (1 - seg(0.29, 0.38));
+    const streamsT = seg(0.46, 0.56) * (1 - seg(0.66, 0.74));
+    const cityT = seg(0.56, 0.67);
+    const galleryT = seg(0.65, 0.8);
+    const finaleT = seg(0.9, 1);
 
     /* Constellation wake-up (returns for finale) */
     const nodeVis = Math.max(constellationT, finaleT);
     nodeMats.forEach((m, i) => {
       const local = Math.min(1, Math.max(0, nodeVis * NODE_COUNT - i) );
       m.opacity = local * 0.95;
-      m.emissiveIntensity = local * 0.5;
+      m.emissiveIntensity = local * (0.5 + (i === hovered ? 0.9 : 0));
+    });
+    nodeMeshes.forEach((mesh, i) => {
+      const targetScale = i === hovered ? 2.6 : 1;
+      const s = mesh.scale.x + (targetScale - mesh.scale.x) * 0.14;
+      mesh.scale.setScalar(s);
     });
     threadMats.forEach((m, i) => {
-      m.opacity = Math.max(constellationT * 0.28, finaleT * 0.4) * (i / NODE_COUNT < nodeVis ? 1 : 0);
+      const base = Math.max(constellationT * 0.28, finaleT * 0.4) * (i / NODE_COUNT < nodeVis ? 1 : 0);
+      m.opacity = i === hovered ? Math.min(1, base * 3 + 0.25) : base;
     });
     nodeGroup.rotation.y = time * 0.00008;
 
@@ -485,5 +558,5 @@ export function createCinematicWorld(canvas, { isDark }) {
     });
   }
 
-  return { setProgress, setTheme, resize, render, dispose };
+  return { setProgress, setPointer, click, setTheme, resize, render, dispose };
 }

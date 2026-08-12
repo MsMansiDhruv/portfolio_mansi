@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Lenis from "lenis";
 import { useScrollProgress } from "@/components/cinema/scroll/useScrollProgress";
 
-export function useExperienceScroll(trackRef, reducedMotion) {
+export function useExperienceScroll(trackRef, reducedMotion, lenisRef) {
   const nativeProgress = useScrollProgress(trackRef);
   const [progress, setProgress] = useState(0);
 
@@ -16,6 +16,7 @@ export function useExperienceScroll(trackRef, reducedMotion) {
       smoothWheel: true,
       wheelMultiplier: 0.9,
     });
+    if (lenisRef) lenisRef.current = lenis;
 
     let frame;
     const raf = (time) => {
@@ -43,8 +44,9 @@ export function useExperienceScroll(trackRef, reducedMotion) {
     return () => {
       cancelAnimationFrame(frame);
       lenis.destroy();
+      if (lenisRef) lenisRef.current = null;
     };
-  }, [trackRef, reducedMotion]);
+  }, [trackRef, reducedMotion, lenisRef]);
 
   return reducedMotion ? nativeProgress : progress;
 }

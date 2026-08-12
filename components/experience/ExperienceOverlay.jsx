@@ -26,24 +26,30 @@ export default function ExperienceOverlay({ progress }) {
   return (
     <div className="mx-overlay">
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.hero} align="center">
-        <h1 className="mx-statement mx-statement--hero">{EXPERIENCE_OPENING.name}</h1>
-        <p className="mx-mono mt-8 opacity-50">Scroll · the world responds</p>
+        <h1 className="mx-statement mx-statement--hero">{EXPERIENCE_OPENING.question}</h1>
+        <p className="mx-mono mt-8 opacity-50">Scroll · enter the world</p>
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.worldLine} align="center">
-        <p className="mx-statement mx-statement--whisper">{EXPERIENCE_OPENING.world}</p>
-        <p className="mx-mono mt-8 text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.tagline}</p>
+        <p className="mx-statement">{EXPERIENCE_COPY.curious.headline}</p>
+        <p className="mx-mono mt-8 opacity-70">{EXPERIENCE_COPY.curious.sub}</p>
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.globe} align="center" id="world">
-        <p className="mx-mono">Personal world</p>
+        <p className="mx-mono">Her world</p>
         <p className="mx-statement--whisper mt-6 max-w-md text-2xl sm:text-3xl">
-          A constellation of everything I&apos;ve built, learned, and discovered.
+          A constellation of everything built, learned, and discovered.
         </p>
+        <p className="mx-mono mt-8 opacity-50">Hover a light · click to travel there</p>
+      </Panel>
+
+      <Panel progress={progress} win={EXPERIENCE_WINDOWS.personal} align="center">
+        <p className="mx-statement">{EXPERIENCE_COPY.personal.headline}</p>
+        <p className="mx-mono mt-6 opacity-70">{EXPERIENCE_COPY.personal.sub}</p>
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.play} align="left">
-        <p className="mx-statement">{EXPERIENCE_COPY.play.headline}</p>
+        <p className="mx-statement text-3xl sm:text-4xl">{EXPERIENCE_COPY.play.headline}</p>
         <p className="mx-mono mt-6">{EXPERIENCE_COPY.play.sub}</p>
       </Panel>
 
@@ -58,8 +64,8 @@ export default function ExperienceOverlay({ progress }) {
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.travel} align="left">
-        <p className="mx-mono">Explore</p>
-        {STORY_TRAVEL.lines.map((line) => (
+        <p className="mx-mono">Travel</p>
+        {STORY_TRAVEL.lines.slice(0, 2).map((line) => (
           <p key={line} className="mx-statement--whisper mt-4 text-2xl first:mt-6">
             {line}
           </p>
@@ -147,9 +153,10 @@ export default function ExperienceOverlay({ progress }) {
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.final} align="center">
-        <p className="mx-statement mx-statement--hero">{EXPERIENCE_COPY.final.name}</p>
-        <p className="mx-statement mt-10 text-3xl sm:text-4xl">{EXPERIENCE_COPY.final.line1}</p>
-        <p className="mx-statement mt-6 text-3xl sm:text-4xl text-[var(--mx-vermilion)]">{EXPERIENCE_COPY.final.line2}</p>
+        <p className="mx-statement text-3xl sm:text-5xl">{EXPERIENCE_COPY.final.line1}</p>
+        <p className="mx-statement mt-4 text-3xl sm:text-5xl text-[var(--mx-vermilion)]">{EXPERIENCE_COPY.final.line2}</p>
+        <p className="mx-statement mx-statement--hero mt-12">{EXPERIENCE_COPY.final.name}</p>
+        <p className="mx-mono mt-6 opacity-70">{EXPERIENCE_COPY.final.roles}</p>
         <div className="mt-12 flex flex-wrap justify-center gap-4 text-sm">
           <a href={`mailto:${EXPERIENCE_CONTACT.email}`} className="mx-mono opacity-70 hover:opacity-100">
             Email

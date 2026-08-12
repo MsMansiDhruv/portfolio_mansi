@@ -44,7 +44,7 @@ export default function ExperienceVisual({ progress }) {
   const shuttlePath = "M 420 520 Q 580 380 720 320 T 980 280";
 
   return (
-    <div className="absolute inset-0 overflow-hidden" aria-hidden>
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       <StoryMotif progress={progress} />
 
       {/* Translucent grade only — the 3D world beneath provides the environment */}
