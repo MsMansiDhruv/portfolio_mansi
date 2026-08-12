@@ -34,10 +34,8 @@ export default function ExperienceOverlay({ progress }) {
     <div className="mx-overlay">
       {key === "hero" ? (
         <Panel align="center">
-          <p className="mx-mono text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.role}</p>
-          <h1 className="mx-statement mx-statement--hero mt-6">{EXPERIENCE_OPENING.name}</h1>
-          <p className="mx-body mt-8 max-w-2xl">{EXPERIENCE_OPENING.line}</p>
-          <p className="mx-mono mt-10 opacity-80">{EXPERIENCE_OPENING.cta}</p>
+          <h1 className="mx-statement mx-statement--hero">{EXPERIENCE_OPENING.name}</h1>
+          <p className="mx-mono mt-10 text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.enter}</p>
         </Panel>
       ) : null}
 

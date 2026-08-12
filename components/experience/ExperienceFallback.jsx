@@ -18,9 +18,8 @@ export default function ExperienceFallback() {
       <QuickViewPanel open={quickOpen} onClose={() => setQuickOpen(false)} />
 
       <div className="px-5 pt-28 text-center">
-        <p className="mx-mono text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.role}</p>
-        <h1 className="mx-statement mx-statement--hero mt-4 text-3xl">{EXPERIENCE_OPENING.name}</h1>
-        <p className="mx-statement--whisper mt-4 text-xl">{EXPERIENCE_OPENING.line}</p>
+        <h1 className="mx-statement mx-statement--hero text-3xl">{EXPERIENCE_OPENING.name}</h1>
+        <p className="mx-mono mt-6 text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.enter}</p>
       </div>
 
       <div className="mx-fallback-grid mx-auto max-w-lg pb-16">

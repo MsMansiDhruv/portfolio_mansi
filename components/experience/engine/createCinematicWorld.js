@@ -71,25 +71,24 @@ function makeIconGeometry(icon) {
   }
 }
 
-/** Avatar travels through the same world as the camera. */
-const AVATAR_KEYS = [
-  { t: 0.0, pos: [1.35, -0.15, 9.2], scale: 1.05 },
-  { t: 0.12, pos: [1.1, -0.25, 6.8], scale: 1 },
-  { t: 0.28, pos: [-1.35, -0.55, 3.4], scale: 0.95 },
-  { t: 0.42, pos: [1.45, -1.35, 1.6], scale: 0.9 },
-  { t: 0.58, pos: [-1.2, -1.85, -1.2], scale: 0.95 },
-  { t: 0.74, pos: [1.35, -1.7, -4.2], scale: 1 },
-  { t: 0.9, pos: [-0.9, -1.2, -6.5], scale: 1.05 },
-  { t: 1.0, pos: [0.55, -0.35, 8.5], scale: 1.15 },
+/** Observer silhouette path — small figure at the edge of a large world. */
+const SILHOUETTE_KEYS = [
+  { t: 0.0, pos: [0.55, -0.85, 8.6], scale: 0.38, yaw: 0.15 },
+  { t: 0.14, pos: [0.9, -0.7, 5.8], scale: 0.36, yaw: -0.4 },
+  { t: 0.3, pos: [-0.85, -1.15, 2.6], scale: 0.34, yaw: 0.55 },
+  { t: 0.45, pos: [1.05, -1.85, 0.4], scale: 0.32, yaw: -0.35 },
+  { t: 0.6, pos: [-0.7, -2.15, -2.4], scale: 0.34, yaw: 0.25 },
+  { t: 0.78, pos: [0.95, -1.95, -5.2], scale: 0.36, yaw: -0.2 },
+  { t: 1.0, pos: [0.35, -0.55, 9.2], scale: 0.4, yaw: 0 },
 ];
 
-function sampleAvatar(progress, out) {
-  let a = AVATAR_KEYS[0];
-  let b = AVATAR_KEYS[AVATAR_KEYS.length - 1];
-  for (let i = 0; i < AVATAR_KEYS.length - 1; i++) {
-    if (progress >= AVATAR_KEYS[i].t && progress <= AVATAR_KEYS[i + 1].t) {
-      a = AVATAR_KEYS[i];
-      b = AVATAR_KEYS[i + 1];
+function sampleSilhouette(progress, out) {
+  let a = SILHOUETTE_KEYS[0];
+  let b = SILHOUETTE_KEYS[SILHOUETTE_KEYS.length - 1];
+  for (let i = 0; i < SILHOUETTE_KEYS.length - 1; i++) {
+    if (progress >= SILHOUETTE_KEYS[i].t && progress <= SILHOUETTE_KEYS[i + 1].t) {
+      a = SILHOUETTE_KEYS[i];
+      b = SILHOUETTE_KEYS[i + 1];
       break;
     }
   }
@@ -101,51 +100,60 @@ function sampleAvatar(progress, out) {
     a.pos[2] + (b.pos[2] - a.pos[2]) * k
   );
   out.scale = a.scale + (b.scale - a.scale) * k;
+  out.yaw = a.yaw + (b.yaw - a.yaw) * k;
 }
 
-/** Soft circular portrait texture from the real photo — lives in WebGL, not HTML chrome. */
-function loadPortraitAvatar(url, onReady) {
-  const loader = new THREE.TextureLoader();
-  loader.load(
-    url,
-    (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.anisotropy = 8;
+/** Featureless back-facing figure — shape and posture only. No face. */
+function createObserverSilhouette(mat) {
+  const group = new THREE.Group();
 
-      const size = 1024;
-      const canvas = document.createElement("canvas");
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext("2d");
-      const img = tex.image;
-      const side = Math.min(img.width, img.height);
-      const sx = (img.width - side) / 2;
-      const sy = (img.height - side) / 2 * 0.35;
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.clip();
-      ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
-      ctx.restore();
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 12), mat);
+  head.position.y = 0.78;
+  head.scale.set(0.95, 1.05, 0.9);
+  group.add(head);
 
-      // Soft rim so she sits in the fogged scene, not as a hard sticker
-      const g = ctx.createRadialGradient(size / 2, size / 2, size * 0.42, size / 2, size / 2, size / 2);
-      g.addColorStop(0, "rgba(0,0,0,0)");
-      g.addColorStop(1, "rgba(0,0,0,0.55)");
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-      ctx.fill();
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), mat);
+  hair.position.set(0, 0.74, -0.04);
+  hair.scale.set(1.05, 1.15, 0.85);
+  group.add(hair);
 
-      const portrait = new THREE.CanvasTexture(canvas);
-      portrait.colorSpace = THREE.SRGBColorSpace;
-      portrait.anisotropy = 8;
-      onReady(portrait, tex);
-    },
-    undefined,
-    () => onReady(null, null)
-  );
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.04, 0.08, 8), mat);
+  neck.position.y = 0.64;
+  group.add(neck);
+
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.38, 4, 10), mat);
+  torso.position.y = 0.32;
+  group.add(torso);
+
+  const hip = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), mat);
+  hip.position.y = 0.05;
+  hip.scale.set(1.15, 0.7, 0.85);
+  group.add(hip);
+
+  const thighL = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.28, 3, 8), mat);
+  thighL.position.set(-0.07, -0.28, 0.01);
+  group.add(thighL);
+  const thighR = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.28, 3, 8), mat);
+  thighR.position.set(0.07, -0.28, 0.01);
+  group.add(thighR);
+
+  const calfL = new THREE.Mesh(new THREE.CapsuleGeometry(0.045, 0.26, 3, 8), mat);
+  calfL.position.set(-0.07, -0.62, 0);
+  group.add(calfL);
+  const calfR = new THREE.Mesh(new THREE.CapsuleGeometry(0.045, 0.26, 3, 8), mat);
+  calfR.position.set(0.07, -0.62, 0);
+  group.add(calfR);
+
+  const armL = new THREE.Mesh(new THREE.CapsuleGeometry(0.035, 0.32, 3, 8), mat);
+  armL.position.set(-0.2, 0.28, -0.02);
+  armL.rotation.z = 0.18;
+  group.add(armL);
+  const armR = new THREE.Mesh(new THREE.CapsuleGeometry(0.035, 0.32, 3, 8), mat);
+  armR.position.set(0.2, 0.28, -0.02);
+  armR.rotation.z = -0.18;
+  group.add(armR);
+
+  return group;
 }
 
 /** Camera — engineer journey: systems overview → dive into pipelines → gallery → pullback */
@@ -255,75 +263,22 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
   });
   scene.add(new THREE.Points(dustGeo, dustMat));
 
-  /* ---------- 3D avatar presence (same plane as the systems world) ---------- */
-  const avatarGroup = new THREE.Group();
-  scene.add(avatarGroup);
-  const avatarState = { pos: new THREE.Vector3(), scale: 1 };
-  const avatarLook = new THREE.Vector3();
-
-  // Body — dark silhouette standing in the world
-  const bodyMat = new THREE.MeshStandardMaterial({
-    color: 0x10141c,
-    emissive: 0x1a2030,
-    emissiveIntensity: 0.15,
-    metalness: 0.2,
-    roughness: 0.85,
-    transparent: true,
-    opacity: 0,
-  });
-  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.55, 6, 12), bodyMat);
-  torso.position.y = 0.05;
-  avatarGroup.add(torso);
-  const legs = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.42, 4, 10), bodyMat);
-  legs.position.set(-0.07, -0.55, 0);
-  avatarGroup.add(legs);
-  const legs2 = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.42, 4, 10), bodyMat);
-  legs2.position.set(0.07, -0.55, 0);
-  avatarGroup.add(legs2);
-
-  // Head — real portrait, circular, fog-aware
-  const headMat = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
-    transparent: true,
-    opacity: 0,
-    roughness: 0.55,
+  /* ---------- Observer silhouette (no face — presence only) ---------- */
+  const silMat = new THREE.MeshStandardMaterial({
+    color: 0x07080c,
+    emissive: 0x12151c,
+    emissiveIntensity: 0.2,
     metalness: 0.05,
-    depthWrite: false,
-  });
-  const head = new THREE.Mesh(new THREE.CircleGeometry(0.28, 48), headMat);
-  head.position.y = 0.72;
-  avatarGroup.add(head);
-
-  // Soft halo behind the head so she reads against dark/light scenes
-  const haloMat = new THREE.MeshBasicMaterial({
-    color: 0xa84848,
+    roughness: 0.95,
     transparent: true,
     opacity: 0,
-    depthWrite: false,
   });
-  const halo = new THREE.Mesh(new THREE.CircleGeometry(0.34, 48), haloMat);
-  halo.position.set(0, 0.72, -0.02);
-  avatarGroup.add(halo);
-
-  const avatarRim = new THREE.PointLight(0xa84848, 0, 4.5);
-  avatarRim.position.set(0.4, 0.8, 0.6);
-  avatarGroup.add(avatarRim);
-
-  let portraitTex = null;
-  let rawPortrait = null;
-  loadPortraitAvatar("/portrait.jpg", (masked, raw) => {
-    if (disposed) {
-      masked?.dispose();
-      raw?.dispose();
-      return;
-    }
-    portraitTex = masked;
-    rawPortrait = raw;
-    if (masked) {
-      headMat.map = masked;
-      headMat.needsUpdate = true;
-    }
-  });
+  const silhouette = createObserverSilhouette(silMat);
+  scene.add(silhouette);
+  const silState = { pos: new THREE.Vector3(), scale: 0.38, yaw: 0 };
+  const silRim = new THREE.PointLight(0xc8c2b4, 0, 3.2);
+  silRim.position.set(0.15, 0.9, -0.45);
+  silhouette.add(silRim);
 
   /* ---------- Systems map — DE icon nodes ---------- */
   const NODE_COUNT = NODE_SPECS.length;
@@ -705,35 +660,17 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     /* Final connected reveal */
     webMat.opacity = finaleT * 0.3;
 
-    /* Avatar — walks the same world as the camera, always present */
-    sampleAvatar(progress, avatarState);
-    const bob = Math.sin(time * 0.0022) * 0.035;
-    avatarGroup.position.set(avatarState.pos.x, avatarState.pos.y + bob, avatarState.pos.z);
-    const s = avatarState.scale * (0.85 + seg(0.02, 0.1) * 0.2);
-    avatarGroup.scale.setScalar(s);
+    /* Observer silhouette — small, backlit, facing into the world (never a portrait) */
+    sampleSilhouette(progress, silState);
+    const bob = Math.sin(time * 0.0018) * 0.012;
+    silhouette.position.set(silState.pos.x, silState.pos.y + bob, silState.pos.z);
+    silhouette.scale.setScalar(silState.scale);
+    // Face into the world / along path — back to the camera, not toward it
+    silhouette.rotation.set(0, Math.PI + silState.yaw, 0);
 
-    // Face the camera so the portrait stays readable in the scene
-    avatarLook.copy(camera.position);
-    avatarLook.y = avatarGroup.position.y + 0.5;
-    avatarGroup.lookAt(avatarLook);
-
-    const avatarVis = Math.min(1, 0.2 + seg(0.01, 0.08) * 0.8);
-    bodyMat.opacity = avatarVis * 0.92;
-    headMat.opacity = avatarVis;
-    haloMat.opacity = avatarVis * 0.22;
-    avatarRim.intensity = avatarVis * (0.45 + Math.sin(time * 0.0018) * 0.12);
-
-    // Near systems map she stands among the icons; during streams she watches from the side
-    if (constellationT > 0.2) {
-      avatarRim.color.setHex(0x5a9ea8);
-      haloMat.color.setHex(0x5a9ea8);
-    } else if (galleryT > 0.2) {
-      avatarRim.color.setHex(0xa84848);
-      haloMat.color.setHex(0xa84848);
-    } else {
-      avatarRim.color.setHex(0xa84848);
-      haloMat.color.setHex(0xa84848);
-    }
+    const silVis = Math.min(1, seg(0.01, 0.06) * 0.95 + 0.05);
+    silMat.opacity = silVis;
+    silRim.intensity = silVis * (0.55 + Math.sin(time * 0.0015) * 0.08);
 
     renderer.render(scene, camera);
   }
@@ -749,16 +686,10 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     latticeMat.dispose();
     webGeo.dispose();
     webMat.dispose();
-    portraitTex?.dispose();
-    rawPortrait?.dispose();
-    head.geometry.dispose();
-    headMat.dispose();
-    halo.geometry.dispose();
-    haloMat.dispose();
-    torso.geometry.dispose();
-    legs.geometry.dispose();
-    legs2.geometry.dispose();
-    bodyMat.dispose();
+    silhouette.traverse((o) => {
+      o.geometry?.dispose?.();
+    });
+    silMat.dispose();
     nodeGroup.traverse((o) => {
       o.geometry?.dispose?.();
       o.material?.dispose?.();
