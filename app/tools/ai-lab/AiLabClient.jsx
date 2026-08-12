@@ -17,7 +17,12 @@ import {
   TerminalSquare,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { useTheme } from "@/components/design-system-v2";
+import ExperienceNav from "@/components/experience/ExperienceNav";
+import QuickViewPanel from "@/components/universe/QuickViewPanel";
 import { formatResponseSections, generateResponse } from "./engine";
+import "@/styles/mansi-experience.css";
+import "@/styles/mansi-ailab.css";
 
 const MODES = [
   {
@@ -479,6 +484,8 @@ function ConversationMessage({ role, children, streaming = false }) {
 export default function AiLabPage() {
   const reducedMotion = useReducedMotion();
   const searchParams = useSearchParams();
+  const { isDark } = useTheme();
+  const [quickOpen, setQuickOpen] = useState(false);
   const [mode, setMode] = useState("ask");
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -622,21 +629,26 @@ export default function AiLabPage() {
   };
 
   return (
-    <main className="min-h-screen min-w-0 overflow-x-hidden bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-white">
-      <div className="mx-auto flex min-h-screen w-full max-w-[90rem] min-w-0 flex-col px-5 py-4 sm:px-6 lg:px-8">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+    <div
+      className="mx-root lab-root min-h-screen min-w-0 overflow-x-hidden"
+      data-theme={isDark ? "dark" : "light"}
+    >
+      <ExperienceNav onQuickView={() => setQuickOpen(true)} />
+      <QuickViewPanel open={quickOpen} onClose={() => setQuickOpen(false)} />
+
+      <div className="mx-auto flex min-h-screen w-full max-w-[90rem] min-w-0 flex-col px-5 pb-8 pt-24 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
           <div className="min-w-0">
-            <Link href="/" className="text-xs font-medium text-teal-700 hover:underline dark:text-teal-400">
-              ← Universe
-            </Link>
-            <p className="mt-2 text-xs uppercase tracking-[0.32em] text-slate-500 dark:text-slate-400">AI Lab</p>
-            <h1 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">Mansi&apos;s thinking system</h1>
-            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mx-coord">REASONING LAYER</p>
+            <h1 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight sm:text-4xl">
+              AI Lab
+            </h1>
+            <p className="mx-whisper mt-3 max-w-xl">
               Six chambers · Each with its own role · Knowledge-grounded
             </p>
           </div>
-          <div className="hidden shrink-0 items-center gap-2 text-sm text-slate-500 dark:text-slate-400 md:flex">
-            <span className="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+          <div className="hidden shrink-0 items-center gap-2 text-sm text-[var(--mx-stone)] md:flex">
+            <span className="inline-flex h-2.5 w-2.5 rounded-full bg-[var(--mx-amber)]" />
             Knowledge-grounded reasoning
           </div>
         </div>
@@ -860,7 +872,7 @@ export default function AiLabPage() {
           />
         </div>
       </div>
-    </main>
+    </div>
   );
 }
 

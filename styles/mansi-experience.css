@@ -30,8 +30,10 @@
   --mx-smoke: var(--mx-graphite);
 }
 
+html[data-theme="light"],
+[data-theme="light"],
 [data-theme="light"] .mx-root {
-  /* Day = CLARITY */
+  /* Day = CLARITY — tokens on html so shell + nav stay consistent */
   --mx-ink: #f3efe7;
   --mx-charcoal: #e8e2d8;
   --mx-graphite: #ddd6ca;
@@ -44,6 +46,11 @@
   --mx-muted-blue: #5a7a8c;
   --mx-panel: rgba(243, 239, 231, 0.72);
   --mx-panel-border: rgba(22, 24, 30, 0.14);
+  --mx-vermilion: var(--mx-amber);
+  --mx-teal: var(--mx-signal);
+  --mx-cream: var(--mx-stone);
+  --mx-muted: var(--mx-stone);
+  --mx-smoke: var(--mx-graphite);
 }
 
 .mx-root {

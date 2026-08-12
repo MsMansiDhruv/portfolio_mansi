@@ -1,0 +1,88 @@
+/* AI Lab — Living System surfaces (day/night via --mx-*) */
+
+.lab-root {
+  background: var(--mx-ink);
+  color: var(--mx-ivory);
+  cursor: auto;
+}
+
+.lab-root .mx-cursor {
+  display: none;
+}
+
+/* Map common slate toolkit surfaces onto Quiet Instrument materials */
+.lab-root .bg-slate-50,
+.lab-root .bg-white,
+.lab-root .dark\:bg-slate-950,
+.lab-root .dark\:bg-slate-900,
+.lab-root .dark\:bg-slate-950\/80 {
+  background-color: var(--mx-panel) !important;
+}
+
+.lab-root .bg-slate-950 {
+  background-color: var(--mx-charcoal) !important;
+  color: var(--mx-ivory) !important;
+}
+
+.lab-root .border-slate-200,
+.lab-root .border-slate-800,
+.lab-root .dark\:border-slate-800,
+.lab-root .dark\:border-slate-700 {
+  border-color: var(--mx-panel-border) !important;
+}
+
+.lab-root .text-slate-950,
+.lab-root .text-slate-900,
+.lab-root .dark\:text-white,
+.lab-root .dark\:text-slate-100 {
+  color: var(--mx-ivory) !important;
+}
+
+.lab-root .text-slate-500,
+.lab-root .text-slate-400,
+.lab-root .dark\:text-slate-400,
+.lab-root .dark\:text-slate-300,
+.lab-root .text-slate-700,
+.lab-root .dark\:text-slate-200 {
+  color: var(--mx-stone) !important;
+}
+
+.lab-root .text-teal-700,
+.lab-root .dark\:text-teal-400,
+.lab-root .text-teal-600,
+.lab-root .dark\:text-teal-500 {
+  color: var(--mx-signal) !important;
+}
+
+.lab-root .border-teal-600,
+.lab-root .dark\:border-teal-500,
+.lab-root .bg-teal-600,
+.lab-root .dark\:bg-teal-600 {
+  border-color: var(--mx-amber) !important;
+  background-color: color-mix(in srgb, var(--mx-amber) 88%, black) !important;
+  color: #0a0c10 !important;
+}
+
+.lab-root .rounded-2xl.border,
+.lab-root .rounded-3xl.border,
+.lab-root .rounded-full.border {
+  background-color: var(--mx-panel);
+  border-color: var(--mx-panel-border);
+}
+
+.lab-root input,
+.lab-root textarea {
+  background: var(--mx-charcoal) !important;
+  color: var(--mx-ivory) !important;
+  border-color: var(--mx-panel-border) !important;
+}
+
+[data-theme="light"] .lab-root input,
+[data-theme="light"] .lab-root textarea {
+  background: #fff !important;
+  color: var(--mx-ivory) !important;
+}
+
+.lab-root button:hover {
+  filter: brightness(1.05);
+}

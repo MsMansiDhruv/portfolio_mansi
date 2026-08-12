@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { ArchitectureFlow, DecisionList, TradeoffPanel } from "@/components/portfolio/storytelling";
 import EditorialNote from "@/components/portfolio/identity/EditorialNote";
@@ -10,9 +10,11 @@ import OlapWorkloadCaseStudy from "@/components/projects/OlapWorkloadCaseStudy";
 import BrainMvpCaseStudy from "@/components/projects/BrainMvpCaseStudy";
 import IntelligencePipelineCaseStudy from "@/components/projects/IntelligencePipelineCaseStudy";
 import { ProjectCaseStudyNav } from "@/components/projects/ProjectCaseStudyNav";
+import { useTheme } from "@/components/design-system-v2";
+import ExperienceNav from "@/components/experience/ExperienceNav";
+import QuickViewPanel from "@/components/universe/QuickViewPanel";
 import InstallationRoom from "@/components/work/InstallationRoom";
 import { getInstallation } from "@/lib/data/work-exhibition";
-import ExperienceNav from "@/components/experience/ExperienceNav";
 import { getRelatedProjects } from "@/lib/data/project-meta";
 import { cn } from "@/lib/cn";
 import "@/styles/mansi-experience.css";
@@ -57,6 +59,8 @@ function ArchitecturePanel({ layers, notes, className }) {
 
 export default function ProjectDetails({ project }) {
   const p = project;
+  const { isDark } = useTheme();
+  const [quickOpen, setQuickOpen] = useState(false);
   const exhibition = getInstallation(p.slug);
   if (exhibition) {
     return <InstallationRoom slug={p.slug} />;
@@ -77,8 +81,9 @@ export default function ProjectDetails({ project }) {
   const hasArchitecture = Boolean(p.architectureLayers?.length);
 
   return (
-    <div className="mx-root wk-root min-h-screen" data-theme="dark">
-      <ExperienceNav onQuickView={() => {}} />
+    <div className="mx-root wk-root min-h-screen" data-theme={isDark ? "dark" : "light"}>
+      <ExperienceNav onQuickView={() => setQuickOpen(true)} />
+      <QuickViewPanel open={quickOpen} onClose={() => setQuickOpen(false)} />
       <div className="mx-auto min-w-0 w-full max-w-6xl animate-fadeIn px-5 pb-20 pt-28 xl:max-w-7xl">
       <div
         className={cn(

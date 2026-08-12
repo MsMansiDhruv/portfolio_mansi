@@ -28,6 +28,7 @@ export function DSv2ThemeProvider({
   children, 
   defaultTheme = 'system',
   syncSystemTheme = true,
+  storageKey = 'ds-v2-theme',
 }) {
   const [theme, setThemeState] = useState(defaultTheme);
   const [mounted, setMounted] = useState(false);
@@ -39,18 +40,25 @@ export function DSv2ThemeProvider({
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }, [theme, mounted]);
 
-  // Initialize from localStorage
+  // Initialize from localStorage (honor storageKey; migrate legacy "theme")
   useEffect(() => {
     setMounted(true);
     try {
-      const stored = localStorage.getItem('ds-v2-theme');
+      let stored = localStorage.getItem(storageKey);
+      if (!stored) {
+        const legacy = localStorage.getItem('theme');
+        if (legacy === 'light' || legacy === 'dark' || legacy === 'system') {
+          stored = legacy;
+          localStorage.setItem(storageKey, legacy);
+        }
+      }
       if (stored === 'light' || stored === 'dark' || stored === 'system') {
         setThemeState(stored);
       }
     } catch {
       // ignore
     }
-  }, []);
+  }, [storageKey]);
 
   // Apply theme to DOM
   useEffect(() => {
@@ -70,7 +78,6 @@ export function DSv2ThemeProvider({
     if (theme !== 'system' || !mounted || !syncSystemTheme) return;
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const onChange = () => {
-      // Force re-render to pick up new system preference
       setThemeState('system');
     };
     mq.addEventListener('change', onChange);
@@ -80,7 +87,9 @@ export function DSv2ThemeProvider({
   const setTheme = (next) => {
     setThemeState(next);
     try {
-      localStorage.setItem('ds-v2-theme', next);
+      localStorage.setItem(storageKey, next);
+      // keep legacy key in sync for older toggles
+      localStorage.setItem('theme', next);
     } catch {
       // ignore
     }

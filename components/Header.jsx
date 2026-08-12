@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, ChevronDown, Command, Moon, Sun } from "lucide-react";
+import { Menu, X, ChevronDown, Command } from "lucide-react";
 import { useTheme } from "@/components/design-system-v2";
 import { cn } from "@/lib/cn";
 import StorySiteNav, { StorySiteBrand } from "@/components/story/StorySiteNav";
@@ -189,15 +189,15 @@ export default function Header({ onCommandOpen, cinematic = false }) {
               <button
                 type="button"
                 onClick={toggleTheme}
-                aria-label="Toggle theme"
+                aria-label={isDark ? "Switch to day — clarity" : "Switch to night — focus"}
                 className={cn(
-                  "inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2",
+                  "inline-flex min-h-[44px] items-center justify-center rounded-full border px-3 text-xs font-medium uppercase tracking-[0.16em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2",
                   onDarkHero
                     ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
                     : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                 )}
               >
-                {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                {isDark ? "Day" : "Night"}
               </button>
 
               <button
