@@ -1,35 +1,17 @@
 "use client";
 
-import { EXHIBITION_EXHIBITS } from "@/lib/data/exhibition-exhibits";
-import { smoothstep } from "@/lib/data/precision";
-
 /**
- * Detail plane only — journey hopping lives in JourneyDock.
+ * Editorial plane — only after the visitor has entered an exhibit.
+ * High-contrast graphite/ivory surface. Never over busy particles.
  */
 export default function ExhibitionPanel({
   theme,
-  progress,
-  nearExhibit,
   activeExhibit,
   phase,
   onRead,
   onReturn,
 }) {
-  // Keep hall intro quiet; dock owns navigation
-  if (!activeExhibit && progress < 0.04) return null;
-
-  if (!activeExhibit) {
-    if (!nearExhibit || progress < 0.68) return null;
-    return (
-      <div className="mp-exhibition-ui" data-theme={theme}>
-        <div className="mp-info-plane mp-info-plane--hall mp-info-plane--compact">
-          <p className="mp-info-mono">PROJECT {nearExhibit.number}</p>
-          <p className="mp-info-near-title">{nearExhibit.title}</p>
-          <p className="mp-info-caption">{nearExhibit.tagline}</p>
-        </div>
-      </div>
-    );
-  }
+  if (!activeExhibit) return null;
 
   return (
     <div className="mp-exhibition-ui" data-theme={theme}>
@@ -41,22 +23,22 @@ export default function ExhibitionPanel({
 
           {phase === "immerse" && (
             <p className="mp-info-body">
-              Use Next / Prev to move between installations. Open details when ready.
+              Follow the data through the system.
             </p>
           )}
 
           {phase === "read" && (
             <div className="mp-info-sections">
               <section>
-                <h3>The problem</h3>
+                <h3>Problem</h3>
                 <p>{activeExhibit.problem}</p>
               </section>
               <section>
-                <h3>The system</h3>
+                <h3>Approach</h3>
                 <p>{activeExhibit.system}</p>
               </section>
               <section>
-                <h3>Key decisions</h3>
+                <h3>Architecture</h3>
                 <p>{activeExhibit.decisions}</p>
               </section>
               <section>
@@ -64,7 +46,7 @@ export default function ExhibitionPanel({
                 <p className="mp-info-tech">{activeExhibit.technology}</p>
               </section>
               <section>
-                <h3>Outcome</h3>
+                <h3>Result</h3>
                 <p>{activeExhibit.outcome}</p>
               </section>
             </div>
@@ -77,30 +59,11 @@ export default function ExhibitionPanel({
               </button>
             )}
             <button type="button" className="mp-info-btn mp-info-btn--ghost" onClick={onReturn}>
-              Return to plaza
+              Return to exhibition
             </button>
           </div>
         </div>
       </div>
     </div>
   );
-}
-
-export function nearestExhibitFromProgress(progress) {
-  if (progress < 0.68) return null;
-  let best = null;
-  let bestDist = Infinity;
-  for (const ex of EXHIBITION_EXHIBITS) {
-    const at = ex.appearAt ?? 0.75;
-    const dist = Math.abs(progress - (at + 0.04));
-    if (progress >= at - 0.06 && dist < bestDist) {
-      bestDist = dist;
-      best = ex;
-    }
-  }
-  return best;
-}
-
-export function hallPresence(progress) {
-  return smoothstep(0.08, 0.18, progress);
 }

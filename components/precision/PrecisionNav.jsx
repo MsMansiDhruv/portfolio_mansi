@@ -4,16 +4,15 @@ import ConvergenceMark from "./ConvergenceMark";
 import { NAV_LINKS } from "@/lib/data/precision";
 
 /**
- * Persistent nav — WORLD destinations travel in-world; external pages
- * journey to an aperture progress then route.
+ * Persistent nav — destinations travel in-world; never teleports.
  */
-export default function PrecisionNav({ theme, onToggleTheme, onTravel }) {
+export default function PrecisionNav({ theme, onToggleTheme, onTravel, onHome }) {
   return (
     <nav className="mp-nav" aria-label="Mansi Precision">
       <button
         type="button"
         className="mp-brand mp-brand--btn"
-        onClick={() => onTravel?.({ id: "world", progress: 0, href: null })}
+        onClick={() => onHome?.()}
       >
         <ConvergenceMark size={18} />
         <span>Mansi</span>

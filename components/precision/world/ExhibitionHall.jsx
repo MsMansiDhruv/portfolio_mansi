@@ -6,8 +6,9 @@ import ProjectExhibit from "./ProjectExhibit";
 export default function ExhibitionHall({
   theme,
   activeSlug,
-  nearSlug,
+  hoverSlug,
   onSelectExhibit,
+  onHoverExhibit,
   cursorRef,
 }) {
   return (
@@ -17,9 +18,10 @@ export default function ExhibitionHall({
           key={ex.slug}
           exhibit={ex}
           theme={theme}
-          active={nearSlug === ex.slug}
+          hovered={hoverSlug === ex.slug}
           focused={activeSlug === ex.slug}
           onSelect={onSelectExhibit}
+          onHover={onHoverExhibit}
           cursorRef={cursorRef}
         />
       ))}

@@ -1,32 +1,27 @@
 "use client";
 
 import { useMemo, useRef } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { smoothstep, THEME_PALETTE } from "@/lib/data/precision";
+import { THEME_PALETTE } from "@/lib/data/precision";
+import { EXHIBITION_EXHIBITS } from "@/lib/data/exhibition-exhibits";
 
-const COUNT = 2400;
+const COUNT = 980;
 
 /**
- * Living data field — every point is a datum with velocity and purpose.
- * Quiet at enter → streams join → branch → converge → singular output.
- * Cursor subtly bends nearby particles.
+ * Interactive data field — particles are records with velocity and purpose.
+ * Quiet by default. Cursor bends nearby streams. Hovered exhibits attract flow.
  */
-export default function DataField({
-  progressRef,
-  theme,
-  cursorRef,
-  activeSlug,
-}) {
+export default function DataField({ theme, cursorRef, interactionRef }) {
   const points = useRef();
-  const { camera } = useThree();
   const p = THEME_PALETTE[theme] || THEME_PALETTE.night;
+  const energy = useRef(0.22);
 
   const { positions, velocities, phases, roles, colors, baseColor } = useMemo(() => {
     const positions = new Float32Array(COUNT * 3);
     const velocities = new Float32Array(COUNT * 3);
     const phases = new Float32Array(COUNT);
-    const roles = new Float32Array(COUNT); // 0 streamA, 1 streamB, 2 streamC, 3 reject, 4 converge, 5 output
+    const roles = new Float32Array(COUNT); // 0–2 streams, 3 reject, 4 merge, 5 output
     const colors = new Float32Array(COUNT * 3);
     const base = new THREE.Color(theme === "day" ? "#3a4a5c" : "#8aa0b8");
     const amber = new THREE.Color(p.amber);
@@ -34,28 +29,31 @@ export default function DataField({
 
     for (let i = 0; i < COUNT; i++) {
       const i3 = i * 3;
-      const role = i < COUNT * 0.28 ? 0 : i < COUNT * 0.5 ? 1 : i < COUNT * 0.68 ? 2 : i < COUNT * 0.78 ? 3 : i < COUNT * 0.9 ? 4 : 5;
+      const role =
+        i < COUNT * 0.3 ? 0 :
+        i < COUNT * 0.55 ? 1 :
+        i < COUNT * 0.72 ? 2 :
+        i < COUNT * 0.82 ? 3 :
+        i < COUNT * 0.92 ? 4 : 5;
       roles[i] = role;
       phases[i] = Math.random();
 
-      // Spawn far ahead (+Z), travel toward convergence (0) then output (−Z)
       const lane =
-        role === 0 ? -1.8 + Math.random() * 0.6 :
-        role === 1 ? -0.3 + Math.random() * 0.6 :
-        role === 2 ? 1.2 + Math.random() * 0.6 :
-        role === 3 ? (Math.random() - 0.5) * 4 :
-        role === 5 ? (Math.random() - 0.5) * 0.25 :
-        (Math.random() - 0.5) * 1.2;
+        role === 0 ? -1.6 + Math.random() * 0.5 :
+        role === 1 ? -0.25 + Math.random() * 0.5 :
+        role === 2 ? 1.1 + Math.random() * 0.5 :
+        role === 5 ? (Math.random() - 0.5) * 0.2 :
+        (Math.random() - 0.5) * 2.2;
 
       positions[i3] = lane;
-      positions[i3 + 1] = 0.9 + Math.random() * 1.4;
-      positions[i3 + 2] = 18 + Math.random() * 8;
+      positions[i3 + 1] = 0.95 + Math.random() * 1.1;
+      positions[i3 + 2] = 12 + Math.random() * 6;
 
-      velocities[i3] = (Math.random() - 0.5) * 0.02;
-      velocities[i3 + 1] = (Math.random() - 0.5) * 0.01;
-      velocities[i3 + 2] = -0.35 - Math.random() * 0.55;
+      velocities[i3] = (Math.random() - 0.5) * 0.015;
+      velocities[i3 + 1] = (Math.random() - 0.5) * 0.008;
+      velocities[i3 + 2] = -0.28 - Math.random() * 0.4;
 
-      const c = role === 5 ? amber : role === 3 ? cyan.clone().multiplyScalar(0.55) : role >= 4 ? amber : base;
+      const c = role === 5 ? amber : role === 3 ? cyan.clone().multiplyScalar(0.55) : base;
       colors[i3] = c.r;
       colors[i3 + 1] = c.g;
       colors[i3 + 2] = c.b;
@@ -74,126 +72,114 @@ export default function DataField({
   useFrame((_, delta) => {
     if (!points.current) return;
     const dt = Math.min(delta, 0.05);
-    const g = progressRef.current || 0;
+    const ix = interactionRef?.current;
+    const hoverSlug = ix?.hoverSlug || null;
+    const activeSlug = ix?.activeSlug || null;
+    const inside = !!activeSlug;
+
+    const hoverEx = hoverSlug
+      ? EXHIBITION_EXHIBITS.find((e) => e.slug === hoverSlug)
+      : null;
+
+    const targetEnergy = inside ? 0.35 : hoverEx ? 0.72 : 0.28;
+    energy.current = THREE.MathUtils.damp(energy.current, targetEnergy, 2.2, dt);
+    const e = energy.current;
+
     const pos = points.current.geometry.attributes.position.array;
     const col = points.current.geometry.attributes.color.array;
-
-    // Awaken: quiet → stream → join → branch → converge → output
-    const awakeA = smoothstep(0.08, 0.2, g);
-    const awakeB = smoothstep(0.16, 0.3, g);
-    const awakeC = smoothstep(0.24, 0.38, g);
-    const chaos = smoothstep(0.34, 0.48, g);
-    const converge = smoothstep(0.46, 0.58, g);
-    const clarified = smoothstep(0.54, 0.62, g);
-    const output = smoothstep(0.58, 0.72, g);
-    const work = smoothstep(0.68, 0.85, g);
-
-    // Hold during clarity — reduce motion
-    const hold = converge * (1 - output * 0.85);
-    const speedScale = (0.15 + awakeA * 0.85) * (1 - hold * 0.72) * (activeSlug ? 0.35 : 1);
-
     const cursor = cursorRef?.current;
     const cx = cursor?.x ?? 0;
     const cy = cursor?.y ?? 1.2;
-    const cz = cursor?.z ?? 10;
+    const cz = cursor?.z ?? 8;
 
     for (let i = 0; i < COUNT; i++) {
       const i3 = i * 3;
       const role = roles[i];
-      let alive =
-        role === 0 ? awakeA :
-        role === 1 ? awakeB :
-        role === 2 ? awakeC :
-        role === 3 ? chaos * 0.7 :
-        role === 4 ? converge :
-        output;
+      phases[i] += dt * (0.2 + e * 0.55);
 
-      if (alive < 0.02) {
-        // Park quietly off-volume when dormant
-        if (pos[i3 + 2] < 22) {
-          pos[i3 + 2] = 22 + Math.random() * 4;
-        }
-        continue;
-      }
-
-      phases[i] += dt * (0.15 + speedScale * 0.4);
       let x = pos[i3];
       let y = pos[i3 + 1];
       let z = pos[i3 + 2];
 
       let vx = velocities[i3];
       let vy = velocities[i3 + 1];
-      let vz = velocities[i3 + 2] * speedScale;
+      let vz = velocities[i3 + 2] * (0.45 + e * 0.9);
 
-      // Target lanes by role / world phase
       let targetX =
-        role === 0 ? -1.6 :
+        role === 0 ? -1.45 :
         role === 1 ? 0 :
-        role === 2 ? 1.6 :
-        role === 3 ? x + Math.sin(phases[i] * 3) * 0.8 :
-        role === 5 ? Math.sin(phases[i] * 0.7) * 0.08 :
-        0;
+        role === 2 ? 1.45 :
+        role === 3 ? x + Math.sin(phases[i] * 2.4) * 0.6 :
+        role === 5 ? Math.sin(phases[i] * 0.6) * 0.06 :
+        Math.sin(phases[i] + role) * 0.4;
 
-      if (chaos > 0.1 && role < 3) {
-        targetX += Math.sin(phases[i] * 2.2 + role) * chaos * 1.4;
-      }
-      if (converge > 0.05 && role < 4) {
-        targetX = THREE.MathUtils.lerp(targetX, 0, converge);
-      }
-      if (role === 3 && chaos > 0.2) {
-        // Rejected data drifts outward / falls
-        targetX = (x > 0 ? 1 : -1) * (2.8 + Math.random());
-        vy -= dt * 0.35;
-      }
-      if (role === 5 || (clarified > 0.5 && role === 4)) {
-        targetX *= 1 - clarified;
-        vz = -0.55 * speedScale * (0.4 + output);
+      // Merge toward center as streams travel
+      if (z < 6 && role < 3) {
+        targetX *= Math.max(0.15, (z + 4) / 10);
       }
 
-      // Soft cursor influence — expensive, subtle
+      // Rejected drift
+      if (role === 3) {
+        targetX = (x >= 0 ? 1 : -1) * (2.2 + Math.sin(phases[i]) * 0.4);
+        vy -= dt * 0.25;
+      }
+
+      // Attract toward hovered exhibit — data discovers the installation
+      if (hoverEx && role < 5) {
+        const hx = hoverEx.position[0];
+        const hy = hoverEx.position[1] + 1.4;
+        const hz = hoverEx.position[2];
+        const dx = hx - x;
+        const dy = hy - y;
+        const dz = hz - z;
+        const d = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
+        if (d < 9) {
+          const pull = (1 - d / 9) * 0.055;
+          vx += (dx / d) * pull;
+          vy += (dy / d) * pull * 0.45;
+          vz += (dz / d) * pull * 0.35;
+        }
+      }
+
+      // Cursor influence — bend / separate
       const dx = x - cx;
       const dy = y - cy;
       const dz = z - cz;
       const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-      if (dist < 2.4 && dist > 0.01) {
-        const force = (1 - dist / 2.4) * 0.045;
+      if (dist < 2.2 && dist > 0.01) {
+        const force = (1 - dist / 2.2) * 0.055;
         vx += (dx / dist) * force;
-        vy += (dy / dist) * force * 0.5;
-        vz += (dz / dist) * force * 0.25;
+        vy += (dy / dist) * force * 0.45;
+        vz += (dz / dist) * force * 0.2;
       }
 
-      x += (targetX - x) * Math.min(1, dt * 1.4) + vx;
-      y += vy * dt * 8;
-      z += vz * (0.9 + Math.sin(phases[i]) * 0.08);
+      x += (targetX - x) * Math.min(1, dt * 1.35) + vx;
+      y += vy * dt * 7;
+      z += vz * (0.92 + Math.sin(phases[i]) * 0.06);
 
-      // Vertical settle toward path height
-      const pathY = role === 5 ? 1.35 : 1.1 + Math.sin(phases[i] + role) * 0.25;
-      y += (pathY - y) * dt * 1.2;
+      const pathY = role === 5 ? 1.32 : 1.05 + Math.sin(phases[i] + role) * 0.22;
+      y += (pathY - y) * dt * 1.15;
 
-      // Recycle
-      if (z < -22 || (role === 3 && y < 0.2)) {
-        z = 18 + Math.random() * 6;
+      if (z < -10 || (role === 3 && y < 0.15)) {
+        z = 12 + Math.random() * 5;
         x =
-          role === 0 ? -1.8 + Math.random() * 0.5 :
+          role === 0 ? -1.6 + Math.random() * 0.45 :
           role === 1 ? -0.2 + Math.random() * 0.4 :
-          role === 2 ? 1.3 + Math.random() * 0.5 :
-          (Math.random() - 0.5) * 3;
-        y = 0.95 + Math.random() * 1.2;
+          role === 2 ? 1.2 + Math.random() * 0.45 :
+          (Math.random() - 0.5) * 2.5;
+        y = 0.95 + Math.random() * 1.0;
         vy = 0;
       }
 
-      // Work zone: keep a thinner presence near exhibits
-      if (work > 0.2 && role < 4 && z < -4) {
-        z = THREE.MathUtils.lerp(z, -4 + Math.random() * 2, work * 0.02);
-      }
+      // Dim world streams while inside an exhibit
+      const dim = inside ? 0.28 : 1;
 
       pos[i3] = x;
       pos[i3 + 1] = y;
       pos[i3 + 2] = z;
 
-      // Dim / tint by role
-      const a = Math.min(1, alive * 1.15);
-      if (role === 5 && output > 0.2) {
+      const a = Math.min(1, (0.35 + e * 0.9) * dim);
+      if (role === 5) {
         col[i3] = 0.88 * a;
         col[i3 + 1] = 0.62 * a;
         col[i3 + 2] = 0.2 * a;
@@ -210,22 +196,23 @@ export default function DataField({
 
     points.current.geometry.attributes.position.needsUpdate = true;
     points.current.geometry.attributes.color.needsUpdate = true;
-    points.current.material.opacity = theme === "day" ? 0.72 : 0.85;
+    points.current.material.opacity = theme === "day" ? 0.68 : 0.82;
 
-    // Face camera slightly for readability
-    void camera;
+    if (interactionRef?.current) {
+      interactionRef.current.energy = e;
+    }
   });
 
   return (
     <points ref={points} geometry={geom} frustumCulled={false}>
       <pointsMaterial
-        size={theme === "day" ? 0.045 : 0.055}
+        size={theme === "day" ? 0.032 : 0.038}
         sizeAttenuation
         vertexColors
         transparent
-        opacity={0.85}
+        opacity={0.62}
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={THREE.NormalBlending}
       />
     </points>
   );

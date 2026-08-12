@@ -1,17 +1,25 @@
 "use client";
 
-import {
-  PRECISION_BEATS,
-  remap,
-  smoothstep,
-  getConvergenceState,
-} from "@/lib/data/precision";
+import { useEffect, useState } from "react";
+import { getConvergenceState } from "@/lib/data/precision";
 
 /**
- * Sparse journey typography + Clarification signature hold.
+ * Sparse spatial chrome — no scroll cue, no presentation typography stack.
  */
-export default function PrecisionOverlay({ progress, theme, exhibitActive }) {
-  const p = progress;
+export default function PrecisionOverlay({ theme, exhibitActive, energyRef }) {
+  const [energy, setEnergy] = useState(0.25);
+
+  useEffect(() => {
+    let raf;
+    const loop = () => {
+      setEnergy(energyRef?.current?.energy ?? 0.25);
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [energyRef]);
+
+  const state = getConvergenceState(energy);
 
   if (exhibitActive) {
     return (
@@ -24,52 +32,12 @@ export default function PrecisionOverlay({ progress, theme, exhibitActive }) {
     );
   }
 
-  const titleOp = smoothstep(0.02, 0.1, p) * (1 - smoothstep(0.18, 0.28, p));
-  const roleOp = smoothstep(0.05, 0.12, p) * (1 - smoothstep(0.2, 0.3, p));
-  const clarityOp = smoothstep(0.5, 0.56, p) * (1 - smoothstep(0.62, 0.7, p));
-  const streamHint = smoothstep(0.14, 0.22, p) * (1 - smoothstep(0.32, 0.4, p));
-
-  const convLocal = remap(p, PRECISION_BEATS.convergence.start, PRECISION_BEATS.clarity.end);
-  const state = getConvergenceState(convLocal);
-
   return (
     <div className="mp-overlay mp-overlay--spatial">
       <div className="mp-meta mp-meta--tl">MP-WORLD · DATA</div>
       <div className="mp-meta mp-meta--tr">{state.label}</div>
       <div className="mp-meta mp-meta--br">
         {theme === "day" ? "DAY · CLARITY" : "NIGHT · FOCUS"}
-      </div>
-
-      <div
-        className="mp-copy mp-copy--enter"
-        style={{ opacity: titleOp, pointerEvents: titleOp > 0.05 ? "auto" : "none" }}
-      >
-        <h1 className="mp-title" style={{ opacity: titleOp }}>
-          Mansi
-        </h1>
-        <p className="mp-role" style={{ opacity: roleOp }}>
-          Data Engineer · Builder · Explorer
-        </p>
-      </div>
-
-      <div className="mp-copy mp-copy--hint" style={{ opacity: streamHint }}>
-        <p className="mp-hint">Data begins to move.</p>
-      </div>
-
-      <div
-        className="mp-copy mp-copy--clarity"
-        style={{ opacity: clarityOp, pointerEvents: "none" }}
-      >
-        <p className="mp-clarity-stack">
-          <span>CLARITY</span>
-          <span>IS AN</span>
-          <span>ENGINEERING</span>
-          <span>DECISION.</span>
-        </p>
-      </div>
-
-      <div className="mp-scroll-cue" style={{ opacity: titleOp * 0.7 }}>
-        <span>SCROLL TO TRAVEL</span>
       </div>
     </div>
   );

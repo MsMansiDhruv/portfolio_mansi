@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
-import { PRECISION_ASSETS, smoothstep, lerp } from "@/lib/data/precision";
+import { PRECISION_ASSETS } from "@/lib/data/precision";
 
 function cropFigure(image, opts) {
   const { x, y, w, h } = opts;
@@ -45,10 +45,10 @@ function cropFigure(image, opts) {
 }
 
 /**
- * Cinematic Mansi — digitized from authored stills (unaltered face).
- * Sparse presence: scale reference, not the visual centerpiece.
+ * Human-scale Mansi — sparse presence inside the world.
+ * Existing character asset, unaltered face. Not a hero illustration.
  */
-export default function MansiFigure({ progressRef, theme, activeSlug }) {
+export default function MansiFigure({ theme, interactionRef, activeSlug }) {
   const root = useRef();
   const plate = useRef();
   const nightImg = useLoader(THREE.TextureLoader, PRECISION_ASSETS.lookingBack);
@@ -73,38 +73,29 @@ export default function MansiFigure({ progressRef, theme, activeSlug }) {
   useFrame(({ camera }, delta) => {
     if (!root.current) return;
     const dt = Math.min(delta, 0.05);
-    const g = progressRef.current || 0;
+    const hide = !!activeSlug;
+    root.current.visible = !hide;
+    if (hide) return;
 
-    // Appear sparingly: far at start, approach mid, leave during deep work/exhibit
-    const show =
-      smoothstep(0.02, 0.12, g) *
-      (1 - smoothstep(0.62, 0.78, g)) *
-      (activeSlug ? 0 : 1);
+    const energy = interactionRef?.current?.energy ?? 0.25;
+    // Observe near home — slight drift toward live streams
+    const tx = 2.15 + Math.sin(energy * 2) * 0.15;
+    const tz = 9.8 - energy * 1.4;
 
-    root.current.visible = show > 0.05;
-    if (show < 0.05) return;
-
-    const approach = smoothstep(0.1, 0.35, g);
-    const mid = smoothstep(0.35, 0.55, g);
-
-    const x = lerp(2.4, 1.6, approach) + lerp(0, -0.4, mid);
-    const z = lerp(17.5, 11.5, approach) + lerp(0, -4.5, mid);
-
-    root.current.position.x = THREE.MathUtils.damp(root.current.position.x, x, 1.6, dt);
-    root.current.position.z = THREE.MathUtils.damp(root.current.position.z, z, 1.6, dt);
-    root.current.scale.setScalar(1.05 + approach * 0.08);
+    root.current.position.x = THREE.MathUtils.damp(root.current.position.x, tx, 1.2, dt);
+    root.current.position.z = THREE.MathUtils.damp(root.current.position.z, tz, 1.2, dt);
 
     if (plate.current) {
-      plate.current.lookAt(camera.position.x, root.current.position.y + 1.1, camera.position.z);
+      plate.current.lookAt(camera.position.x, root.current.position.y + 1.05, camera.position.z);
     }
   });
 
   if (!map) return null;
 
   return (
-    <group ref={root} position={[2.4, 0, 17.5]}>
-      <mesh ref={plate} position={[0, 1.15, 0]}>
-        <planeGeometry args={[0.85, 1.85]} />
+    <group ref={root} position={[2.2, 0, 10]}>
+      <mesh ref={plate} position={[0, 1.05, 0]}>
+        <planeGeometry args={[0.72, 1.55]} />
         <meshBasicMaterial
           map={map}
           transparent
@@ -113,9 +104,9 @@ export default function MansiFigure({ progressRef, theme, activeSlug }) {
           side={THREE.DoubleSide}
         />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.015, 0]}>
-        <circleGeometry args={[0.22, 24]} />
-        <meshBasicMaterial color="#000" transparent opacity={theme === "day" ? 0.08 : 0.22} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 0]}>
+        <circleGeometry args={[0.18, 24]} />
+        <meshBasicMaterial color="#000" transparent opacity={theme === "day" ? 0.07 : 0.2} />
       </mesh>
     </group>
   );

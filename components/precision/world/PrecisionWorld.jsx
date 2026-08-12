@@ -8,55 +8,62 @@ import DataField from "./DataField";
 import ExhibitionHall from "./ExhibitionHall";
 import MansiFigure from "./MansiFigure";
 import WorldLighting from "./WorldLighting";
+import WorldControls from "./WorldControls";
 import Convergence from "./Convergence";
 
 export default function PrecisionWorld({
   theme,
-  progressRef,
-  exhibitRef,
+  cameraTargetRef,
+  lookOffsetRef,
+  interactionRef,
   activeSlug,
-  nearSlug,
+  hoverSlug,
   onSelectExhibit,
-  activeExhibit,
+  onHoverExhibit,
+  controlsEnabled,
 }) {
-  const cursorRef = useRef({ x: 0, y: 1.25, z: 12 });
+  const cursorRef = useRef({ x: 0, y: 1.25, z: 10 });
 
   return (
     <>
       <WorldLighting theme={theme} />
-      <CameraRig progressRef={progressRef} exhibitRef={exhibitRef} />
+      <CameraRig cameraTargetRef={cameraTargetRef} lookOffsetRef={lookOffsetRef} />
+      <WorldControls
+        cameraTargetRef={cameraTargetRef}
+        lookOffsetRef={lookOffsetRef}
+        enabled={controlsEnabled}
+      />
       <CursorBridge cursorRef={cursorRef} />
       <Architecture theme={theme} />
 
       <Suspense fallback={null}>
         <DataField
-          progressRef={progressRef}
           theme={theme}
           cursorRef={cursorRef}
-          activeSlug={activeSlug}
+          interactionRef={interactionRef}
         />
       </Suspense>
 
       <Suspense fallback={null}>
         <MansiFigure
           theme={theme}
-          progressRef={progressRef}
+          interactionRef={interactionRef}
           activeSlug={activeSlug}
         />
       </Suspense>
 
       <Suspense fallback={null}>
-        <Convergence theme={theme} progressRef={progressRef} />
+        <Convergence theme={theme} interactionRef={interactionRef} />
       </Suspense>
 
       <Suspense fallback={null}>
         <ExhibitionHall
           theme={theme}
           activeSlug={activeSlug}
-          nearSlug={nearSlug}
+          hoverSlug={hoverSlug}
           onSelectExhibit={onSelectExhibit}
+          onHoverExhibit={onHoverExhibit}
           cursorRef={cursorRef}
-          activeExhibit={activeExhibit}
         />
       </Suspense>
     </>

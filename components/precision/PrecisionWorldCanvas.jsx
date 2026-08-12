@@ -4,17 +4,21 @@ import { Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import * as THREE from "three";
 import PrecisionWorld from "./world/PrecisionWorld";
+import { THEME_PALETTE } from "@/lib/data/precision";
 
 export default function PrecisionWorldCanvas({
-  progressRef,
   theme,
-  exhibitRef,
+  cameraTargetRef,
+  lookOffsetRef,
+  interactionRef,
   activeSlug,
-  nearSlug,
+  hoverSlug,
   onSelectExhibit,
-  activeExhibit,
+  onHoverExhibit,
+  controlsEnabled,
 }) {
   const [mounted, setMounted] = useState(false);
+  const palette = THEME_PALETTE[theme] || THEME_PALETTE.night;
 
   useEffect(() => {
     setMounted(true);
@@ -28,7 +32,7 @@ export default function PrecisionWorldCanvas({
     <div className="mp-stage mp-stage--world">
       <Canvas
         dpr={[1, 1.5]}
-        camera={{ fov: 38, near: 0.1, far: 120, position: [0.2, 1.65, 22] }}
+        camera={{ fov: 38, near: 0.1, far: 100, position: [0.2, 1.62, 15.5] }}
         gl={{
           antialias: true,
           alpha: false,
@@ -39,18 +43,22 @@ export default function PrecisionWorldCanvas({
         shadows
         style={{ width: "100%", height: "100%" }}
         onCreated={({ gl }) => {
-          gl.setClearColor("#0c121c");
+          gl.setClearColor(palette.background);
         }}
       >
+        <color attach="background" args={[palette.background]} />
+        <fog attach="fog" args={[palette.fog, palette.fogNear, palette.fogFar]} />
         <Suspense fallback={null}>
           <PrecisionWorld
             theme={theme}
-            progressRef={progressRef}
-            exhibitRef={exhibitRef}
+            cameraTargetRef={cameraTargetRef}
+            lookOffsetRef={lookOffsetRef}
+            interactionRef={interactionRef}
             activeSlug={activeSlug}
-            nearSlug={nearSlug}
+            hoverSlug={hoverSlug}
             onSelectExhibit={onSelectExhibit}
-            activeExhibit={activeExhibit}
+            onHoverExhibit={onHoverExhibit}
+            controlsEnabled={controlsEnabled}
           />
         </Suspense>
       </Canvas>

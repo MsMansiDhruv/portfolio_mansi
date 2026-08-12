@@ -38,20 +38,29 @@
     rgba(8, 12, 20, 0.4) 100%
   );
   --mp-grade: none;
-  --mp-scroll-h: 720vh;
 
   position: relative;
   width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--mp-ink);
   color: var(--mp-text);
   font-family: var(--mp-font-body);
 }
 
+.mp-root--interactive {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body.mp-world-lock {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
 .mp-scroll-space {
-  height: var(--mp-scroll-h);
-  width: 100%;
-  pointer-events: none;
-  visibility: hidden;
+  display: none;
 }
 
 .mp-root[data-theme="day"] {

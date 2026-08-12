@@ -12,7 +12,7 @@ const N = 900;
  * Exhibit-local data pipeline — behaviour differs per real project metaphor.
  * Particles are the transition and the explanation.
  */
-export default function ExhibitPipeline({ exhibit, theme, active, cursorRef }) {
+export default function ExhibitPipeline({ exhibit, theme, active, intensity = 0, cursorRef }) {
   const points = useRef();
   const p = THEME_PALETTE[theme] || THEME_PALETTE.night;
   const pipeline = getPipeline(exhibit?.slug);
@@ -47,18 +47,27 @@ export default function ExhibitPipeline({ exhibit, theme, active, cursorRef }) {
   }, [positions, colors]);
 
   useFrame((_, delta) => {
-    if (!points.current || !active || !exhibit) return;
+    if (!points.current || !exhibit) return;
     const dt = Math.min(delta, 0.05);
+    const live = active && intensity > 0.05;
+    points.current.visible = live;
+    if (!live) return;
     const pos = points.current.geometry.attributes.position.array;
     const col = points.current.geometry.attributes.color.array;
     const origin = exhibit.position;
     const mode = pipeline.mode;
     const stages = pipeline.stages || [];
     const cursor = cursorRef?.current;
+    const speed = 0.2 + intensity * 0.75;
+
+    // World-space origin for cursor influence (parent group already places us)
+    const ox = origin[0];
+    const oy = origin[1];
+    const oz = origin[2];
 
     for (let i = 0; i < N; i++) {
       const i3 = i * 3;
-      phases[i] += dt * (0.35 + (active ? 0.55 : 0));
+      phases[i] += dt * (0.25 + speed);
 
       let t = (phases[i] % 1);
       let rejected = states[i] > 0.5;
@@ -71,7 +80,7 @@ export default function ExhibitPipeline({ exhibit, theme, active, cursorRef }) {
 
       // Rejection chance at stage
       if (!rejected && stage?.reject > 0 && local > 0.45 && local < 0.55) {
-        if (Math.random() < stage.reject * 0.04) {
+        if (Math.random() < stage.reject * 0.035 * intensity) {
           states[i] = 1;
           rejected = true;
         }
@@ -131,9 +140,9 @@ export default function ExhibitPipeline({ exhibit, theme, active, cursorRef }) {
 
       // Cursor bend (local space)
       if (cursor) {
-        const wx = origin[0] + x;
-        const wy = origin[1] + y;
-        const wz = origin[2] + z;
+        const wx = ox + x;
+        const wy = oy + y;
+        const wz = oz + z;
         const dx = wx - cursor.x;
         const dy = wy - cursor.y;
         const dz = wz - cursor.z;
@@ -161,36 +170,36 @@ export default function ExhibitPipeline({ exhibit, theme, active, cursorRef }) {
 
     points.current.geometry.attributes.position.needsUpdate = true;
     points.current.geometry.attributes.color.needsUpdate = true;
-    points.current.visible = !!active;
+    points.current.material.opacity = 0.35 + intensity * 0.55;
   });
 
   if (!exhibit) return null;
 
   return (
-    <group position={exhibit.position}>
+    <group>
       {/* Quiet architectural gates — minimal, not decorative clutter */}
       {(pipeline.stages || []).slice(0, 4).map((s, i) => (
-        <mesh key={s.id} position={[0, s.y, 1.2 - i * 0.55]}>
-          <boxGeometry args={[modeWidth(pipeline.mode, i), 0.04, 0.04]} />
+        <mesh key={s.id} position={[0, s.y, 1.05 - i * 0.48]}>
+          <boxGeometry args={[modeWidth(pipeline.mode, i) * 0.55, 0.02, 0.02]} />
           <meshStandardMaterial
             color={p.aluminium}
             metalness={0.9}
             roughness={0.25}
             emissive={p.amber}
-            emissiveIntensity={active ? 0.12 : 0}
+            emissiveIntensity={intensity > 0.2 ? 0.08 + intensity * 0.12 : 0}
           />
         </mesh>
       ))}
 
       <points ref={points} geometry={geom} frustumCulled={false}>
         <pointsMaterial
-          size={0.05}
+          size={0.038}
           sizeAttenuation
           vertexColors
           transparent
-          opacity={0.9}
+          opacity={0.75}
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          blending={THREE.NormalBlending}
         />
       </points>
     </group>

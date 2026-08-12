@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 import * as THREE from "three";
@@ -8,29 +8,36 @@ import { THEME_PALETTE } from "@/lib/data/precision";
 import ExhibitPipeline from "./ExhibitPipeline";
 
 /**
- * Quiet physical exhibit — activity rises with proximity / focus.
- * Enter = camera + particles, not a fade.
+ * Architectural project installation.
+ * Hover wakes data + ENTER label. Click enters — camera travels through particles.
  */
 export default function ProjectExhibit({
   exhibit,
   theme,
-  active,
+  hovered,
   focused,
   onSelect,
+  onHover,
   cursorRef,
 }) {
   const p = THEME_PALETTE[theme] || THEME_PALETTE.night;
   const labelColor = theme === "day" ? "#12141a" : "#eef3f8";
   const root = useRef();
   const glow = useRef(0);
+  const expand = useRef(0);
+  const [localHover, setLocalHover] = useState(false);
+  const isHot = hovered || localHover;
 
   useFrame((_, dt) => {
     if (!root.current) return;
-    const target = focused ? 1 : active ? 0.55 : 0.12;
-    glow.current = THREE.MathUtils.damp(glow.current, target, 3, Math.min(dt, 0.05));
-    const s = focused ? 1.02 : active ? 1.01 : 1;
+    const d = Math.min(dt, 0.05);
+    const target = focused ? 1 : isHot ? 0.85 : 0.1;
+    glow.current = THREE.MathUtils.damp(glow.current, target, 3.2, d);
+    expand.current = THREE.MathUtils.damp(expand.current, focused ? 1 : 0, 1.4, d);
+
+    const s = 1 + expand.current * 0.08 + (isHot && !focused ? 0.02 : 0);
     root.current.scale.setScalar(
-      THREE.MathUtils.damp(root.current.scale.x, s, 2.5, Math.min(dt, 0.05))
+      THREE.MathUtils.damp(root.current.scale.x, s, 2.8, d)
     );
   });
 
@@ -44,72 +51,91 @@ export default function ProjectExhibit({
       }}
       onPointerOver={(e) => {
         e.stopPropagation();
-        document.body.style.cursor = "pointer";
+        setLocalHover(true);
+        onHover?.(exhibit.slug);
       }}
-      onPointerOut={() => {
-        document.body.style.cursor = "none";
+      onPointerOut={(e) => {
+        e.stopPropagation();
+        setLocalHover(false);
+        onHover?.(null);
       }}
     >
-      <mesh position={[0, 0.28, 0]} castShadow receiveShadow>
-        <boxGeometry args={[1.35, 0.56, 0.45]} />
-        <meshStandardMaterial color={p.metalDark} metalness={0.7} roughness={0.38} />
+      {/* Pedestal — quiet when inside */}
+      <mesh position={[0, 0.28, 0]} castShadow receiveShadow visible={!focused}>
+        <boxGeometry args={[1.2, 0.56, 0.42]} />
+        <meshStandardMaterial color={p.metalDark} metalness={0.72} roughness={0.36} />
       </mesh>
-      <mesh position={[0, 0.58, 0]}>
-        <boxGeometry args={[1.5, 0.05, 0.55]} />
+      <mesh position={[0, 0.58, 0]} visible={!focused}>
+        <boxGeometry args={[1.35, 0.045, 0.5]} />
         <meshStandardMaterial
           color={p.aluminium}
-          metalness={0.88}
-          roughness={0.22}
+          metalness={0.9}
+          roughness={0.2}
           emissive={p.amber}
-          emissiveIntensity={glow.current * 0.15}
+          emissiveIntensity={glow.current * 0.22}
         />
       </mesh>
 
-      {/* Quiet instrument frame — no busy media plate as hero */}
-      <mesh position={[0, 1.55, 0]} castShadow>
-        <boxGeometry args={[1.9, 1.35, 0.06]} />
-        <meshStandardMaterial color={p.metalDark} metalness={0.75} roughness={0.32} />
+      {/* Instrument frame — quiet surface, not a poster */}
+      <mesh position={[0, 1.5, 0]} castShadow visible={!focused}>
+        <boxGeometry args={[1.65, 1.15, 0.07]} />
+        <meshStandardMaterial color={p.metalDark} metalness={0.78} roughness={0.3} />
       </mesh>
-      <mesh position={[0, 1.55, 0.04]}>
-        <planeGeometry args={[1.7, 1.15]} />
+      <mesh position={[0, 1.5, 0.045]} visible={!focused}>
+        <planeGeometry args={[1.45, 0.95]} />
         <meshStandardMaterial
           color={theme === "day" ? "#d8dee8" : "#1a2430"}
-          metalness={0.2}
+          metalness={0.18}
           roughness={0.55}
           emissive={p.amber}
-          emissiveIntensity={glow.current * 0.08}
+          emissiveIntensity={glow.current * 0.12}
         />
       </mesh>
 
-      <Text
-        position={[0, 2.45, 0.08]}
-        fontSize={0.065}
-        color={p.amber}
-        anchorX="center"
-        letterSpacing={0.14}
-      >
-        {`PROJECT ${exhibit.number}`}
-      </Text>
-      <Text
-        position={[0, 2.28, 0.08]}
-        fontSize={0.085}
-        color={labelColor}
-        anchorX="center"
-        maxWidth={2.2}
-        textAlign="center"
-      >
-        {exhibit.title}
-      </Text>
+      {/* Hover label only — PROJECT / name / ENTER */}
+      {isHot && !focused && (
+        <group position={[0, 2.35, 0.1]}>
+          <Text
+            fontSize={0.055}
+            color={p.amber}
+            anchorX="center"
+            letterSpacing={0.16}
+          >
+            {`PROJECT ${exhibit.number}`}
+          </Text>
+          <Text
+            position={[0, -0.14, 0]}
+            fontSize={0.078}
+            color={labelColor}
+            anchorX="center"
+            maxWidth={2.1}
+            textAlign="center"
+          >
+            {exhibit.title}
+          </Text>
+          <Text
+            position={[0, -0.3, 0]}
+            fontSize={0.055}
+            color={p.amber}
+            anchorX="center"
+            letterSpacing={0.18}
+          >
+            ENTER →
+          </Text>
+        </group>
+      )}
 
-      <mesh position={[0, 1.3, 0]}>
-        <boxGeometry args={[2.2, 2.6, 1.2]} />
+      {/* Hit volume */}
+      <mesh position={[0, 1.25, 0]}>
+        <boxGeometry args={[2.0, 2.5, 1.4]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
 
       <ExhibitPipeline
         exhibit={exhibit}
         theme={theme}
-        active={focused || active}
+        intensity={focused ? 1 : isHot ? 0.55 : 0.08}
+        active={focused || isHot}
         cursorRef={cursorRef}
       />
     </group>
