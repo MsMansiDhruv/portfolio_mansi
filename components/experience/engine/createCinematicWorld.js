@@ -427,6 +427,33 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     monolithGroup.add(edges);
   }
 
+  /* ---------- Exploration screen — video plays inside the gallery, part of the set ---------- */
+  const video = document.createElement("video");
+  video.src = "/projects/change_my_dress_to_suit_remov.mp4";
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.preload = "metadata";
+  const videoTex = new THREE.VideoTexture(video);
+  videoTex.colorSpace = THREE.SRGBColorSpace;
+  const screenMat = new THREE.MeshBasicMaterial({
+    map: videoTex,
+    transparent: true,
+    opacity: 0,
+    toneMapped: false,
+  });
+  const screenGeo = new THREE.PlaneGeometry(1.5, 2.6);
+  const screen = new THREE.Mesh(screenGeo, screenMat);
+  screen.position.set(1.9, -1.15, -7.6);
+  screen.rotation.y = -0.55;
+  monolithGroup.add(screen);
+  const screenFrameMat = new THREE.LineBasicMaterial({ color: cur.monolithEdge, transparent: true, opacity: 0 });
+  const screenFrame = new THREE.LineSegments(new THREE.EdgesGeometry(screenGeo), screenFrameMat);
+  screenFrame.position.copy(screen.position);
+  screenFrame.rotation.copy(screen.rotation);
+  monolithGroup.add(screenFrame);
+  let videoPlaying = false;
+
   /* ---------- Final connective web ---------- */
   const webMat = new THREE.LineBasicMaterial({ color: cur.thread, transparent: true, opacity: 0 });
   const webPts = [];
@@ -648,6 +675,20 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
       m.opacity = local * (0.5 + Math.sin(time * 0.0018 + i) * 0.18);
     });
 
+    /* Exploration screen — fades in with the gallery, plays only while visible */
+    const screenT = seg(0.56, 0.64) * (1 - seg(0.82, 0.9));
+    screenMat.opacity = screenT * 0.88;
+    screenFrameMat.opacity = screenT * 0.6;
+    if (screenT > 0.05 && !videoPlaying) {
+      videoPlaying = true;
+      video.play().catch(() => {
+        videoPlaying = false;
+      });
+    } else if (screenT <= 0.05 && videoPlaying) {
+      videoPlaying = false;
+      video.pause();
+    }
+
     /* Final connected reveal */
     webMat.opacity = finaleT * 0.3;
 
@@ -689,6 +730,10 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
       o.geometry?.dispose?.();
       o.material?.dispose?.();
     });
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+    videoTex.dispose();
   }
 
   return { setProgress, setPointer, click, setTheme, resize, render, dispose };
