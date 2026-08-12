@@ -1,0 +1,88 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --world-ink: #07070b;
+  --world-paper: #f3ece3;
+  --world-paper-muted: #e8dfd3;
+  --world-muted: #8a8494;
+  --world-cyan: #3de0ff;
+  --world-coral: #ff6b4a;
+  --world-violet: #9d7bff;
+  --world-lime: #c8f542;
+  --world-blue: #4d7cff;
+  --font-display: "Syne", ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: "Instrument Serif", Georgia, serif;
+}
+
+.world-page {
+  font-family: var(--font-display);
+  color: var(--world-paper);
+  background: var(--world-ink);
+}
+
+.world-grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.world-grid {
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent);
+}
+
+.world-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.world-editorial {
+  font-family: var(--font-editorial);
+  font-style: italic;
+}
+
+.world-act-paper {
+  background: var(--world-paper);
+  color: var(--world-ink);
+}
+
+.world-act-ink {
+  background: var(--world-ink);
+  color: var(--world-paper);
+}
+
+@keyframes world-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes world-drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-24px, 12px);
+  }
+}
+
+.world-float {
+  animation: world-float 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-float {
+    animation: none;
+  }
+}

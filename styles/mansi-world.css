@@ -1,0 +1,147 @@
+/* Mansi World — cinematic identity system */
+
+.mansi-world {
+  --mw-ink: #080a10;
+  --mw-midnight: #101820;
+  --mw-smoke: #1c2430;
+  --mw-ivory: #ebe6dc;
+  --mw-cream: #d8d2c6;
+  --mw-muted: #6e7788;
+  --mw-vermilion: #c45c5c;
+  --mw-amber: #c9a962;
+  --mw-teal: #5eb8c4;
+  --mw-blue: #2a3548;
+  color: var(--mw-ivory);
+  background: var(--mw-ink);
+}
+
+.mansi-world-page {
+  position: relative;
+  min-height: 100vh;
+  background: var(--mw-ink);
+}
+
+.mansi-world-atmosphere {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(196, 92, 92, 0.06), transparent 55%),
+    linear-gradient(180deg, var(--mw-ink) 0%, var(--mw-midnight) 100%);
+}
+
+.mansi-world-grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.mansi-chapter-hero {
+  position: relative;
+  z-index: 2;
+  padding: 5rem 1.25rem 2rem;
+}
+
+@media (min-width: 640px) {
+  .mansi-chapter-hero {
+    padding: 6rem 2.5rem 2.5rem;
+  }
+}
+
+.mansi-chapter-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mw-vermilion);
+}
+
+.mansi-chapter-title {
+  font-family: var(--font-editorial);
+  font-size: clamp(2.25rem, 6vw, 3.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-top: 1rem;
+}
+
+.mansi-chapter-sub {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+  color: var(--mw-muted);
+  margin-top: 1rem;
+  max-width: 32rem;
+}
+
+.mansi-world-content {
+  position: relative;
+  z-index: 2;
+}
+
+.mansi-cursor-dot {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mw-vermilion);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.mansi-cursor-dot.is-visible {
+  opacity: 0.55;
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .mansi-cursor-dot {
+    display: none;
+  }
+}
+
+/* Scrollbar */
+.mansi-world ::-webkit-scrollbar {
+  width: 6px;
+}
+.mansi-world ::-webkit-scrollbar-track {
+  background: var(--mw-ink);
+}
+.mansi-world ::-webkit-scrollbar-thumb {
+  background: var(--mw-smoke);
+  border-radius: 3px;
+}
+.mansi-world ::-webkit-scrollbar-thumb:hover {
+  background: var(--mw-vermilion);
+}
+
+.mansi-thread-glow {
+  filter: drop-shadow(0 0 6px rgba(196, 92, 92, 0.45));
+}
+
+.mansi-page-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--mw-ink);
+  pointer-events: none;
+}
+
+.anime-cinema-root {
+  --film-vermilion: var(--mw-vermilion);
+}
+
+.anime-cinema-track {
+  height: 1200vh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anime-cinema-track {
+    height: auto;
+  }
+}

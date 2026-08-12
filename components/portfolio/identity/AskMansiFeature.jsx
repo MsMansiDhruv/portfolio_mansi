@@ -4,22 +4,18 @@ import Link from "next/link";
 import { ArrowRight, MessageSquareText } from "lucide-react";
 import { ASK_MANSI } from "@/lib/data/identity";
 import { Reveal } from "@/components/portfolio/motion";
-import MansiMark from "./MansiMark";
 
 export default function AskMansiFeature() {
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-slate-950 px-5 py-8 text-white dark:bg-slate-950 sm:px-8 sm:py-10">
+    <section className="relative overflow-hidden rounded-2xl bg-slate-950 px-5 py-8 text-white sm:px-8 sm:py-10">
       <div className="pointer-events-none absolute -right-16 top-0 h-48 w-48 rounded-full bg-teal-500/10 blur-3xl" aria-hidden />
       <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:items-center">
         <Reveal>
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-300">
-              <MessageSquareText className="h-5 w-5" strokeWidth={1.75} aria-hidden />
-            </span>
-            <MansiMark className="text-teal-400/70" size="sm" />
-          </div>
-          <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.24em] text-teal-400/90">{ASK_MANSI.subtitle}</p>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight">{ASK_MANSI.title}</h2>
+          <MessageSquareText className="h-6 w-6 text-amber-300/90" strokeWidth={1.75} aria-hidden />
+          <h2 className="mt-4 text-[clamp(1.75rem,4vw,2.5rem)] font-semibold leading-tight tracking-tight">
+            {ASK_MANSI.title}
+          </h2>
+          <p className="mt-2 text-base text-slate-300">{ASK_MANSI.lead}</p>
           <p className="mt-3 max-w-lg text-sm leading-relaxed text-slate-400">{ASK_MANSI.description}</p>
           <Link
             href="/tools/ai-lab?mode=ask"
@@ -31,22 +27,18 @@ export default function AskMansiFeature() {
         </Reveal>
 
         <Reveal delay={0.06}>
-          <ul className="space-y-2 border-l border-slate-800 pl-4">
+          <ul className="space-y-1 border-l border-slate-800 pl-4">
             {ASK_MANSI.examples.map((example) => (
               <li key={example}>
                 <Link
                   href={`/tools/ai-lab?mode=ask&q=${encodeURIComponent(example)}`}
-                  className="block py-1.5 text-sm text-slate-400 transition hover:text-teal-300"
+                  className="block py-2 text-sm text-slate-400 transition hover:text-teal-300"
                 >
-                  &ldquo;{example}&rdquo;
+                  {example}
                 </Link>
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-xs text-slate-500">
-            Architecture, SQL, pipeline review, interviews, and cost questions live in their own modes—I&apos;ll point
-            you there.
-          </p>
         </Reveal>
       </div>
     </section>

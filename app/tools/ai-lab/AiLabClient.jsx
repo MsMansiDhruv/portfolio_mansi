@@ -612,12 +612,12 @@ export default function AiLabPage() {
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <div className="min-w-0">
             <Link href="/" className="text-xs font-medium text-teal-700 hover:underline dark:text-teal-400">
-              ← Portfolio
+              ← Universe
             </Link>
-            <p className="mt-2 text-xs uppercase tracking-[0.32em] text-slate-500 dark:text-slate-400">AI Engineering Lab</p>
-            <h1 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">Engineering workspace</h1>
+            <p className="mt-2 text-xs uppercase tracking-[0.32em] text-slate-500 dark:text-slate-400">AI Lab</p>
+            <h1 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">Experimental intelligence</h1>
             <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-              6 agents · Context-aware · Knowledge-grounded
+              Six instruments · Each mode has a role · Knowledge-grounded
             </p>
           </div>
           <div className="hidden shrink-0 items-center gap-2 text-sm text-slate-500 dark:text-slate-400 md:flex">

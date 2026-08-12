@@ -1,0 +1,99 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  /* Restrained cinematic palette — one film, not a game UI */
+  --story-midnight: #0b0f18;
+  --story-charcoal: #141a26;
+  --story-indigo: #2a3348;
+  --story-grey: #6b7384;
+  --story-ivory: #e8e4dc;
+  --story-cream: #d4cfc4;
+  --story-cyan: #5eb8c4;
+  --story-amber: #c9a962;
+  --story-red: #9e4a52;
+
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: "Cormorant Garamond", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* legacy aliases */
+  --kairo-ink: var(--story-midnight);
+  --kairo-midnight: var(--story-midnight);
+  --kairo-charcoal: var(--story-charcoal);
+  --kairo-paper: var(--story-ivory);
+  --kairo-muted: var(--story-grey);
+  --kairo-cyan: var(--story-cyan);
+  --kairo-gold: var(--story-amber);
+  --kairo-crimson: var(--story-red);
+  --kairo-violet: var(--story-indigo);
+  --kairo-indigo: var(--story-indigo);
+}
+
+.story-page,
+.kairo-page {
+  font-family: var(--font-display);
+  color: var(--story-ivory);
+  background: var(--story-midnight);
+}
+
+.story-display,
+.kairo-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.story-editorial,
+.kairo-editorial {
+  font-family: var(--font-editorial);
+}
+
+.story-mono,
+.kairo-mono {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.story-grain,
+.kairo-grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.story-vignette,
+.kairo-vignette {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 75% 65% at 50% 48%, transparent 35%, rgba(11, 15, 24, 0.82) 100%);
+}
+
+/* Lighting moods — narrative, not decorative */
+.story-light-cool {
+  background: linear-gradient(180deg, #0a0e16 0%, var(--story-midnight) 100%);
+}
+.story-light-morning {
+  background: linear-gradient(165deg, #121820 0%, #0f141c 50%, var(--story-midnight) 100%);
+}
+.story-light-warm {
+  background: linear-gradient(165deg, #15120f 0%, var(--story-charcoal) 40%, var(--story-midnight) 100%);
+}
+.story-light-present {
+  background: linear-gradient(180deg, #0e121a 0%, #12161f 50%, var(--story-midnight) 100%);
+}
+
+.story-ease {
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-animate {
+    animation: none !important;
+    transition: none !important;
+  }
+}

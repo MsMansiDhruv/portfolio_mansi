@@ -9,6 +9,8 @@ import CommandPalette from "@/components/CommandPalette";
 import PageTransition from "@/components/PageTransition";
 import ScrollToTop from "@/components/ScrollToTop";
 import { cn } from "@/lib/cn";
+import "@/styles/mansi-world.css";
+import "@/styles/universe.css";
 
 export default function AppShell({ children }) {
   const [commandOpen, setCommandOpen] = useState(false);
@@ -16,6 +18,7 @@ export default function AppShell({ children }) {
   const isAiLab = pathname?.startsWith("/tools/ai-lab");
   const isHome = pathname === "/";
   const isSister = pathname === "/sister";
+  const isFullBleed = isHome || isAiLab;
 
   useEffect(() => {
     document.getElementById("gpu-sparks-canvas")?.remove();
@@ -27,22 +30,16 @@ export default function AppShell({ children }) {
 
   return (
     <DSv2ThemeProvider defaultTheme="system" storageKey="theme">
-      <div className="flex min-h-screen min-w-0 flex-col overflow-x-hidden bg-[#faf9f6] dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-        <Header onCommandOpen={() => setCommandOpen(true)} />
+      <div className="story-page mansi-world flex min-h-screen min-w-0 flex-col overflow-x-hidden bg-[var(--story-midnight)] text-[var(--story-ivory)]">
+        {!isHome && <Header onCommandOpen={() => setCommandOpen(true)} cinematic />}
 
         <main className="min-w-0 flex-grow w-full">
-          <div
-            className={cn(
-              "min-w-0",
-              isAiLab ? "max-w-none px-0 py-0" : "mx-auto max-w-7xl px-5 sm:px-6 lg:px-8",
-              !isAiLab && (isHome ? "pt-6 pb-4 sm:pt-7 sm:pb-4 lg:pt-8 lg:pb-3" : "py-8 sm:py-10 lg:py-14")
-            )}
-          >
+          <div className={cn("min-w-0", isFullBleed ? "max-w-none px-0 py-0" : "max-w-none px-0 py-0")}>
             <PageTransition>{children}</PageTransition>
           </div>
         </main>
 
-        <Footer />
+        {!isHome && <Footer cinematic />}
       </div>
 
       <CommandPalette

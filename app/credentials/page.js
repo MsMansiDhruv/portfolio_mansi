@@ -1,95 +1,65 @@
 "use client";
 
 import Link from "next/link";
-import { Reveal } from "@/components/portfolio/motion";
-import RecognitionGrid from "@/components/portfolio/credentials/RecognitionGrid";
-import SkillsCredentialsSection from "@/components/portfolio/credentials/SkillsCredentialsSection";
-import VisualCareerTimeline from "@/components/portfolio/credentials/VisualCareerTimeline";
-import RecommendationsSection from "@/components/portfolio/RecommendationsSection";
+import StoryChapterShell from "@/components/world/StoryChapterShell";
+import CareerTimelineCinematic from "@/components/cinema/CareerTimelineCinematic";
+import SkillConstellation from "@/components/cinema/SkillConstellation";
+import AchievementPanel from "@/components/cinema/AchievementPanel";
+import VoicesScene from "@/components/story/VoicesScene";
+import LifeBeyond from "@/components/story/LifeBeyond";
 import { ABOUT_ME, getAboutHeroLine } from "@/lib/data/career";
-import { PROFILE } from "@/lib/data/credentials-content";
-
-function SectionLabel({ children }) {
-  return (
-    <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-teal-800/80 dark:text-teal-400/90">
-      {children}
-    </p>
-  );
-}
-
-function SectionRule() {
-  return <div className="mt-3 border-t border-slate-200 dark:border-slate-800" aria-hidden />;
-}
+import { CAREER_EVOLUTION } from "@/lib/data/credentials-content";
+import { STORY_PAGE_META } from "@/lib/data/anime-story";
 
 export default function CredentialsPage() {
   const heroLine = getAboutHeroLine();
+  const meta = STORY_PAGE_META.journey;
 
   return (
-    <main className="min-w-0 w-full overflow-x-hidden pb-14 pt-2">
-      <Reveal revealOn="mount">
-        <header className="border-b border-slate-200 pb-10 dark:border-slate-800">
-          <SectionLabel>Profile</SectionLabel>
+    <StoryChapterShell chapter={meta.chapter} title={meta.title} subtitle={meta.subtitle}>
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-10 lg:px-14">
+        <p className="story-editorial max-w-2xl text-xl italic leading-relaxed text-[var(--story-cream)]">{heroLine}</p>
+        <p className="mt-5 max-w-2xl text-sm leading-relaxed text-[var(--story-grey)]">{ABOUT_ME[0]}</p>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--story-grey)]">{ABOUT_ME[1]}</p>
 
-          <div className="mt-4 grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start lg:gap-14">
-            <div className="min-w-0">
-              <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">
-                {PROFILE.name}
-              </h1>
-              <p className="mt-2 text-base text-slate-600 dark:text-slate-400">{PROFILE.headline}</p>
-              <p className="mt-1 text-sm text-slate-500">{PROFILE.domains}</p>
+        <div className="mt-12 flex flex-wrap gap-3">
+          {CAREER_EVOLUTION.map((e) => (
+            <span key={e.label} className="story-mono border border-white/[0.08] px-3 py-2 text-[var(--story-grey)]">
+              {e.era} · {e.label}
+            </span>
+          ))}
+        </div>
+      </div>
 
-              <p className="mt-8 max-w-2xl text-[1.15rem] font-medium leading-[1.6] text-slate-900 dark:text-slate-100 sm:text-[1.25rem]">
-                {heroLine}
-              </p>
+      <CareerTimelineCinematic showHeader={false} />
+      <LifeBeyond />
 
-              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">{ABOUT_ME[0]}</p>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-500 dark:text-slate-500">{ABOUT_ME[1]}</p>
-            </div>
-
-            <div className="min-w-0 border-t border-slate-200/80 pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-1 dark:border-slate-800">
-              <VisualCareerTimeline />
-            </div>
+      <div className="px-5 py-16 sm:px-10 lg:px-14">
+        <div className="mx-auto max-w-[1200px]">
+          <p className="story-mono text-[var(--story-grey)]">Skills accumulated along the way</p>
+          <div className="mt-8">
+            <SkillConstellation />
           </div>
-        </header>
-      </Reveal>
+        </div>
+      </div>
 
-      <Reveal delay={0.05} className="mt-12 block">
-        <section>
-          <SectionLabel>Recognition</SectionLabel>
-          <SectionRule />
-          <RecognitionGrid />
-        </section>
-      </Reveal>
+      <div className="border-y border-white/[0.06] px-5 py-16 sm:px-10 lg:px-14">
+        <div className="mx-auto max-w-[1200px]">
+          <AchievementPanel />
+        </div>
+      </div>
 
-      <Reveal delay={0.06} className="mt-12 block">
-        <section>
-          <SectionLabel>Skills &amp; credentials</SectionLabel>
-          <SectionRule />
-          <SkillsCredentialsSection />
-        </section>
-      </Reveal>
+      <div id="recommendations">
+        <VoicesScene />
+      </div>
 
-      <Reveal delay={0.07} className="mt-12 block">
-        <section id="recommendations">
-          <SectionLabel>Recommendations</SectionLabel>
-          <SectionRule />
-          <RecommendationsSection />
-        </section>
-      </Reveal>
-
-      <Reveal delay={0.08} className="mt-12 block border-t border-slate-200 pt-8 dark:border-slate-800">
-        <section className="max-w-lg">
-          <h2 className="text-base font-semibold text-slate-950 dark:text-white">Want the complete career history?</h2>
-          <Link
-            href="/resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 inline-flex text-sm font-medium text-teal-800 transition hover:text-teal-900 dark:text-teal-400"
-          >
-            View resume →
+      <div className="px-5 py-16 sm:px-10 lg:px-14">
+        <div className="mx-auto max-w-[1200px]">
+          <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="story-mono text-[var(--story-grey)] hover:text-[var(--story-ivory)]">
+            Complete résumé (PDF) →
           </Link>
-        </section>
-      </Reveal>
-    </main>
+        </div>
+      </div>
+    </StoryChapterShell>
   );
 }

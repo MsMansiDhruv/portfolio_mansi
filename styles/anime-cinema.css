@@ -1,0 +1,177 @@
+.anime-cinema-root {
+  position: relative;
+  background: var(--story-midnight);
+  --film-ink: #0a0d14;
+  --film-midnight: #121a28;
+  --film-vermilion: #b54a4a;
+  --film-gold: #c9a962;
+  --film-cream: #e8e4dc;
+}
+
+.anime-cinema-track {
+  position: relative;
+  height: 1100vh;
+}
+
+.anime-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.25rem 1.25rem 0;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .anime-nav {
+    padding: 1.5rem 2.5rem 0;
+  }
+}
+
+.anime-nav a,
+.anime-nav button {
+  pointer-events: auto;
+}
+
+.anime-emblem {
+  width: 24px;
+  height: 24px;
+  color: var(--story-cyan);
+  opacity: 0.65;
+}
+
+.anime-chapter-rail {
+  position: fixed;
+  right: 0.5rem;
+  top: 50%;
+  z-index: 40;
+  transform: translateY(-50%);
+  display: none;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 70vh;
+  overflow: hidden;
+}
+
+@media (min-width: 1280px) {
+  .anime-chapter-rail {
+    display: flex;
+  }
+}
+
+.anime-chapter-item {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  color: var(--story-grey);
+  opacity: 0.3;
+  transition: opacity 0.3s, color 0.3s;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.anime-chapter-item.is-active {
+  opacity: 1;
+  color: var(--story-cyan);
+}
+
+.anime-statement {
+  font-family: var(--font-editorial);
+  font-size: clamp(1.75rem, 5vw, 3.5rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.anime-statement--whisper {
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  text-transform: none;
+  font-style: italic;
+  text-transform: none;
+}
+
+.anime-handnote {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--story-cream);
+  opacity: 0.85;
+}
+
+.anime-episode-block {
+  border-left: 1px solid var(--film-vermilion);
+  padding-left: 1rem;
+  margin-top: 1.5rem;
+}
+
+.anime-glitch {
+  animation: anime-glitch 0.35s steps(2) infinite;
+}
+
+@keyframes anime-glitch {
+  0% { transform: translate(0); opacity: 1; }
+  50% { transform: translate(-2px, 1px); opacity: 0.85; }
+  100% { transform: translate(1px, -1px); opacity: 0.95; }
+}
+
+.silhouette-character {
+  width: 100%;
+  height: 100%;
+  color: #0f141c;
+}
+
+.anime-mood--quiet {
+  background: linear-gradient(180deg, var(--film-midnight) 0%, var(--film-ink) 100%);
+}
+
+.anime-mood--warm {
+  background: radial-gradient(ellipse 60% 50% at 50% 80%, rgba(201, 169, 98, 0.12), transparent 60%);
+}
+
+.anime-mood--travel {
+  background: linear-gradient(135deg, rgba(181, 74, 74, 0.08) 0%, rgba(18, 26, 40, 0.9) 50%);
+}
+
+.anime-identity-chip {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.anime-identity-chip:hover {
+  border-color: var(--story-cyan);
+  background: rgba(94, 184, 196, 0.06);
+}
+
+.story-site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.story-site-nav a {
+  color: var(--story-grey);
+  transition: color 0.2s;
+}
+
+.story-site-nav a:hover,
+.story-site-nav a.is-active {
+  color: var(--story-ivory);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anime-glitch {
+    animation: none;
+  }
+  .anime-cinema-track {
+    height: auto;
+  }
+}

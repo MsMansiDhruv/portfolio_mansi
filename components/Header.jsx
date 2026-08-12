@@ -6,13 +6,14 @@ import { useState, useEffect, useRef } from "react";
 import { Menu, X, ChevronDown, Command, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/components/design-system-v2";
 import { cn } from "@/lib/cn";
+import StorySiteNav, { StorySiteBrand } from "@/components/story/StorySiteNav";
 
 const navItems = [
   { label: "Home", href: "/" },
-  { label: "Projects", href: "/projects" },
-  { label: "Writing", href: "/blog" },
-  { label: "About", href: "/credentials" },
-  { label: "AI Lab", href: "/tools/ai-lab", highlight: true },
+  { label: "Work", href: "/projects" },
+  { label: "Journey", href: "/credentials" },
+  { label: "Notes", href: "/blog" },
+  { label: "Lab", href: "/tools/ai-lab", highlight: true },
 ];
 
 const toolItems = [
@@ -22,7 +23,7 @@ const toolItems = [
   { label: "QR Code Generator", href: "/tools/qr" },
 ];
 
-export default function Header({ onCommandOpen }) {
+export default function Header({ onCommandOpen, cinematic = false }) {
   const pathname = usePathname();
   const { isDark, setTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -73,20 +74,38 @@ export default function Header({ onCommandOpen }) {
     setTheme(isDark ? "light" : "dark");
   };
 
+  const onDarkHero = cinematic && !scrolled;
+
   return (
     <>
       <header
         className={cn(
           "sticky top-0 z-50 w-full transition-all duration-300 pt-[env(safe-area-inset-top)]",
           scrolled
-            ? "bg-[#faf9f6]/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-800/70 shadow-sm"
+            ? cinematic
+              ? "bg-[var(--kairo-ink)]/92 backdrop-blur-xl border-b border-white/10"
+              : "bg-[#faf9f6]/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200/70 dark:border-slate-800/70 shadow-sm"
             : "bg-transparent"
         )}
       >
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
+            {cinematic ? (
+              <>
+                <StorySiteBrand />
+                <StorySiteNav className="hidden md:flex" />
+              </>
+            ) : (
+              <>
             <Link href="/" className="flex items-center gap-3 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2">
-              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-sm">
+              <div
+                className={cn(
+                  "flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm",
+                  onDarkHero
+                    ? "bg-[var(--world-paper)] text-[var(--world-ink)]"
+                    : "bg-slate-900 dark:bg-white text-white dark:text-slate-900"
+                )}
+              >
                 MD
               </div>
               <span className="sr-only">Mansi Dhruv</span>
@@ -94,7 +113,7 @@ export default function Header({ onCommandOpen }) {
 
             <nav className="hidden md:flex items-center gap-8">
               {navItems.map((item) => (
-                <NavLink key={item.href} href={item.href} active={isActive(item.href)} highlight={item.highlight}>
+                <NavLink key={item.href} href={item.href} active={isActive(item.href)} highlight={item.highlight} onDarkHero={onDarkHero}>
                   {item.label}
                 </NavLink>
               ))}
@@ -108,8 +127,12 @@ export default function Header({ onCommandOpen }) {
                   className={cn(
                     "flex items-center gap-1 text-sm font-medium transition-colors pb-1 border-b-2",
                     isToolkitActive
-                      ? "text-slate-900 dark:text-white border-teal-600 dark:border-teal-400"
-                      : "text-slate-600 dark:text-slate-300 border-transparent hover:text-slate-900 dark:hover:text-white"
+                      ? onDarkHero
+                        ? "text-[var(--world-cyan)] border-[var(--world-cyan)]"
+                        : "text-slate-900 dark:text-white border-teal-600 dark:border-teal-400"
+                      : onDarkHero
+                        ? "text-white/70 border-transparent hover:text-white"
+                        : "text-slate-600 dark:text-slate-300 border-transparent hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
                   Toolkit
@@ -146,7 +169,12 @@ export default function Header({ onCommandOpen }) {
                 href="/resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-900 bg-slate-900 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-slate-800 dark:border-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition",
+                  onDarkHero
+                    ? "border-white/30 text-white hover:bg-white/10"
+                    : "border-slate-900 bg-slate-900 px-3.5 py-1.5 text-white hover:bg-slate-800 dark:border-white dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                )}
               >
                 Resume
                 <span aria-hidden className="text-xs opacity-80">
@@ -154,13 +182,20 @@ export default function Header({ onCommandOpen }) {
                 </span>
               </a>
             </nav>
+              </>
+            )}
 
             <div className="flex items-center gap-2 md:gap-4">
               <button
                 type="button"
                 onClick={toggleTheme}
                 aria-label="Toggle theme"
-                className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2"
+                className={cn(
+                  "inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2",
+                  onDarkHero
+                    ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
+                    : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                )}
               >
                 {isDark ? <Sun size={18} /> : <Moon size={18} />}
               </button>
@@ -168,7 +203,12 @@ export default function Header({ onCommandOpen }) {
               <button
                 type="button"
                 onClick={onCommandOpen}
-                className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 transition"
+                className={cn(
+                  "hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium transition",
+                  onDarkHero
+                    ? "border-white/20 bg-white/5 text-white/90 hover:bg-white/10"
+                    : "border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800"
+                )}
                 title="Open command palette (Cmd+K)"
               >
                 <Command size={16} />
@@ -178,7 +218,12 @@ export default function Header({ onCommandOpen }) {
               <button
                 type="button"
                 onClick={() => setMobileOpen(true)}
-                className="md:hidden inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                className={cn(
+                  "md:hidden inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border transition",
+                  onDarkHero
+                    ? "border-white/20 bg-white/5 text-white hover:bg-white/10"
+                    : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                )}
                 aria-label="Open mobile menu"
               >
                 <Menu size={20} />
@@ -269,17 +314,23 @@ export default function Header({ onCommandOpen }) {
   );
 }
 
-function NavLink({ href, active, highlight, children }) {
+function NavLink({ href, active, highlight, onDarkHero, children }) {
   return (
     <Link
       href={href}
       className={cn(
         "rounded-sm text-sm font-medium transition-colors pb-1 border-b-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2",
         active
-          ? "text-slate-900 dark:text-white border-teal-700 dark:border-teal-400"
+          ? onDarkHero
+            ? "text-[var(--world-cyan)] border-[var(--world-cyan)]"
+            : "text-slate-900 dark:text-white border-teal-700 dark:border-teal-400"
           : highlight
-            ? "border-transparent text-teal-600 hover:text-teal-700 dark:text-teal-300 dark:hover:text-teal-200"
-            : "text-slate-600 dark:text-slate-300 border-transparent hover:text-slate-900 dark:hover:text-white"
+            ? onDarkHero
+              ? "border-transparent text-[var(--world-violet)] hover:text-[var(--world-violet)]/80"
+              : "border-transparent text-teal-600 hover:text-teal-700 dark:text-teal-300 dark:hover:text-teal-200"
+            : onDarkHero
+              ? "text-white/70 border-transparent hover:text-white"
+              : "text-slate-600 dark:text-slate-300 border-transparent hover:text-slate-900 dark:hover:text-white"
       )}
     >
       {children}

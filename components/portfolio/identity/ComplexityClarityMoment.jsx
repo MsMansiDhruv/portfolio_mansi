@@ -28,11 +28,10 @@ export default function ComplexityClarityMoment() {
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-400/90">Mansi&apos;s motif</p>
-          <p className="mt-2 font-serif text-xl leading-snug text-white/95 sm:text-2xl">{MANSI_SIGNATURE.motif}</p>
+          <p className="font-serif text-xl leading-snug text-white/95 sm:text-2xl">{MANSI_SIGNATURE.motif}</p>
           <p className="mt-2 max-w-xs text-xs leading-relaxed text-slate-400">{MANSI_SIGNATURE.line}</p>
         </div>
-        <MansiMark className="text-teal-400/80" />
+        <MansiMark className="text-teal-400/80" interactive />
       </div>
 
       <div className="relative mt-6 h-24 sm:h-28">

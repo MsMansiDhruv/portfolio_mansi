@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Reveal } from "@/components/portfolio/motion";
 import { AI_AGENTS } from "@/lib/data/home-content";
+import { AI_LAB_VOICE } from "@/lib/data/identity";
 
 const LAB_MODES = AI_AGENTS.filter((a) => a.id !== "ask");
 
@@ -35,9 +36,7 @@ export default function AiLabPromo() {
           <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">
             AI Engineering Lab
           </h2>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            Specialized engineering modes — each with a distinct persona. Ask Mansi is the human entry point above.
-          </p>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-slate-600 dark:text-slate-400">{AI_LAB_VOICE}</p>
         </div>
         <Link
           href="/tools/ai-lab"

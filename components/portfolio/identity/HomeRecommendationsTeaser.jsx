@@ -19,14 +19,7 @@ export default function HomeRecommendationsTeaser() {
   return (
     <section>
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-teal-800/80 dark:text-teal-400/90">
-            What colleagues say
-          </p>
-          <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
-            {RECOMMENDATIONS.length} recommendations on record
-          </p>
-        </div>
+        <h2 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">From collaborators</h2>
         <Link href="/credentials#recommendations" className="text-sm font-medium text-teal-800 dark:text-teal-400">
           Read all →
         </Link>

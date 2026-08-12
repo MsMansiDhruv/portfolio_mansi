@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ArrowRight } from "lucide-react";
-import { Reveal } from "@/components/portfolio/motion";
-
-const ACCENT = "var(--color-accent)";
+import StoryChapterShell from "@/components/world/StoryChapterShell";
+import { STORY_PAGE_META } from "@/lib/data/anime-story";
 
 function formatDate(ms) {
   if (!ms) return "";
@@ -15,7 +14,6 @@ export default function BlogPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const sentinelRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
@@ -44,79 +42,58 @@ export default function BlogPage() {
   const featured = posts[0];
   const rest = posts.slice(1);
 
+  const meta = STORY_PAGE_META.writing;
+
   return (
-    <div className="min-w-0 space-y-10 sm:space-y-12">
-      <Reveal>
-        <header className="max-w-2xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-teal-800/80 dark:text-teal-400">Publication</p>
-          <h1 className="mt-4 text-[clamp(1.75rem,5vw,2.25rem)] font-semibold tracking-tight text-slate-950 dark:text-white">Writing</h1>
-          <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">Engineering notes on data platforms, cloud, and delivery.</p>
-        </header>
-      </Reveal>
+    <StoryChapterShell chapter={meta.chapter} title={meta.title} subtitle={meta.subtitle}>
+      <div className="mx-auto max-w-[1200px] px-5 pb-20 sm:px-10 lg:px-14">
+          {loading && <p className="story-mono mt-10 text-[var(--story-grey)]">Loading case files…</p>}
+          {error && <p className="mt-10 text-sm text-[var(--story-red)]">Failed to load Medium posts: {error}</p>}
 
-      {loading && <p className="text-sm text-slate-500">Loading articles…</p>}
-      {error && <p className="text-sm text-rose-600">Failed to load Medium posts: {error}</p>}
-
-      {!loading && !error && featured ? (
-        <Reveal delay={0.05}>
-          <article
-            className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950"
-            onClick={() => openArticle(featured.url)}
-          >
-            <div className="border-b border-slate-200/80 bg-gradient-to-r from-teal-50/40 to-transparent px-5 py-3 dark:border-slate-800 dark:from-teal-950/20">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal-800/80 dark:text-teal-400/90">
-                Latest · Engineering notes
-              </p>
-            </div>
-            <div className="p-5 sm:p-8">
-              <h2 className="break-words text-xl font-semibold text-slate-950 group-hover:text-teal-800 dark:text-white dark:group-hover:text-teal-400 sm:text-2xl">
-                {featured.title}
-              </h2>
-              <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                {featured.subtitle}
-              </p>
-              <div className="mt-5 flex items-center gap-3 text-xs text-slate-500">
-                <span>{formatDate(featured.publishedAt)}</span>
-                <span className="inline-flex items-center gap-1 font-medium text-teal-800 dark:text-teal-400">
+          {!loading && !error && featured ? (
+            <article
+              className="group mt-12 cursor-pointer border border-white/[0.08] transition hover:border-white/[0.15]"
+              onClick={() => openArticle(featured.url)}
+            >
+              <div className="border-b border-white/[0.06] px-6 py-4">
+                <p className="story-mono text-[var(--story-grey)]">Latest case file</p>
+              </div>
+              <div className="p-6 sm:p-8">
+                <h2 className="story-display text-2xl font-medium group-hover:text-[var(--story-cyan)] sm:text-3xl">
+                  {featured.title}
+                </h2>
+                <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-[var(--story-grey)]">{featured.subtitle}</p>
+                <span className="story-mono mt-6 inline-flex items-center gap-1 text-[var(--story-cyan)]">
                   Read on Medium
                   <ArrowRight className="h-3 w-3" />
                 </span>
               </div>
-            </div>
-          </article>
-        </Reveal>
-      ) : null}
+              <p className="story-mono border-t border-white/[0.06] px-6 py-3 text-[var(--story-grey)]">
+                {formatDate(featured.publishedAt)}
+              </p>
+            </article>
+          ) : null}
 
-      {!loading && !error && rest.length > 0 ? (
-        <ul className="divide-y divide-slate-200 dark:divide-slate-800">
-          {rest.map((p, i) => (
-            <Reveal key={p.id} delay={0.02 * i}>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => openArticle(p.url)}
-                  className="group w-full py-5 text-left"
-                >
-                  <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-                    <div className="min-w-0">
-                      <h3 className="break-words text-base font-semibold text-slate-950 group-hover:text-teal-800 dark:text-white dark:group-hover:text-teal-400">
-                        {p.title}
-                      </h3>
-                      {p.subtitle ? <p className="mt-1 line-clamp-1 text-sm text-slate-600 dark:text-slate-400">{p.subtitle}</p> : null}
+          {!loading && rest.length > 0 ? (
+            <ul className="mt-12 divide-y divide-white/[0.06]">
+              {rest.map((p) => (
+                <li key={p.id}>
+                  <button type="button" onClick={() => openArticle(p.url)} className="group w-full py-6 text-left">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+                      <h3 className="story-display text-lg font-medium group-hover:text-[var(--story-cyan)]">{p.title}</h3>
+                      <span className="story-mono shrink-0 text-[var(--story-grey)]">{formatDate(p.publishedAt)}</span>
                     </div>
-                    <span className="shrink-0 text-xs text-slate-500">{formatDate(p.publishedAt)}</span>
-                  </div>
-                </button>
-              </li>
-            </Reveal>
-          ))}
-        </ul>
-      ) : null}
+                    {p.subtitle ? <p className="mt-2 line-clamp-1 text-sm text-[var(--story-grey)]">{p.subtitle}</p> : null}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
 
-      {!loading && posts.length === 0 && !error ? (
-        <p className="text-sm text-slate-500">No posts found on Medium.</p>
-      ) : null}
-      <div ref={sentinelRef} className="h-1" aria-hidden />
-    </div>
+          {!loading && posts.length === 0 && !error ? (
+            <p className="story-mono mt-10 text-[var(--story-grey)]">No field notes found.</p>
+          ) : null}
+        </div>
+    </StoryChapterShell>
   );
 }

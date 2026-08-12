@@ -1,105 +1,81 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { PROJECTS } from "@/lib/data/projects";
-import { FEATURED_PROJECT_SLUG, getProjectMeta } from "@/lib/data/project-meta";
-import { HOME_CASE_STUDIES } from "@/lib/data/home-content";
-import { Reveal, HoverLift } from "@/components/portfolio/motion";
-import { ArchitectureFlow } from "@/components/portfolio/storytelling";
-
-function formatTech(items, max = 4) {
-  const list = items || [];
-  if (list.length <= max) return list.join(" · ");
-  return list.slice(0, max).join(" · ");
-}
+import { useMemo, useState } from "react";
+import StoryChapterShell from "@/components/world/StoryChapterShell";
+import ProjectGalleryCard, { useSortedProjects } from "@/components/cinema/ProjectGalleryCard";
+import { EXPERIMENT_PROJECT_SLUGS } from "@/lib/data/identity";
+import { FEATURED_PROJECT_SLUG } from "@/lib/data/project-meta";
+import { STORY_PAGE_META } from "@/lib/data/anime-story";
 
 export default function ProjectsPage() {
   const [query, setQuery] = useState("");
-  const featured = getProjectMeta(FEATURED_PROJECT_SLUG);
-  const caseMap = Object.fromEntries(HOME_CASE_STUDIES.map((c) => [c.slug, c]));
+  const sorted = useSortedProjects();
+  const meta = STORY_PAGE_META.work;
 
   const filtered = useMemo(() => {
-    let list = [...PROJECTS].sort((a, b) => b.date.localeCompare(a.date));
-    if (!query.trim()) return list;
+    if (!query.trim()) return sorted;
     const q = query.trim().toLowerCase();
-    return list.filter(
+    return sorted.filter(
       (p) =>
         p.title.toLowerCase().includes(q) ||
         p.desc.toLowerCase().includes(q) ||
         (p.tags || []).some((t) => t.toLowerCase().includes(q))
     );
-  }, [query]);
+  }, [query, sorted]);
 
-  const others = filtered.filter((p) => p.slug !== FEATURED_PROJECT_SLUG);
+  const featured = filtered.find((p) => p.slug === FEATURED_PROJECT_SLUG);
+  const rest = filtered.filter((p) => p.slug !== FEATURED_PROJECT_SLUG);
+  const client = rest.filter((p) => !EXPERIMENT_PROJECT_SLUGS.includes(p.slug));
+  const experiments = rest.filter((p) => EXPERIMENT_PROJECT_SLUGS.includes(p.slug));
 
   return (
-    <div className="min-w-0 space-y-12 sm:space-y-16">
-      <Reveal>
-        <header className="max-w-2xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-teal-800/80 dark:text-teal-400">Case studies</p>
-          <h1 className="mt-4 text-[clamp(1.75rem,5vw,2.25rem)] font-semibold tracking-tight text-slate-950 dark:text-white">Projects</h1>
-          <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
-            Platform work, experiments, and proofs—index is short; detail pages carry architecture and decisions.
-          </p>
-        </header>
-      </Reveal>
-
-      {featured && !query ? (
-        <Reveal delay={0.05}>
-          <HoverLift>
-            <Link
-              href={`/projects/${featured.slug}`}
-              className="group grid min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 lg:grid-cols-[1.2fr_0.8fr]"
-            >
-              <div className="min-w-0 border-b border-slate-200 p-6 dark:border-slate-800 sm:p-8 lg:border-b-0 lg:border-r">
-                <p className="text-xs text-slate-500">{featured.category} · Featured</p>
-                <h2 className="mt-2 break-words text-2xl font-semibold text-slate-950 dark:text-white sm:text-3xl">{featured.title}</h2>
-                <p className="mt-2 break-words text-xs text-slate-500">{formatTech(featured.tech)}</p>
-                <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">{caseMap[featured.slug]?.outcome || featured.summary}</p>
-                <span className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-teal-800 dark:text-teal-400">
-                  Explore
-                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                </span>
-              </div>
-              <div className="bg-slate-50 p-6 dark:bg-slate-900/50">
-                <ArchitectureFlow layers={featured.architectureLayers} compact />
-              </div>
-            </Link>
-          </HoverLift>
-        </Reveal>
-      ) : null}
-
-      <div>
+    <StoryChapterShell chapter={meta.chapter} title={meta.title} subtitle={meta.subtitle}>
+      <div className="mx-auto max-w-[1200px] px-5 pb-20 sm:px-10 lg:px-14">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Filter projects…"
-          className="mb-8 w-full max-w-none rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-base dark:border-slate-800 dark:bg-slate-950 sm:max-w-sm"
+          placeholder="Filter episodes…"
           aria-label="Filter projects"
+          className="story-mono w-full max-w-md border border-white/[0.12] bg-transparent px-4 py-3 text-sm text-[var(--story-ivory)] placeholder:text-[var(--story-grey)] focus:border-[var(--mw-vermilion)] focus:outline-none"
         />
-        <ul className="divide-y divide-slate-200 dark:divide-slate-800">
-          {others.map((p, i) => {
-            const cs = caseMap[p.slug];
-            return (
-              <Reveal key={p.slug} delay={0.03 * i}>
-                <li>
-                  <Link href={`/projects/${p.slug}`} className="group flex min-w-0 flex-col gap-2 py-5 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="min-w-0">
-                      <p className="text-xs text-slate-500">{p.category}</p>
-                      <h3 className="break-words text-lg font-semibold text-slate-950 dark:text-white">{p.title}</h3>
-                      <p className="mt-1 break-words text-xs text-slate-500">{formatTech(p.tech)}</p>
-                      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{cs?.outcome || p.desc}</p>
-                    </div>
-                    <span className="text-sm font-medium text-teal-800 dark:text-teal-400">Explore →</span>
-                  </Link>
-                </li>
-              </Reveal>
-            );
-          })}
-        </ul>
+
+        {featured && !query ? (
+          <div className="mt-12">
+            <p className="story-mono mb-4 text-[var(--mw-vermilion)]">The problem → the build</p>
+            <ProjectGalleryCard project={featured} index={0} />
+          </div>
+        ) : null}
+
+        {!query && client.length > 0 ? (
+          <div className="mt-16">
+            <p className="story-mono mb-6 text-[var(--story-grey)]">Platform work</p>
+            <div className="grid gap-6 sm:grid-cols-2">
+              {client.map((p, i) => (
+                <ProjectGalleryCard key={p.slug} project={p} index={i + 1} />
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {!query && experiments.length > 0 ? (
+          <div className="mt-16">
+            <p className="story-mono mb-6 text-[var(--story-amber)]">Built because I was curious</p>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {experiments.map((p, i) => (
+                <ProjectGalleryCard key={p.slug} project={p} index={i} />
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {query ? (
+          <div className="mt-12 grid gap-6 sm:grid-cols-2">
+            {rest.map((p, i) => (
+              <ProjectGalleryCard key={p.slug} project={p} index={i} />
+            ))}
+          </div>
+        ) : null}
       </div>
-    </div>
+    </StoryChapterShell>
   );
 }
