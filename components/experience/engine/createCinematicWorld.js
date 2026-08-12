@@ -71,82 +71,6 @@ function makeIconGeometry(icon) {
   }
 }
 
-/** Observer silhouette path — small figure at the edge of a large world. */
-const SILHOUETTE_KEYS = [
-  { t: 0.0, pos: [0.55, -0.85, 8.6], scale: 0.38, yaw: 0.15 },
-  { t: 0.14, pos: [0.9, -0.7, 5.8], scale: 0.36, yaw: -0.4 },
-  { t: 0.3, pos: [-0.85, -1.15, 2.6], scale: 0.34, yaw: 0.55 },
-  { t: 0.45, pos: [1.05, -1.85, 0.4], scale: 0.32, yaw: -0.35 },
-  { t: 0.6, pos: [-0.7, -2.15, -2.4], scale: 0.34, yaw: 0.25 },
-  { t: 0.78, pos: [0.95, -1.95, -5.2], scale: 0.36, yaw: -0.2 },
-  { t: 1.0, pos: [0.35, -0.55, 9.2], scale: 0.4, yaw: 0 },
-];
-
-function sampleSilhouette(progress, out) {
-  let a = SILHOUETTE_KEYS[0];
-  let b = SILHOUETTE_KEYS[SILHOUETTE_KEYS.length - 1];
-  for (let i = 0; i < SILHOUETTE_KEYS.length - 1; i++) {
-    if (progress >= SILHOUETTE_KEYS[i].t && progress <= SILHOUETTE_KEYS[i + 1].t) {
-      a = SILHOUETTE_KEYS[i];
-      b = SILHOUETTE_KEYS[i + 1];
-      break;
-    }
-  }
-  const span = Math.max(1e-6, b.t - a.t);
-  const k = smoothstep(Math.min(1, Math.max(0, (progress - a.t) / span)));
-  out.pos.set(
-    a.pos[0] + (b.pos[0] - a.pos[0]) * k,
-    a.pos[1] + (b.pos[1] - a.pos[1]) * k,
-    a.pos[2] + (b.pos[2] - a.pos[2]) * k
-  );
-  out.scale = a.scale + (b.scale - a.scale) * k;
-  out.yaw = a.yaw + (b.yaw - a.yaw) * k;
-}
-
-/** Minimal back-facing cutout — posture only. No face, hair detail, or likeness. */
-function createObserverSilhouette(mat) {
-  const group = new THREE.Group();
-
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), mat);
-  head.position.y = 0.76;
-  head.scale.set(0.9, 1.05, 0.85);
-  group.add(head);
-
-  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.12, 0.4, 3, 8), mat);
-  torso.position.y = 0.34;
-  group.add(torso);
-
-  const hip = new THREE.Mesh(new THREE.SphereGeometry(0.11, 6, 6), mat);
-  hip.position.y = 0.06;
-  hip.scale.set(1.1, 0.65, 0.8);
-  group.add(hip);
-
-  const thighL = new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.3, 2, 6), mat);
-  thighL.position.set(-0.065, -0.28, 0.01);
-  group.add(thighL);
-  const thighR = new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.3, 2, 6), mat);
-  thighR.position.set(0.065, -0.28, 0.01);
-  group.add(thighR);
-
-  const calfL = new THREE.Mesh(new THREE.CapsuleGeometry(0.04, 0.26, 2, 6), mat);
-  calfL.position.set(-0.065, -0.62, 0);
-  group.add(calfL);
-  const calfR = new THREE.Mesh(new THREE.CapsuleGeometry(0.04, 0.26, 2, 6), mat);
-  calfR.position.set(0.065, -0.62, 0);
-  group.add(calfR);
-
-  const armL = new THREE.Mesh(new THREE.CapsuleGeometry(0.032, 0.34, 2, 6), mat);
-  armL.position.set(-0.18, 0.3, -0.02);
-  armL.rotation.z = 0.2;
-  group.add(armL);
-  const armR = new THREE.Mesh(new THREE.CapsuleGeometry(0.032, 0.34, 2, 6), mat);
-  armR.position.set(0.18, 0.3, -0.02);
-  armR.rotation.z = -0.2;
-  group.add(armR);
-
-  return group;
-}
-
 /** Camera — engineer journey: systems overview → dive into pipelines → gallery → pullback */
 const CAM_KEYS = [
   { t: 0.0, pos: [0, 0.4, 11.5], look: [0, 0, 0], fov: 38 },
@@ -253,23 +177,6 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     depthWrite: false,
   });
   scene.add(new THREE.Points(dustGeo, dustMat));
-
-  /* ---------- Observer silhouette (no face — presence only) ---------- */
-  const silMat = new THREE.MeshStandardMaterial({
-    color: 0x07080c,
-    emissive: 0x12151c,
-    emissiveIntensity: 0.2,
-    metalness: 0.05,
-    roughness: 0.95,
-    transparent: true,
-    opacity: 0,
-  });
-  const silhouette = createObserverSilhouette(silMat);
-  scene.add(silhouette);
-  const silState = { pos: new THREE.Vector3(), scale: 0.38, yaw: 0 };
-  const silRim = new THREE.PointLight(0xc8c2b4, 0, 3.2);
-  silRim.position.set(0.15, 0.9, -0.45);
-  silhouette.add(silRim);
 
   /* ---------- Systems map — DE icon nodes ---------- */
   const NODE_COUNT = NODE_SPECS.length;
@@ -426,33 +333,6 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     edges.position.copy(mesh.position);
     monolithGroup.add(edges);
   }
-
-  /* ---------- Exploration screen — video plays inside the gallery, part of the set ---------- */
-  const video = document.createElement("video");
-  video.src = "/projects/change_my_dress_to_suit_remov.mp4";
-  video.muted = true;
-  video.loop = true;
-  video.playsInline = true;
-  video.preload = "metadata";
-  const videoTex = new THREE.VideoTexture(video);
-  videoTex.colorSpace = THREE.SRGBColorSpace;
-  const screenMat = new THREE.MeshBasicMaterial({
-    map: videoTex,
-    transparent: true,
-    opacity: 0,
-    toneMapped: false,
-  });
-  const screenGeo = new THREE.PlaneGeometry(1.5, 2.6);
-  const screen = new THREE.Mesh(screenGeo, screenMat);
-  screen.position.set(1.9, -1.15, -7.6);
-  screen.rotation.y = -0.55;
-  monolithGroup.add(screen);
-  const screenFrameMat = new THREE.LineBasicMaterial({ color: cur.monolithEdge, transparent: true, opacity: 0 });
-  const screenFrame = new THREE.LineSegments(new THREE.EdgesGeometry(screenGeo), screenFrameMat);
-  screenFrame.position.copy(screen.position);
-  screenFrame.rotation.copy(screen.rotation);
-  monolithGroup.add(screenFrame);
-  let videoPlaying = false;
 
   /* ---------- Final connective web ---------- */
   const webMat = new THREE.LineBasicMaterial({ color: cur.thread, transparent: true, opacity: 0 });
@@ -675,34 +555,8 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
       m.opacity = local * (0.5 + Math.sin(time * 0.0018 + i) * 0.18);
     });
 
-    /* Exploration screen — fades in with the gallery, plays only while visible */
-    const screenT = seg(0.56, 0.64) * (1 - seg(0.82, 0.9));
-    screenMat.opacity = screenT * 0.88;
-    screenFrameMat.opacity = screenT * 0.6;
-    if (screenT > 0.05 && !videoPlaying) {
-      videoPlaying = true;
-      video.play().catch(() => {
-        videoPlaying = false;
-      });
-    } else if (screenT <= 0.05 && videoPlaying) {
-      videoPlaying = false;
-      video.pause();
-    }
-
     /* Final connected reveal */
     webMat.opacity = finaleT * 0.3;
-
-    /* Observer silhouette — small, backlit, facing into the world (never a portrait) */
-    sampleSilhouette(progress, silState);
-    const bob = Math.sin(time * 0.0018) * 0.012;
-    silhouette.position.set(silState.pos.x, silState.pos.y + bob, silState.pos.z);
-    silhouette.scale.setScalar(silState.scale);
-    // Face into the world / along path — back to the camera, not toward it
-    silhouette.rotation.set(0, Math.PI + silState.yaw, 0);
-
-    const silVis = Math.min(1, seg(0.01, 0.06) * 0.95 + 0.05);
-    silMat.opacity = silVis;
-    silRim.intensity = silVis * (0.55 + Math.sin(time * 0.0015) * 0.08);
 
     renderer.render(scene, camera);
   }
@@ -718,10 +572,6 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     latticeMat.dispose();
     webGeo.dispose();
     webMat.dispose();
-    silhouette.traverse((o) => {
-      o.geometry?.dispose?.();
-    });
-    silMat.dispose();
     nodeGroup.traverse((o) => {
       o.geometry?.dispose?.();
       o.material?.dispose?.();
@@ -730,10 +580,6 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
       o.geometry?.dispose?.();
       o.material?.dispose?.();
     });
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
-    videoTex.dispose();
   }
 
   return { setProgress, setPointer, click, setTheme, resize, render, dispose };
