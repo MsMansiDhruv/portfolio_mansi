@@ -9,7 +9,6 @@ import ExperienceNav from "./ExperienceNav";
 import ExperienceGlobe from "./ExperienceGlobe";
 import ExperienceOverlay from "./ExperienceOverlay";
 import ExperienceFallback from "./ExperienceFallback";
-import ExperienceGuide from "./ExperienceGuide";
 import QuickViewPanel from "@/components/universe/QuickViewPanel";
 import { useExperienceScroll } from "./hooks/useExperienceScroll";
 import { EXPERIENCE_SCROLL_VH, EXPERIENCE_TERRITORIES } from "@/lib/data/mansi-experience";
@@ -96,8 +95,6 @@ export default function MansiExperience() {
           />
         </div>
       </div>
-
-      {ready ? <ExperienceGuide progress={progress} lenisRef={lenisRef} trackRef={trackRef} /> : null}
 
       <div className={`mx-systems-hud ${showSystemsHud ? "is-visible" : ""}`} aria-label="Systems map">
         {EXPERIENCE_TERRITORIES.map((item, idx) => (

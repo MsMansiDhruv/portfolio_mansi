@@ -71,6 +71,83 @@ function makeIconGeometry(icon) {
   }
 }
 
+/** Avatar travels through the same world as the camera. */
+const AVATAR_KEYS = [
+  { t: 0.0, pos: [1.35, -0.15, 9.2], scale: 1.05 },
+  { t: 0.12, pos: [1.1, -0.25, 6.8], scale: 1 },
+  { t: 0.28, pos: [-1.35, -0.55, 3.4], scale: 0.95 },
+  { t: 0.42, pos: [1.45, -1.35, 1.6], scale: 0.9 },
+  { t: 0.58, pos: [-1.2, -1.85, -1.2], scale: 0.95 },
+  { t: 0.74, pos: [1.35, -1.7, -4.2], scale: 1 },
+  { t: 0.9, pos: [-0.9, -1.2, -6.5], scale: 1.05 },
+  { t: 1.0, pos: [0.55, -0.35, 8.5], scale: 1.15 },
+];
+
+function sampleAvatar(progress, out) {
+  let a = AVATAR_KEYS[0];
+  let b = AVATAR_KEYS[AVATAR_KEYS.length - 1];
+  for (let i = 0; i < AVATAR_KEYS.length - 1; i++) {
+    if (progress >= AVATAR_KEYS[i].t && progress <= AVATAR_KEYS[i + 1].t) {
+      a = AVATAR_KEYS[i];
+      b = AVATAR_KEYS[i + 1];
+      break;
+    }
+  }
+  const span = Math.max(1e-6, b.t - a.t);
+  const k = smoothstep(Math.min(1, Math.max(0, (progress - a.t) / span)));
+  out.pos.set(
+    a.pos[0] + (b.pos[0] - a.pos[0]) * k,
+    a.pos[1] + (b.pos[1] - a.pos[1]) * k,
+    a.pos[2] + (b.pos[2] - a.pos[2]) * k
+  );
+  out.scale = a.scale + (b.scale - a.scale) * k;
+}
+
+/** Soft circular portrait texture from the real photo — lives in WebGL, not HTML chrome. */
+function loadPortraitAvatar(url, onReady) {
+  const loader = new THREE.TextureLoader();
+  loader.load(
+    url,
+    (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = 8;
+
+      const size = 1024;
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      const img = tex.image;
+      const side = Math.min(img.width, img.height);
+      const sx = (img.width - side) / 2;
+      const sy = (img.height - side) / 2 * 0.35;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
+      ctx.restore();
+
+      // Soft rim so she sits in the fogged scene, not as a hard sticker
+      const g = ctx.createRadialGradient(size / 2, size / 2, size * 0.42, size / 2, size / 2, size / 2);
+      g.addColorStop(0, "rgba(0,0,0,0)");
+      g.addColorStop(1, "rgba(0,0,0,0.55)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      const portrait = new THREE.CanvasTexture(canvas);
+      portrait.colorSpace = THREE.SRGBColorSpace;
+      portrait.anisotropy = 8;
+      onReady(portrait, tex);
+    },
+    undefined,
+    () => onReady(null, null)
+  );
+}
+
 /** Camera — engineer journey: systems overview → dive into pipelines → gallery → pullback */
 const CAM_KEYS = [
   { t: 0.0, pos: [0, 0.4, 11.5], look: [0, 0, 0], fov: 38 },
@@ -177,6 +254,76 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     depthWrite: false,
   });
   scene.add(new THREE.Points(dustGeo, dustMat));
+
+  /* ---------- 3D avatar presence (same plane as the systems world) ---------- */
+  const avatarGroup = new THREE.Group();
+  scene.add(avatarGroup);
+  const avatarState = { pos: new THREE.Vector3(), scale: 1 };
+  const avatarLook = new THREE.Vector3();
+
+  // Body — dark silhouette standing in the world
+  const bodyMat = new THREE.MeshStandardMaterial({
+    color: 0x10141c,
+    emissive: 0x1a2030,
+    emissiveIntensity: 0.15,
+    metalness: 0.2,
+    roughness: 0.85,
+    transparent: true,
+    opacity: 0,
+  });
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.55, 6, 12), bodyMat);
+  torso.position.y = 0.05;
+  avatarGroup.add(torso);
+  const legs = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.42, 4, 10), bodyMat);
+  legs.position.set(-0.07, -0.55, 0);
+  avatarGroup.add(legs);
+  const legs2 = new THREE.Mesh(new THREE.CapsuleGeometry(0.09, 0.42, 4, 10), bodyMat);
+  legs2.position.set(0.07, -0.55, 0);
+  avatarGroup.add(legs2);
+
+  // Head — real portrait, circular, fog-aware
+  const headMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0,
+    roughness: 0.55,
+    metalness: 0.05,
+    depthWrite: false,
+  });
+  const head = new THREE.Mesh(new THREE.CircleGeometry(0.28, 48), headMat);
+  head.position.y = 0.72;
+  avatarGroup.add(head);
+
+  // Soft halo behind the head so she reads against dark/light scenes
+  const haloMat = new THREE.MeshBasicMaterial({
+    color: 0xa84848,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+  });
+  const halo = new THREE.Mesh(new THREE.CircleGeometry(0.34, 48), haloMat);
+  halo.position.set(0, 0.72, -0.02);
+  avatarGroup.add(halo);
+
+  const avatarRim = new THREE.PointLight(0xa84848, 0, 4.5);
+  avatarRim.position.set(0.4, 0.8, 0.6);
+  avatarGroup.add(avatarRim);
+
+  let portraitTex = null;
+  let rawPortrait = null;
+  loadPortraitAvatar("/portrait.jpg", (masked, raw) => {
+    if (disposed) {
+      masked?.dispose();
+      raw?.dispose();
+      return;
+    }
+    portraitTex = masked;
+    rawPortrait = raw;
+    if (masked) {
+      headMat.map = masked;
+      headMat.needsUpdate = true;
+    }
+  });
 
   /* ---------- Systems map — DE icon nodes ---------- */
   const NODE_COUNT = NODE_SPECS.length;
@@ -558,6 +705,36 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     /* Final connected reveal */
     webMat.opacity = finaleT * 0.3;
 
+    /* Avatar — walks the same world as the camera, always present */
+    sampleAvatar(progress, avatarState);
+    const bob = Math.sin(time * 0.0022) * 0.035;
+    avatarGroup.position.set(avatarState.pos.x, avatarState.pos.y + bob, avatarState.pos.z);
+    const s = avatarState.scale * (0.85 + seg(0.02, 0.1) * 0.2);
+    avatarGroup.scale.setScalar(s);
+
+    // Face the camera so the portrait stays readable in the scene
+    avatarLook.copy(camera.position);
+    avatarLook.y = avatarGroup.position.y + 0.5;
+    avatarGroup.lookAt(avatarLook);
+
+    const avatarVis = Math.min(1, 0.2 + seg(0.01, 0.08) * 0.8);
+    bodyMat.opacity = avatarVis * 0.92;
+    headMat.opacity = avatarVis;
+    haloMat.opacity = avatarVis * 0.22;
+    avatarRim.intensity = avatarVis * (0.45 + Math.sin(time * 0.0018) * 0.12);
+
+    // Near systems map she stands among the icons; during streams she watches from the side
+    if (constellationT > 0.2) {
+      avatarRim.color.setHex(0x5a9ea8);
+      haloMat.color.setHex(0x5a9ea8);
+    } else if (galleryT > 0.2) {
+      avatarRim.color.setHex(0xa84848);
+      haloMat.color.setHex(0xa84848);
+    } else {
+      avatarRim.color.setHex(0xa84848);
+      haloMat.color.setHex(0xa84848);
+    }
+
     renderer.render(scene, camera);
   }
 
@@ -572,6 +749,16 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     latticeMat.dispose();
     webGeo.dispose();
     webMat.dispose();
+    portraitTex?.dispose();
+    rawPortrait?.dispose();
+    head.geometry.dispose();
+    headMat.dispose();
+    halo.geometry.dispose();
+    haloMat.dispose();
+    torso.geometry.dispose();
+    legs.geometry.dispose();
+    legs2.geometry.dispose();
+    bodyMat.dispose();
     nodeGroup.traverse((o) => {
       o.geometry?.dispose?.();
       o.material?.dispose?.();
