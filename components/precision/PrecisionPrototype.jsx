@@ -1,18 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import "@/styles/mansi-precision.css";
-import {
-  PRECISION_ASSETS,
-} from "@/lib/data/precision";
+import { PRECISION_ASSETS } from "@/lib/data/precision";
 import PrecisionNav from "./PrecisionNav";
 import PrecisionLoader from "./PrecisionLoader";
-import CinematicStage from "./CinematicStage";
+import PrecisionWorldCanvas from "./PrecisionWorldCanvas";
+import PrecisionOverlay from "./PrecisionOverlay";
 
 const THEME_KEY = "mansi-precision-theme";
 
-function preloadImages(urls) {
+function preload(urls) {
   return Promise.all(
     urls.map(
       (src) =>
@@ -30,6 +29,7 @@ export default function PrecisionPrototype() {
   const [progress, setProgress] = useState(0);
   const [theme, setTheme] = useState("night");
   const [ready, setReady] = useState(false);
+  const progressRef = useRef(0);
 
   useEffect(() => {
     try {
@@ -41,29 +41,21 @@ export default function PrecisionPrototype() {
   }, []);
 
   useEffect(() => {
-    const primary = [
-      PRECISION_ASSETS.hero,
-      PRECISION_ASSETS.observing,
-      PRECISION_ASSETS.nightFocus,
-      PRECISION_ASSETS.dayClarity,
-      PRECISION_ASSETS.signature,
-    ];
-    const secondary = [
-      PRECISION_ASSETS.visual,
-      PRECISION_ASSETS.clarifying,
-      PRECISION_ASSETS.exhibition,
-      PRECISION_ASSETS.transformation,
-      PRECISION_ASSETS.lookingBack,
-    ];
-
     let cancelled = false;
-
     (async () => {
-      await preloadImages(primary);
+      await preload([
+        PRECISION_ASSETS.visual,
+        PRECISION_ASSETS.characterMaster,
+        PRECISION_ASSETS.nightFocus,
+        PRECISION_ASSETS.dayClarity,
+      ]);
       if (!cancelled) setReady(true);
-      preloadImages(secondary);
+      preload([
+        PRECISION_ASSETS.hero,
+        PRECISION_ASSETS.exhibition,
+        PRECISION_ASSETS.transformation,
+      ]);
     })();
-
     return () => {
       cancelled = true;
     };
@@ -74,13 +66,11 @@ export default function PrecisionPrototype() {
     document.body.style.overflowX = "hidden";
 
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.35,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      touchMultiplier: 1.1,
+      touchMultiplier: 1.05,
     });
-
-    // Allow cinematic scrubbing from console / QA without fighting Lenis.
     window.__mpLenis = lenis;
 
     let raf;
@@ -90,9 +80,9 @@ export default function PrecisionPrototype() {
         1,
         lenis.limit || document.documentElement.scrollHeight - window.innerHeight
       );
-      const scroll = lenis.scroll || 0;
-      const next = Math.min(1, Math.max(0, scroll / max));
-      setProgress((prev) => (Math.abs(prev - next) > 0.0005 ? next : prev));
+      const next = Math.min(1, Math.max(0, (lenis.scroll || 0) / max));
+      progressRef.current = next;
+      setProgress((prev) => (Math.abs(prev - next) > 0.0008 ? next : prev));
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
@@ -139,7 +129,8 @@ export default function PrecisionPrototype() {
         </span>
       </div>
 
-      <CinematicStage progress={progress} theme={theme} />
+      <PrecisionWorldCanvas progressRef={progressRef} theme={theme} />
+      <PrecisionOverlay progress={progress} theme={theme} />
       <div className="mp-scroll-space" aria-hidden="true" />
     </div>
   );

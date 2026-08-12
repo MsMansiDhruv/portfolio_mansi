@@ -91,6 +91,40 @@
   z-index: 1;
 }
 
+.mp-stage--world {
+  background: #08090b;
+}
+
+.mp-root[data-theme="day"] .mp-stage--world {
+  background: #e6dfd2;
+}
+
+.mp-overlay--spatial {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.mp-depth-cue {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 45%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.22) 100%
+  );
+  pointer-events: none;
+}
+
+.mp-root[data-theme="day"] .mp-depth-cue {
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 40%,
+    transparent 45%,
+    rgba(90, 75, 50, 0.1) 100%
+  );
+}
+
 .mp-camera {
   position: absolute;
   inset: -8%;
