@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { HOME_CASE_STUDIES } from "@/lib/data/home-content";
-import { TECHNICAL_PROFILE } from "@/lib/data/credentials-content";
+import { TECHNICAL_PROFILE, PROFILE } from "@/lib/data/credentials-content";
 import { getExperienceYearsText } from "@/lib/career/experience";
 import { STORY_FINAL } from "@/lib/data/anime-story";
 
@@ -14,51 +14,58 @@ export default function QuickViewPanel({ open, onClose }) {
 
   return (
     <>
-      <button
-        type="button"
-        className="fixed inset-0 z-40 bg-black/40"
-        aria-label="Close quick view"
-        onClick={onClose}
-      />
-      <aside className={`universe-quick-panel is-open`} aria-label="Quick view">
-        <p className="story-mono text-[var(--u-vermilion)]">Quick view</p>
-        <p className="mt-2 text-sm text-[var(--u-muted)]">{getExperienceYearsText()} · experience</p>
+      <button type="button" className="mx-quick-scrim" aria-label="Close quick view" onClick={onClose} />
+      <aside className="mx-quick-panel" aria-label="Quick view" role="dialog">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="mx-mono text-[var(--mx-vermilion)]">Quick view</p>
+            <p className="mt-2 text-sm" style={{ color: "var(--mx-ivory)", opacity: 0.75 }}>
+              {PROFILE.name} · {getExperienceYearsText()}
+            </p>
+          </div>
+          <button type="button" className="mx-mono opacity-60 hover:opacity-100" onClick={onClose}>
+            Close
+          </button>
+        </div>
 
         <section className="mt-8">
-          <p className="story-mono mb-3 text-[10px] text-[var(--u-muted)]">PROJECTS</p>
+          <p className="mx-mono mb-3 opacity-60">Projects</p>
           <ul className="space-y-2 text-sm">
             {projects.map((p) => (
               <li key={p.slug}>
-                <Link href={`/projects/${p.slug}`} className="hover:text-[var(--u-vermilion)]" onClick={onClose}>
+                <Link href={`/projects/${p.slug}`} className="hover:text-[var(--mx-vermilion)]" onClick={onClose}>
                   {p.title}
                 </Link>
               </li>
             ))}
           </ul>
-          <Link href="/projects" className="story-mono mt-3 inline-block text-[10px] text-[var(--u-muted)]" onClick={onClose}>
+          <Link href="/projects" className="mx-mono mt-3 inline-block opacity-60 hover:opacity-100" onClick={onClose}>
             All work →
           </Link>
         </section>
 
         <section className="mt-8">
-          <p className="story-mono mb-3 text-[10px] text-[var(--u-muted)]">CAPABILITIES</p>
-          <ul className="space-y-2 text-xs text-[var(--u-muted)]">
+          <p className="mx-mono mb-3 opacity-60">Capabilities</p>
+          <ul className="space-y-2 text-xs" style={{ color: "var(--mx-muted)" }}>
             {skills.map(([cat, tools]) => (
               <li key={cat}>
-                <span className="text-[var(--u-ivory)]">{cat}</span> — {tools.join(", ")}
+                <span style={{ color: "var(--mx-ivory)" }}>{cat}</span> — {Array.isArray(tools) ? tools.join(", ") : tools}
               </li>
             ))}
           </ul>
         </section>
 
-        <section className="mt-8 flex flex-wrap gap-3 text-sm">
-          <Link href="/credentials" onClick={onClose} className="story-mono text-[var(--u-muted)] hover:text-[var(--u-ivory)]">
-            Credentials
+        <section className="mt-8 flex flex-wrap gap-4 text-sm">
+          <Link href="/tools/ai-lab" onClick={onClose} className="mx-mono text-[var(--mx-vermilion)]">
+            AI Lab →
           </Link>
-          <a href={STORY_FINAL.resume} className="story-mono text-[var(--u-muted)] hover:text-[var(--u-ivory)]">
+          <Link href="/credentials" onClick={onClose} className="mx-mono opacity-70 hover:opacity-100">
+            Experience
+          </Link>
+          <a href={STORY_FINAL.resume} className="mx-mono opacity-70 hover:opacity-100" onClick={onClose}>
             Resume
           </a>
-          <Link href="/contact" onClick={onClose} className="story-mono text-[var(--u-vermilion)]">
+          <Link href="/contact" onClick={onClose} className="mx-mono opacity-70 hover:opacity-100">
             Contact
           </Link>
         </section>
