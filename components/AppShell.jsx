@@ -10,7 +10,7 @@ import PageTransition from "@/components/PageTransition";
 import ScrollToTop from "@/components/ScrollToTop";
 import { cn } from "@/lib/cn";
 import "@/styles/mansi-world.css";
-import "@/styles/universe.css";
+import "@/styles/mansi-experience.css";
 
 export default function AppShell({ children }) {
   const [commandOpen, setCommandOpen] = useState(false);

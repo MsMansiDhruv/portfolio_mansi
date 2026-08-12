@@ -1,7 +1,7 @@
 "use client";
 
-import UniverseHome from "@/components/universe/UniverseHome";
+import MansiExperience from "@/components/experience/MansiExperience";
 
 export default function HomePage() {
-  return <UniverseHome />;
+  return <MansiExperience />;
 }
