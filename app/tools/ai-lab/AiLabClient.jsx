@@ -106,6 +106,16 @@ const MODES = [
   },
 ];
 
+/** Muted chamber tones — each mode is a different room in the same thinking system */
+const CHAMBER_TONES = {
+  amber: "#b89858",
+  teal: "#5a9ea8",
+  slate: "#8892a6",
+  emerald: "#5a9e7a",
+  sky: "#6faeb8",
+  violet: "#8a7aa8",
+};
+
 const MODE_CONTEXT = {
   ask: {
     focus: "Personal engineering experience",
@@ -222,8 +232,8 @@ function LeftSidebar({ mode, modes, onModeSelect, history, onHistorySelect }) {
   return (
     <aside className="hidden min-w-0 lg:block lg:max-h-[calc(100dvh-9rem)] lg:w-[240px] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-slate-200/80 lg:pr-4 dark:lg:border-slate-800/80">
       <SidebarLabel>AI Lab</SidebarLabel>
-      <p className="mt-1 text-sm font-medium text-slate-800 dark:text-slate-200">Modes</p>
-      <nav className="mt-3 space-y-0.5" aria-label="AI modes">
+      <p className="mt-1 text-sm font-medium text-slate-800 dark:text-slate-200">Chambers</p>
+      <nav className="mt-3 space-y-0.5" aria-label="AI chambers">
         {modes.map((item) => {
           const selected = item.id === mode;
           return (
@@ -239,7 +249,12 @@ function LeftSidebar({ mode, modes, onModeSelect, history, onHistorySelect }) {
               )}
             >
               <ModeIcon mode={item} />
-              <span className="min-w-0 truncate">{item.label}</span>
+              <span className="min-w-0 flex-1 truncate">{item.label}</span>
+              <span
+                className="h-1.5 w-1.5 shrink-0 rounded-full transition-opacity"
+                style={{ backgroundColor: CHAMBER_TONES[item.accent], opacity: selected ? 1 : 0.35 }}
+                aria-hidden
+              />
             </button>
           );
         })}
@@ -615,9 +630,9 @@ export default function AiLabPage() {
               ← Universe
             </Link>
             <p className="mt-2 text-xs uppercase tracking-[0.32em] text-slate-500 dark:text-slate-400">AI Lab</p>
-            <h1 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">Experimental intelligence</h1>
+            <h1 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">Mansi&apos;s thinking system</h1>
             <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-              Six instruments · Each mode has a role · Knowledge-grounded
+              Six chambers · Each with its own role · Knowledge-grounded
             </p>
           </div>
           <div className="hidden shrink-0 items-center gap-2 text-sm text-slate-500 dark:text-slate-400 md:flex">
@@ -660,11 +675,29 @@ export default function AiLabPage() {
           />
 
           <div className="flex min-h-0 min-w-0 flex-col lg:px-4 xl:px-5">
-          <section className="flex min-h-[min(640px,calc(100dvh-11rem))] min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:min-h-[min(720px,calc(100dvh-10rem))]">
-            <div className="shrink-0 border-b border-slate-200 px-4 py-3 dark:border-slate-800 sm:px-5">
+          <section className="relative flex min-h-[min(640px,calc(100dvh-11rem))] min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:min-h-[min(720px,calc(100dvh-10rem))]">
+            {/* Chamber atmosphere — each mode is a different room */}
+            <AnimatePresence initial={false}>
+              <motion.div
+                key={mode}
+                className="pointer-events-none absolute inset-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.9, ease: "easeOut" }}
+                style={{
+                  background: `radial-gradient(110% 70% at 50% 0%, ${CHAMBER_TONES[currentMode.accent] ?? "#5a9ea8"}1f, transparent 62%)`,
+                }}
+                aria-hidden
+              />
+            </AnimatePresence>
+            <div className="relative shrink-0 border-b border-slate-200 px-4 py-3 dark:border-slate-800 sm:px-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{currentMode.label}</p>
+                  <p className="text-[10px] font-medium uppercase tracking-[0.24em]" style={{ color: CHAMBER_TONES[currentMode.accent] }}>
+                    Chamber {String(MODES.findIndex((m) => m.id === mode) + 1).padStart(2, "0")}
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-slate-900 dark:text-slate-100">{currentMode.label}</p>
                   <p className="mt-0.5 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">{currentMode.welcome}</p>
                 </div>
                 <div className="inline-flex shrink-0 rounded-full border border-slate-200 bg-slate-50 p-0.5 text-xs dark:border-slate-800 dark:bg-slate-950">
@@ -692,7 +725,7 @@ export default function AiLabPage() {
                 </div>
             </div>
 
-            <div ref={viewportRef} className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-4 sm:px-6">
+            <div ref={viewportRef} className="relative min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-4 sm:px-6">
               <div className="w-full min-w-0">
               <AnimatePresence initial={false}>
                 {messages.map((message) => {
@@ -746,7 +779,7 @@ export default function AiLabPage() {
               </div>
             </div>
 
-            <div className="shrink-0 border-t border-slate-200 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] dark:border-slate-800">
+            <div className="relative shrink-0 border-t border-slate-200 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] dark:border-slate-800">
               <form
                 onSubmit={(event) => {
                   event.preventDefault();

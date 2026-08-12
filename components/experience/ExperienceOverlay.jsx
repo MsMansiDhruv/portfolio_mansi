@@ -26,8 +26,8 @@ export default function ExperienceOverlay({ progress }) {
   return (
     <div className="mx-overlay">
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.hero} align="center">
-        <h1 className="mx-statement mx-statement--hero">{EXPERIENCE_OPENING.question}</h1>
-        <p className="mx-mono mt-8 opacity-50">Scroll · enter the world</p>
+        <h1 className="mx-statement mx-statement--hero">{EXPERIENCE_OPENING.mark}</h1>
+        <p className="mx-mono mt-8 text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.enter}</p>
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.worldLine} align="center">
@@ -137,7 +137,7 @@ export default function ExperienceOverlay({ progress }) {
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.about} align="left" id="about">
-        <p className="mx-mono text-[var(--mx-teal)]">About</p>
+        <p className="mx-mono text-[var(--mx-teal)]">{EXPERIENCE_COPY.learned}</p>
         <p className="mx-statement mt-6 text-3xl">{STORY_IDENTITY.name}</p>
         <div className="mt-8 space-y-4 max-w-lg">
           {STORY_IDENTITY.fragments.slice(0, 4).map((f) => (
@@ -153,6 +153,7 @@ export default function ExperienceOverlay({ progress }) {
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.final} align="center">
+        <p className="mx-mono mb-8 opacity-60">{EXPERIENCE_COPY.final.next}</p>
         <p className="mx-statement text-3xl sm:text-5xl">{EXPERIENCE_COPY.final.line1}</p>
         <p className="mx-statement mt-4 text-3xl sm:text-5xl text-[var(--mx-vermilion)]">{EXPERIENCE_COPY.final.line2}</p>
         <p className="mx-statement mx-statement--hero mt-12">{EXPERIENCE_COPY.final.name}</p>

@@ -223,6 +223,9 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
       ])
     );
   }
+  /** Scene-space stream origins — targets for the constellation-to-data morph */
+  const streamHeads = streamCurves.map((c) => c.getPoint(0));
+
   const streamTotal = STREAM_COUNT * PARTICLES_PER_STREAM;
   const streamPos = new Float32Array(streamTotal * 3);
   const streamCol = new Float32Array(streamTotal * 3);
@@ -328,6 +331,8 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
   const tmpColor = new THREE.Color();
   const streamColor = new THREE.Color();
   const badCol = new THREE.Color(0xa84848);
+  const invMat = new THREE.Matrix4();
+  const morphTarget = new THREE.Vector3();
 
   /* ---------- Pointer: parallax + territory raycast ---------- */
   const raycaster = new THREE.Raycaster();
@@ -456,7 +461,23 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     const finaleT = seg(0.9, 1);
 
     /* Constellation wake-up (returns for finale) */
-    const nodeVis = Math.max(constellationT, finaleT);
+    /* Personal → professional transformation: the connected lights of the
+       world travel down and become the sources of the data streams. */
+    const morphT = seg(0.42, 0.52);
+    const handoffT = seg(0.5, 0.56);
+    if (morphT > 0 && finaleT <= 0) {
+      nodeGroup.updateMatrixWorld();
+      invMat.copy(nodeGroup.matrixWorld).invert();
+      const k = smoothstep(morphT);
+      nodeMeshes.forEach((mesh, i) => {
+        morphTarget.copy(streamHeads[i % STREAM_COUNT]).applyMatrix4(invMat);
+        mesh.position.lerpVectors(nodePositions[i], morphTarget, k);
+      });
+    } else {
+      nodeMeshes.forEach((mesh, i) => mesh.position.copy(nodePositions[i]));
+    }
+
+    const nodeVis = Math.max(constellationT, finaleT, morphT * (1 - handoffT));
     nodeMats.forEach((m, i) => {
       const local = Math.min(1, Math.max(0, nodeVis * NODE_COUNT - i) );
       m.opacity = local * 0.95;
