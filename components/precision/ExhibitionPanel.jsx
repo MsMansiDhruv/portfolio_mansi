@@ -1,8 +1,10 @@
 "use client";
 
+import { getPipeline } from "@/lib/data/data-pipelines";
+
 /**
  * Editorial plane — only after the visitor has entered an exhibit.
- * High-contrast graphite/ivory surface. Never over busy particles.
+ * High-contrast surface. Never over busy particles.
  */
 export default function ExhibitionPanel({
   theme,
@@ -13,18 +15,33 @@ export default function ExhibitionPanel({
 }) {
   if (!activeExhibit) return null;
 
+  const pipeline = getPipeline(activeExhibit.slug);
+  const stages = pipeline?.stages || [];
+
   return (
     <div className="mp-exhibition-ui" data-theme={theme}>
       <div className={`mp-info-plane mp-info-plane--room is-${phase}`}>
         <div className="mp-info-plane__inner">
-          <p className="mp-info-mono">PROJECT {activeExhibit.number}</p>
+          <p className="mp-info-mono">
+            PROJECT {activeExhibit.number}
+            {pipeline?.label ? ` · ${pipeline.label}` : ""}
+          </p>
           <h2 className="mp-info-title">{activeExhibit.title}</h2>
           <p className="mp-info-caption">{activeExhibit.tagline}</p>
 
           {phase === "immerse" && (
-            <p className="mp-info-body">
-              Follow the data through the system.
-            </p>
+            <div className="mp-info-immerse">
+              <p className="mp-info-body">
+                The data is forming the architecture. Watch the pipeline resolve.
+              </p>
+              {stages.length > 0 && (
+                <ol className="mp-pipeline-stages" aria-label="Pipeline stages">
+                  {stages.map((s) => (
+                    <li key={s.id}>{s.label}</li>
+                  ))}
+                </ol>
+              )}
+            </div>
           )}
 
           {phase === "read" && (

@@ -6,7 +6,13 @@ import { NAV_LINKS } from "@/lib/data/precision";
 /**
  * Persistent nav — destinations travel in-world; never teleports.
  */
-export default function PrecisionNav({ theme, onToggleTheme, onTravel, onHome }) {
+export default function PrecisionNav({
+  theme,
+  onToggleTheme,
+  onTravel,
+  onHome,
+  activeView = "home",
+}) {
   return (
     <nav className="mp-nav" aria-label="Mansi Precision">
       <button
@@ -23,7 +29,7 @@ export default function PrecisionNav({ theme, onToggleTheme, onTravel, onHome })
           <button
             key={link.id}
             type="button"
-            className="mp-nav-link-btn"
+            className={`mp-nav-link-btn${activeView === link.view || activeView === link.id ? " is-active" : ""}`}
             onClick={() => onTravel?.(link)}
           >
             {link.label}

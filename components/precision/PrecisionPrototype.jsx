@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import "@/styles/mansi-precision.css";
-import { PRECISION_ASSETS, WORLD_VIEWS } from "@/lib/data/precision";
+import { WORLD_VIEWS } from "@/lib/data/precision";
+import { CHARACTER } from "@/lib/data/identity";
 import PrecisionNav from "./PrecisionNav";
 import PrecisionLoader from "./PrecisionLoader";
 import PrecisionWorldCanvas from "./PrecisionWorldCanvas";
@@ -55,6 +56,9 @@ export default function PrecisionPrototype() {
     hoverSlug: null,
     activeSlug: null,
     energy: 0.25,
+    reveal: 0,
+    viewId: "home",
+    travelPulse: 0,
   });
   const pendingRouteRef = useRef(null);
   const hallSnapshotRef = useRef(null);
@@ -71,7 +75,8 @@ export default function PrecisionPrototype() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      await preload([PRECISION_ASSETS.lookingBack, PRECISION_ASSETS.hero]);
+      // Character only — never preload multi-MB cinematic plates on boot
+      await preload([CHARACTER.src]);
       if (!cancelled) setReady(true);
     })();
     return () => {
@@ -102,7 +107,8 @@ export default function PrecisionPrototype() {
   useEffect(() => {
     interactionRef.current.hoverSlug = hoverSlug;
     interactionRef.current.activeSlug = activeExhibit?.slug || null;
-  }, [hoverSlug, activeExhibit]);
+    interactionRef.current.viewId = viewId;
+  }, [hoverSlug, activeExhibit, viewId]);
 
   // After entering, reveal editorial once the visual pipeline has been felt
   useEffect(() => {
@@ -111,13 +117,19 @@ export default function PrecisionPrototype() {
     return () => clearTimeout(t);
   }, [activeExhibit, phase]);
 
-  // Soft route after camera arrives at external destinations
+  // Soft route after camera arrives — poll only while a route is pending
   useEffect(() => {
     let raf;
+    let alive = true;
     const loop = () => {
+      if (!alive) return;
       const pending = pendingRouteRef.current;
+      if (!pending) {
+        raf = requestAnimationFrame(loop);
+        return;
+      }
       const cam = cameraTargetRef.current;
-      if (pending && cam?.arrived && cam.viewId === pending.view) {
+      if (cam?.arrived && cam.viewId === pending.view) {
         const href = pending.href;
         pendingRouteRef.current = null;
         router.push(href);
@@ -126,11 +138,15 @@ export default function PrecisionPrototype() {
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      alive = false;
+      cancelAnimationFrame(raf);
+    };
   }, [router]);
 
   const travelToView = useCallback((id, opts = {}) => {
     const v = viewOf(id);
+    const from = cameraTargetRef.current;
     setViewId(id);
     if (opts.href) {
       pendingRouteRef.current = { href: opts.href, view: id };
@@ -138,16 +154,33 @@ export default function PrecisionPrototype() {
       pendingRouteRef.current = null;
     }
     lookOffsetRef.current = { yaw: 0, pitch: 0 };
+
+    // Stream mid-point — travel along the system axis, never teleport
+    const mid = {
+      position: [
+        (from.position[0] + v.position[0]) * 0.5,
+        Math.max(from.position[1], v.position[1]) + 0.15,
+        (from.position[2] + v.position[2]) * 0.5,
+      ],
+      lookAt: [
+        (from.lookAt[0] + v.lookAt[0]) * 0.5,
+        (from.lookAt[1] + v.lookAt[1]) * 0.5 + 0.05,
+        (from.lookAt[2] + v.lookAt[2]) * 0.5,
+      ],
+    };
+
     cameraTargetRef.current = {
       position: [...v.position],
       lookAt: [...v.lookAt],
       fov: v.fov,
-      mode: "hall",
+      mode: "stream",
       token: Date.now(),
-      mid: null,
+      mid,
       viewId: id,
       arrived: false,
     };
+    interactionRef.current.viewId = id;
+    interactionRef.current.travelPulse = 1;
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -217,6 +250,9 @@ export default function PrecisionPrototype() {
     setActiveExhibit(exhibit);
     setPhase("immerse");
     setHoverSlug(null);
+    setViewId("work");
+    interactionRef.current.travelPulse = 1;
+    interactionRef.current.viewId = "work";
   }, [activeExhibit, viewId]);
 
   const onReturn = useCallback(() => {
@@ -263,6 +299,7 @@ export default function PrecisionPrototype() {
       <PrecisionNav
         theme={theme}
         onToggleTheme={toggleTheme}
+        activeView={activeExhibit ? "work" : viewId}
         onTravel={onTravel}
         onHome={() => {
           if (activeExhibit) onReturn();
@@ -279,6 +316,7 @@ export default function PrecisionPrototype() {
         interactionRef={interactionRef}
         activeSlug={activeExhibit?.slug || null}
         hoverSlug={hoverSlug}
+        viewId={viewId}
         onSelectExhibit={onEnter}
         onHoverExhibit={onHoverExhibit}
         controlsEnabled={!activeExhibit}
@@ -289,6 +327,7 @@ export default function PrecisionPrototype() {
         exhibitActive={!!activeExhibit}
         energyRef={interactionRef}
         hoverSlug={hoverSlug}
+        viewId={viewId}
       />
 
       <ExhibitionPanel

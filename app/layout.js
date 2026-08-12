@@ -3,9 +3,9 @@ import "@/components/design-system-v2/styles/index.css";
 import AppShell from "@/components/AppShell";
 
 export const metadata = {
-  title: "Mansi — Precision Prototype",
+  title: "Mansi — Data Engineer",
   description:
-    "Vertical-slice art direction prototype: three cinematic acts of architectural precision.",
+    "Interactive world of data — Lead Data Engineer building reliable platforms, pipelines, and cloud systems.",
 };
 
 export default function RootLayout({ children }) {

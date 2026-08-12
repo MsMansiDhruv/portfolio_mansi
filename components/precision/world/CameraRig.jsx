@@ -33,7 +33,12 @@ export default function CameraRig({ cameraTargetRef, lookOffsetRef }) {
       };
     }
 
-    const rate = target.mode === "enter" || target.mode === "exit" ? 1.05 : 1.55;
+    const rate =
+      target.mode === "enter" || target.mode === "exit"
+        ? 1.05
+        : target.mode === "stream"
+          ? 1.25
+          : 1.55;
     blend.current = THREE.MathUtils.damp(blend.current, 1, rate, dt);
     const b = blend.current;
 
@@ -45,7 +50,7 @@ export default function CameraRig({ cameraTargetRef, lookOffsetRef }) {
 
     if (fromSnap.current && b < 0.999) {
       const mid = target.mid;
-      if (mid && (target.mode === "enter" || target.mode === "exit")) {
+      if (mid && (target.mode === "enter" || target.mode === "exit" || target.mode === "stream")) {
         // Two-leg path: current → mid (along data) → destination
         if (b < 0.5) {
           const t = THREE.MathUtils.smoothstep(b / 0.5, 0, 1);
@@ -76,7 +81,11 @@ export default function CameraRig({ cameraTargetRef, lookOffsetRef }) {
               mid.lookAt[1] + (target.lookAt[1] - mid.lookAt[1]) * t,
               mid.lookAt[2] + (target.lookAt[2] - mid.lookAt[2]) * t,
             ],
-            fov: THREE.MathUtils.lerp(target.fov ?? 34, target.fov ?? 34, t),
+            fov: THREE.MathUtils.lerp(
+              THREE.MathUtils.lerp(fromSnap.current.fov, target.fov ?? 34, 0.5),
+              target.fov ?? 34,
+              t
+            ),
           };
         }
       } else {
@@ -107,10 +116,12 @@ export default function CameraRig({ cameraTargetRef, lookOffsetRef }) {
     look.current.z += (desired.lookAt[2] - look.current.z) * damp;
     fov.current += (desired.fov - fov.current) * damp;
 
-    // Subtle observe offset from pointer drag (hall only)
+    // Subtle observe offset from pointer drag (hall / stream destinations)
     const off = lookOffsetRef?.current;
-    const ox = target.mode === "hall" ? (off?.yaw ?? 0) : 0;
-    const oy = target.mode === "hall" ? (off?.pitch ?? 0) : 0;
+    const ox =
+      target.mode === "hall" || target.mode === "stream" ? (off?.yaw ?? 0) : 0;
+    const oy =
+      target.mode === "hall" || target.mode === "stream" ? (off?.pitch ?? 0) : 0;
 
     camera.position.set(pos.current.x, pos.current.y, pos.current.z);
     camera.lookAt(look.current.x + ox, look.current.y + oy, look.current.z);

@@ -467,6 +467,23 @@ body.mp-world-lock {
   top: auto;
   bottom: clamp(18%, 22vh, 28%);
   transform: none;
+  padding: 1.25rem 1.4rem 1.35rem;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(8, 12, 18, 0.72) 0%,
+    rgba(8, 12, 18, 0.42) 70%,
+    rgba(8, 12, 18, 0) 100%
+  );
+}
+
+.mp-root[data-theme="day"] .mp-copy--acti {
+  background: linear-gradient(
+    90deg,
+    rgba(236, 240, 245, 0.82) 0%,
+    rgba(236, 240, 245, 0.5) 70%,
+    rgba(236, 240, 245, 0) 100%
+  );
 }
 
 .mp-copy--acti-right {
@@ -497,20 +514,22 @@ body.mp-world-lock {
 .mp-role {
   margin: 1.1rem 0 0;
   font-family: var(--mp-font-mono);
-  font-size: clamp(0.62rem, 1.1vw, 0.75rem);
+  font-size: clamp(0.68rem, 1.1vw, 0.8rem);
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--mp-text-muted);
+  color: var(--mp-text);
+  opacity: 0.78;
 }
 
 .mp-statement {
-  margin: 1.75rem 0 0;
+  margin: 1.35rem 0 0;
   font-family: var(--mp-font-body);
-  font-weight: 300;
-  font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+  font-weight: 400;
+  font-size: clamp(0.98rem, 1.55vw, 1.18rem);
   line-height: 1.55;
-  letter-spacing: 0.04em;
-  color: var(--mp-text-muted);
+  letter-spacing: 0.03em;
+  color: var(--mp-text);
+  opacity: 0.88;
   max-width: 22rem;
 }
 
@@ -956,6 +975,37 @@ html.mp-precision-active body {
   color: rgba(244, 239, 230, 0.88);
 }
 
+.mp-pipeline-stages {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.mp-pipeline-stages li {
+  font-family: var(--mp-font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mp-text);
+  opacity: 0.78;
+  padding-left: 0.85rem;
+  position: relative;
+}
+
+.mp-pipeline-stages li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 1px;
+  background: var(--mp-amber);
+}
+
 .mp-exhibition-ui[data-theme="day"] .mp-info-body,
 .mp-exhibition-ui[data-theme="day"] .mp-info-caption,
 .mp-exhibition-ui[data-theme="day"] .mp-info-sections p {
@@ -1202,10 +1252,23 @@ html.mp-precision-active body {
   cursor: pointer;
   padding: 0.35rem 0;
   transition: color 0.35s ease;
+  position: relative;
 }
 
-.mp-nav-link-btn:hover {
+.mp-nav-link-btn:hover,
+.mp-nav-link-btn.is-active {
   color: var(--mp-text);
+}
+
+.mp-nav-link-btn.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--mp-amber);
+  opacity: 0.85;
 }
 
 body.mp-cinematic-cursor,

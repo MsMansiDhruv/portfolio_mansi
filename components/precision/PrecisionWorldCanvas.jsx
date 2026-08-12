@@ -13,12 +13,16 @@ export default function PrecisionWorldCanvas({
   interactionRef,
   activeSlug,
   hoverSlug,
+  viewId,
   onSelectExhibit,
   onHoverExhibit,
   controlsEnabled,
 }) {
   const [mounted, setMounted] = useState(false);
   const palette = THEME_PALETTE[theme] || THEME_PALETTE.night;
+  const reducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
   useEffect(() => {
     setMounted(true);
@@ -31,8 +35,8 @@ export default function PrecisionWorldCanvas({
   return (
     <div className="mp-stage mp-stage--world">
       <Canvas
-        dpr={[1, 1.5]}
-        camera={{ fov: 38, near: 0.1, far: 100, position: [0.2, 1.62, 15.5] }}
+        dpr={[1, 1.25]}
+        camera={{ fov: 38, near: 0.1, far: 80, position: [0.2, 1.62, 15.5] }}
         gl={{
           antialias: true,
           alpha: false,
@@ -40,10 +44,11 @@ export default function PrecisionWorldCanvas({
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: 1.02,
         }}
-        shadows
+        shadows={false}
         style={{ width: "100%", height: "100%" }}
         onCreated={({ gl }) => {
           gl.setClearColor(palette.background);
+          gl.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
         }}
       >
         <color attach="background" args={[palette.background]} />
@@ -56,9 +61,11 @@ export default function PrecisionWorldCanvas({
             interactionRef={interactionRef}
             activeSlug={activeSlug}
             hoverSlug={hoverSlug}
+            viewId={viewId}
             onSelectExhibit={onSelectExhibit}
             onHoverExhibit={onHoverExhibit}
             controlsEnabled={controlsEnabled}
+            reducedMotion={!!reducedMotion}
           />
         </Suspense>
       </Canvas>

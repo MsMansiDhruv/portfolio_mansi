@@ -20,7 +20,7 @@ function ShellBody({ children, isLiving, showChrome, onCommandOpen }) {
       className={cn(
         "flex min-h-screen min-w-0 flex-col overflow-x-hidden transition-colors duration-700",
         isLiving
-          ? "bg-[var(--mx-ink)] text-[var(--mx-ivory)]"
+          ? "bg-[var(--mx-ink,#0c121c)] text-[var(--mx-ivory,#f0f4f9)]"
           : "story-page mansi-world bg-[var(--story-midnight)] text-[var(--story-ivory)]"
       )}
       data-shell-theme={isDark ? "dark" : "light"}

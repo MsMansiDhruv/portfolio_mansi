@@ -1,7 +1,7 @@
 "use client";
 
-import PrecisionPrototype from "@/components/precision/PrecisionPrototype";
+import WorldApp from "@/components/world/WorldApp";
 
 export default function HomePage() {
-  return <PrecisionPrototype />;
+  return <WorldApp />;
 }
