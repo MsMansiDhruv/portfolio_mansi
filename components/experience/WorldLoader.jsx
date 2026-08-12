@@ -30,7 +30,7 @@ export default function WorldLoader({ onReady }) {
         <span className="mx-loader-dot" />
         <span className="mx-loader-dot" />
       </div>
-      <p className="mx-mono mt-8">Building world</p>
+      <p className="mx-mono mt-8">Finding the fixed star</p>
       <div
         className="mx-mono mt-4 h-px w-24 bg-[var(--mx-vermilion)] transition-all duration-300"
         style={{ transform: `scaleX(${0.15 + progress * 0.85})`, transformOrigin: "left" }}

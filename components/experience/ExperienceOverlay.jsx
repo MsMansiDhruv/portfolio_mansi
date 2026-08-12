@@ -26,8 +26,9 @@ export default function ExperienceOverlay({ progress }) {
   return (
     <div className="mx-overlay">
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.hero} align="center">
-        <h1 className="mx-statement mx-statement--hero">{EXPERIENCE_OPENING.mark}</h1>
-        <p className="mx-mono mt-8 text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.enter}</p>
+        <h1 className="mx-statement mx-statement--hero">{EXPERIENCE_OPENING.name}</h1>
+        <p className="mx-mono mt-8 text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.tagline}</p>
+        <p className="mx-mono mt-6 opacity-50">{EXPERIENCE_OPENING.enter}</p>
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.worldLine} align="center">
@@ -36,11 +37,8 @@ export default function ExperienceOverlay({ progress }) {
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.globe} align="center" id="world">
-        <p className="mx-mono">Her world</p>
-        <p className="mx-statement--whisper mt-6 max-w-md text-2xl sm:text-3xl">
-          A constellation of everything built, learned, and discovered.
-        </p>
-        <p className="mx-mono mt-8 opacity-50">Hover a light · click to travel there</p>
+        <p className="mx-statement text-3xl sm:text-4xl">{EXPERIENCE_COPY.sky.headline}</p>
+        <p className="mx-mono mt-8 opacity-60">{EXPERIENCE_COPY.sky.sub}</p>
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.personal} align="center">
