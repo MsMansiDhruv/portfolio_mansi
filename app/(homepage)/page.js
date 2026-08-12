@@ -1,7 +1,7 @@
 "use client";
 
-import MansiExperience from "@/components/experience/MansiExperience";
+import PrecisionPrototype from "@/components/precision/PrecisionPrototype";
 
 export default function HomePage() {
-  return <MansiExperience />;
+  return <PrecisionPrototype />;
 }

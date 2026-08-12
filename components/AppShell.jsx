@@ -71,7 +71,7 @@ export default function AppShell({ children }) {
         onOpen={() => setCommandOpen(true)}
         onClose={() => setCommandOpen(false)}
       />
-      <ScrollToTop />
+      {!isHome ? <ScrollToTop /> : null}
     </DSv2ThemeProvider>
   );
 }

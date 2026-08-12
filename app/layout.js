@@ -3,8 +3,9 @@ import "@/components/design-system-v2/styles/index.css";
 import AppShell from "@/components/AppShell";
 
 export const metadata = {
-  title: "Mansi Dhruv — Lead Data Engineer · Solution Architect",
-  description: "Interactive systems portfolio. Data platforms, pipelines, architecture, AI lab.",
+  title: "Mansi — Precision Prototype",
+  description:
+    "Vertical-slice art direction prototype: three cinematic acts of architectural precision.",
 };
 
 export default function RootLayout({ children }) {
