@@ -103,54 +103,45 @@ function sampleSilhouette(progress, out) {
   out.yaw = a.yaw + (b.yaw - a.yaw) * k;
 }
 
-/** Featureless back-facing figure — shape and posture only. No face. */
+/** Minimal back-facing cutout — posture only. No face, hair detail, or likeness. */
 function createObserverSilhouette(mat) {
   const group = new THREE.Group();
 
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 12), mat);
-  head.position.y = 0.78;
-  head.scale.set(0.95, 1.05, 0.9);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), mat);
+  head.position.y = 0.76;
+  head.scale.set(0.9, 1.05, 0.85);
   group.add(head);
 
-  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 10), mat);
-  hair.position.set(0, 0.74, -0.04);
-  hair.scale.set(1.05, 1.15, 0.85);
-  group.add(hair);
-
-  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.04, 0.08, 8), mat);
-  neck.position.y = 0.64;
-  group.add(neck);
-
-  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.13, 0.38, 4, 10), mat);
-  torso.position.y = 0.32;
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.12, 0.4, 3, 8), mat);
+  torso.position.y = 0.34;
   group.add(torso);
 
-  const hip = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), mat);
-  hip.position.y = 0.05;
-  hip.scale.set(1.15, 0.7, 0.85);
+  const hip = new THREE.Mesh(new THREE.SphereGeometry(0.11, 6, 6), mat);
+  hip.position.y = 0.06;
+  hip.scale.set(1.1, 0.65, 0.8);
   group.add(hip);
 
-  const thighL = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.28, 3, 8), mat);
-  thighL.position.set(-0.07, -0.28, 0.01);
+  const thighL = new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.3, 2, 6), mat);
+  thighL.position.set(-0.065, -0.28, 0.01);
   group.add(thighL);
-  const thighR = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.28, 3, 8), mat);
-  thighR.position.set(0.07, -0.28, 0.01);
+  const thighR = new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.3, 2, 6), mat);
+  thighR.position.set(0.065, -0.28, 0.01);
   group.add(thighR);
 
-  const calfL = new THREE.Mesh(new THREE.CapsuleGeometry(0.045, 0.26, 3, 8), mat);
-  calfL.position.set(-0.07, -0.62, 0);
+  const calfL = new THREE.Mesh(new THREE.CapsuleGeometry(0.04, 0.26, 2, 6), mat);
+  calfL.position.set(-0.065, -0.62, 0);
   group.add(calfL);
-  const calfR = new THREE.Mesh(new THREE.CapsuleGeometry(0.045, 0.26, 3, 8), mat);
-  calfR.position.set(0.07, -0.62, 0);
+  const calfR = new THREE.Mesh(new THREE.CapsuleGeometry(0.04, 0.26, 2, 6), mat);
+  calfR.position.set(0.065, -0.62, 0);
   group.add(calfR);
 
-  const armL = new THREE.Mesh(new THREE.CapsuleGeometry(0.035, 0.32, 3, 8), mat);
-  armL.position.set(-0.2, 0.28, -0.02);
-  armL.rotation.z = 0.18;
+  const armL = new THREE.Mesh(new THREE.CapsuleGeometry(0.032, 0.34, 2, 6), mat);
+  armL.position.set(-0.18, 0.3, -0.02);
+  armL.rotation.z = 0.2;
   group.add(armL);
-  const armR = new THREE.Mesh(new THREE.CapsuleGeometry(0.035, 0.32, 3, 8), mat);
-  armR.position.set(0.2, 0.28, -0.02);
-  armR.rotation.z = -0.18;
+  const armR = new THREE.Mesh(new THREE.CapsuleGeometry(0.032, 0.34, 2, 6), mat);
+  armR.position.set(0.18, 0.3, -0.02);
+  armR.rotation.z = -0.2;
   group.add(armR);
 
   return group;
