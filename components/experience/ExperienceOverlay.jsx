@@ -28,14 +28,22 @@ export default function ExperienceOverlay({ progress }) {
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.hero} align="center">
         <p className="mx-mono text-[var(--mx-vermilion)]">{EXPERIENCE_OPENING.role}</p>
         <h1 className="mx-statement mx-statement--hero mt-6">{EXPERIENCE_OPENING.name}</h1>
-        <p className="mx-statement--whisper mt-8 max-w-2xl text-2xl sm:text-3xl">{EXPERIENCE_OPENING.line}</p>
-        <p className="mx-mono mt-10 opacity-50">{EXPERIENCE_OPENING.cta}</p>
+        <p className="mt-8 max-w-2xl text-lg leading-relaxed sm:text-xl" style={{ color: "var(--mx-ivory)", opacity: 0.92 }}>
+          {EXPERIENCE_OPENING.line}
+        </p>
+        <p className="mx-mono mt-10 opacity-70">{EXPERIENCE_OPENING.cta}</p>
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.systems} align="center" id="systems">
         <p className="mx-mono text-[var(--mx-teal)]">{EXPERIENCE_COPY.systems.headline}</p>
-        <p className="mx-statement mt-6 text-3xl sm:text-4xl">Interactive architecture</p>
-        <p className="mx-mono mt-6 opacity-60">{EXPERIENCE_COPY.systems.sub}</p>
+        <p className="mx-statement mt-6 text-3xl sm:text-4xl">Pipeline stages as icons</p>
+        <p className="mx-mono mt-6 opacity-70">{EXPERIENCE_COPY.systems.sub}</p>
+        <Link
+          href="/tools/ai-lab"
+          className="mx-mono mt-8 inline-block border border-[var(--mx-vermilion)]/50 px-5 py-2.5 text-[var(--mx-vermilion)] hover:bg-[var(--mx-vermilion)]/10"
+        >
+          Open AI Lab →
+        </Link>
       </Panel>
 
       <Panel progress={progress} win={EXPERIENCE_WINDOWS.pipeline} align="left">

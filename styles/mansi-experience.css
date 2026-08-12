@@ -19,13 +19,14 @@
 }
 
 [data-theme="light"] .mx-root {
-  --mx-ink: #ebe6dc;
-  --mx-charcoal: #e0dbd0;
-  --mx-smoke: #d0cbc0;
-  --mx-ivory: #141018;
-  --mx-cream: #2a2430;
-  --mx-muted: #5a5f6a;
-  --mx-vermilion: #8c3838;
+  --mx-ink: #f3efe6;
+  --mx-charcoal: #ebe6dc;
+  --mx-smoke: #ddd7cb;
+  --mx-ivory: #12141a;
+  --mx-cream: #1c1e26;
+  --mx-muted: #3a404c;
+  --mx-vermilion: #9a3030;
+  --mx-teal: #2f6f7a;
 }
 
 .mx-root {
@@ -70,6 +71,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
+}
+
+[data-theme="dark"] .mx-nav {
   mix-blend-mode: difference;
 }
 
@@ -147,6 +151,31 @@
 .mx-panel-inner {
   max-width: 42rem;
   pointer-events: auto;
+  padding: 1.25rem 1.5rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--mx-ink) 72%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--mx-ivory) 8%, transparent);
+}
+
+[data-theme="light"] .mx-panel-inner {
+  background: color-mix(in srgb, #f3efe6 88%, transparent);
+  box-shadow: 0 8px 32px rgba(18, 20, 26, 0.08), 0 0 0 1px rgba(18, 20, 26, 0.06);
+}
+
+[data-theme="light"] .mx-statement,
+[data-theme="light"] .mx-statement--whisper,
+[data-theme="light"] .mx-mono {
+  text-shadow: none;
+  color: inherit;
+}
+
+[data-theme="light"] .mx-nav-links a,
+[data-theme="light"] .mx-theme-btn,
+[data-theme="light"] .mx-quick-btn {
+  color: #12141a;
+  opacity: 0.85;
 }
 
 .mx-statement {
@@ -323,7 +352,78 @@
 
 .mx-territory-hint {
   margin-top: 0.8rem;
-  opacity: 0.4;
+  opacity: 0.55;
+}
+
+/* ---------- Systems map chips (clickable legend) ---------- */
+
+.mx-systems-hud {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 35;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: min(92vw, 52rem);
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.mx-systems-hud.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mx-systems-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--mx-ivory) 14%, transparent);
+  background: color-mix(in srgb, var(--mx-ink) 82%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--mx-ivory);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.mx-systems-chip:hover,
+.mx-systems-chip.is-hot {
+  border-color: var(--chip-color, var(--mx-teal));
+  background: color-mix(in srgb, var(--mx-ink) 70%, transparent);
+  transform: translateY(-1px);
+}
+
+.mx-systems-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  background: var(--chip-color, var(--mx-teal));
+  flex-shrink: 0;
+}
+
+.mx-systems-chip--lab {
+  border-color: color-mix(in srgb, var(--mx-vermilion) 55%, transparent);
+  color: var(--mx-vermilion);
+}
+
+[data-theme="light"] .mx-systems-chip {
+  background: rgba(243, 239, 230, 0.92);
+  border-color: rgba(18, 20, 26, 0.12);
+  color: #12141a;
+}
+
+[data-theme="light"] .mx-territory-sub {
+  color: #12141a;
 }
 
 .mx-canvas-wrap {

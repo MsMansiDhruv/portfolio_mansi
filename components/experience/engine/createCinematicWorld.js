@@ -16,30 +16,59 @@ function palette(dark) {
   return dark
     ? {
         bg: new THREE.Color(0x08090c),
-        dust: new THREE.Color(0x5a6478),
-        node: new THREE.Color(0xa84848),
-        thread: new THREE.Color(0xa84848),
+        dust: new THREE.Color(0x6a7488),
+        node: new THREE.Color(0x5a9ea8),
+        thread: new THREE.Color(0x5a9ea8),
         stream: new THREE.Color(0x6faeb8),
         lattice: new THREE.Color(0x1c2430),
         latticeEdge: new THREE.Color(0x5a9ea8),
         monolith: new THREE.Color(0x14181f),
-        monolithEdge: new THREE.Color(0xa84848),
-        ambient: 0.16,
-        key: 0.4,
+        monolithEdge: new THREE.Color(0x5a9ea8),
+        ambient: 0.18,
+        key: 0.42,
       }
     : {
-        bg: new THREE.Color(0xe9e4da),
-        dust: new THREE.Color(0x8a8478),
-        node: new THREE.Color(0x8c3838),
-        thread: new THREE.Color(0x8c3838),
-        stream: new THREE.Color(0x4a7a84),
-        lattice: new THREE.Color(0xc8c2b4),
-        latticeEdge: new THREE.Color(0x4a7a84),
-        monolith: new THREE.Color(0xd4cec2),
+        bg: new THREE.Color(0xf3efe6),
+        dust: new THREE.Color(0x7a7468),
+        node: new THREE.Color(0x3d7a84),
+        thread: new THREE.Color(0x4a7a84),
+        stream: new THREE.Color(0x3d7a84),
+        lattice: new THREE.Color(0xd4cec2),
+        latticeEdge: new THREE.Color(0x3d7a84),
+        monolith: new THREE.Color(0xe4ded2),
         monolithEdge: new THREE.Color(0x8c3838),
-        ambient: 0.55,
-        key: 0.3,
+        ambient: 0.62,
+        key: 0.35,
       };
+}
+
+/** Data-engineering icon geometries for the systems map nodes */
+const NODE_SPECS = [
+  { icon: "funnel", color: 0x3d8b9e }, // INGEST
+  { icon: "octa", color: 0xb89858 }, // TRANSFORM
+  { icon: "cylinder", color: 0x5a7a9e }, // STORE
+  { icon: "box", color: 0x4a9e7a }, // SERVE
+  { icon: "ring", color: 0x7a6a9e }, // OBSERVE
+  { icon: "icosa", color: 0xa84848 }, // AI LAB
+];
+
+function makeIconGeometry(icon) {
+  switch (icon) {
+    case "funnel":
+      return new THREE.ConeGeometry(0.12, 0.22, 6);
+    case "octa":
+      return new THREE.OctahedronGeometry(0.13, 0);
+    case "cylinder":
+      return new THREE.CylinderGeometry(0.1, 0.1, 0.2, 12);
+    case "box":
+      return new THREE.BoxGeometry(0.18, 0.18, 0.18);
+    case "ring":
+      return new THREE.TorusGeometry(0.1, 0.035, 8, 18);
+    case "icosa":
+      return new THREE.IcosahedronGeometry(0.13, 0);
+    default:
+      return new THREE.SphereGeometry(0.1, 12, 12);
+  }
 }
 
 /** Camera — engineer journey: systems overview → dive into pipelines → gallery → pullback */
@@ -149,52 +178,57 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
   });
   scene.add(new THREE.Points(dustGeo, dustMat));
 
-  /* ---------- Personal constellation (near origin) ---------- */
-  const NODE_COUNT = 12;
+  /* ---------- Systems map — DE icon nodes ---------- */
+  const NODE_COUNT = NODE_SPECS.length;
   const nodeGroup = new THREE.Group();
   scene.add(nodeGroup);
   const nodePositions = [];
   const nodeMats = [];
   const nodeMeshes = [];
+  const nodeBaseColors = NODE_SPECS.map((s) => new THREE.Color(s.color));
+
   for (let i = 0; i < NODE_COUNT; i++) {
-    const phi = Math.acos(1 - (2 * (i + 0.5)) / NODE_COUNT);
-    const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-    const r = 1.9;
-    const p = new THREE.Vector3(
-      r * Math.sin(phi) * Math.cos(theta),
-      r * Math.cos(phi) * 0.7,
-      r * Math.sin(phi) * Math.sin(theta)
-    );
+    const angle = (i / NODE_COUNT) * Math.PI * 2 - Math.PI / 2;
+    const r = 2.15;
+    const p = new THREE.Vector3(Math.cos(angle) * r, Math.sin(angle) * r * 0.55, Math.sin(angle * 2) * 0.35);
     nodePositions.push(p);
+
+    const color = nodeBaseColors[i];
     const mat = new THREE.MeshStandardMaterial({
-      color: cur.node,
-      emissive: cur.node,
+      color: color.clone(),
+      emissive: color.clone(),
       emissiveIntensity: 0,
+      metalness: 0.25,
+      roughness: 0.45,
       transparent: true,
       opacity: 0,
     });
     nodeMats.push(mat);
-    const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 10), mat);
+    const mesh = new THREE.Mesh(makeIconGeometry(NODE_SPECS[i].icon), mat);
     mesh.position.copy(p);
+    if (NODE_SPECS[i].icon === "cylinder") mesh.rotation.x = Math.PI / 2;
     nodeGroup.add(mesh);
     nodeMeshes.push(mesh);
   }
 
-  /* Invisible hit targets for the first nodes — the world's territories */
+  /* Invisible hit targets — generous so icons are easy to click */
   const hitMat = new THREE.MeshBasicMaterial({ visible: false });
   const hitMeshes = [];
   for (let i = 0; i < TERRITORY_COUNT; i++) {
-    const hit = new THREE.Mesh(new THREE.SphereGeometry(0.36, 8, 8), hitMat);
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(0.48, 10, 10), hitMat);
     hit.position.copy(nodePositions[i]);
     hit.userData.index = i;
     nodeGroup.add(hit);
     hitMeshes.push(hit);
   }
+
+  /* Pipeline ring connecting the stages (teal, not red) */
   const threadMats = [];
   for (let i = 0; i < NODE_COUNT; i++) {
+    const next = (i + 1) % NODE_COUNT;
     const mat = new THREE.LineBasicMaterial({ color: cur.thread, transparent: true, opacity: 0 });
     threadMats.push(mat);
-    const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), nodePositions[i]]);
+    const geo = new THREE.BufferGeometry().setFromPoints([nodePositions[i], nodePositions[next]]);
     nodeGroup.add(new THREE.Line(geo, mat));
   }
 
@@ -316,7 +350,7 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
 
   const tmpColor = new THREE.Color();
   const streamColor = new THREE.Color();
-  const badCol = new THREE.Color(0xa84848);
+  const badCol = new THREE.Color(0xb89858); // amber = dropped records (not all-red scene)
 
   /* ---------- Pointer: parallax + territory raycast ---------- */
   const raycaster = new THREE.Raycaster();
@@ -336,7 +370,7 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
 
   function pickTerritory() {
     if (!pointerActive) return -1;
-    const active = Math.max(seg(0.12, 0.2) * (1 - seg(0.28, 0.36)), seg(0.9, 1));
+    const active = Math.max(seg(0.08, 0.16) * (1 - seg(0.3, 0.4)), seg(0.88, 1));
     if (active < 0.25) return -1;
     raycaster.setFromCamera(pointerNdc, camera);
     const hits = raycaster.intersectObjects(hitMeshes, false);
@@ -377,9 +411,11 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     renderer.setClearColor(tmpColor, 1);
     scene.fog.color.copy(tmpColor);
     dustMat.color.lerpColors(from.dust, cur.dust, k);
-    nodeMats.forEach((m) => {
-      m.color.lerpColors(from.node, cur.node, k);
-      m.emissive.copy(m.color);
+    nodeMats.forEach((m, i) => {
+      // Keep stage identity colors; only soften slightly toward theme
+      const base = nodeBaseColors[i];
+      m.color.copy(base);
+      m.emissive.copy(base);
     });
     threadMats.forEach((m) => m.color.lerpColors(from.thread, cur.thread, k));
     latticeMat.color.lerpColors(from.lattice, cur.lattice, k);
@@ -389,7 +425,7 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     webMat.color.lerpColors(from.thread, cur.thread, k);
     ambient.intensity = from.ambient + (cur.ambient - from.ambient) * k;
     key.intensity = from.key + (cur.key - from.key) * k;
-    accent.color.copy(nodeMats[0].color);
+    accent.color.copy(nodeBaseColors[0]);
   }
 
   function resize(w, h) {
@@ -437,29 +473,29 @@ export function createCinematicWorld(canvas, { isDark, onTerritoryHover } = {}) 
     }
 
     /* Phase intensities — systems map → pipelines → architecture → gallery → reveal */
-    const constellationT = seg(0.1, 0.18) * (1 - seg(0.3, 0.4));
+    const constellationT = Math.max(seg(0.06, 0.14) * (1 - seg(0.32, 0.42)), seg(0.88, 1) * 0.85);
     const streamsT = seg(0.3, 0.42) * (1 - seg(0.58, 0.68));
     const cityT = seg(0.45, 0.58);
     const galleryT = seg(0.55, 0.74);
     const finaleT = seg(0.9, 1);
 
-    const nodeVis = Math.max(constellationT, finaleT);
-    nodeMeshes.forEach((mesh, i) => mesh.position.copy(nodePositions[i]));
+    const nodeVis = Math.max(constellationT, finaleT, 0.15); // keep icons readable early
     nodeMats.forEach((m, i) => {
-      const local = Math.min(1, Math.max(0, nodeVis * NODE_COUNT - i));
-      m.opacity = local * 0.95;
-      m.emissiveIntensity = local * (0.5 + (i === hovered ? 0.9 : 0));
+      const local = Math.min(1, Math.max(0.25, nodeVis));
+      m.opacity = local * 0.98;
+      m.emissiveIntensity = local * (0.35 + (i === hovered ? 0.85 : 0.15));
     });
     nodeMeshes.forEach((mesh, i) => {
-      const targetScale = i === hovered ? 2.6 : 1;
+      const targetScale = i === hovered ? 1.55 : 1;
       const s = mesh.scale.x + (targetScale - mesh.scale.x) * 0.14;
       mesh.scale.setScalar(s);
+      mesh.rotation.y = time * 0.0004 + i * 0.4;
     });
     threadMats.forEach((m, i) => {
-      const base = Math.max(constellationT * 0.35, finaleT * 0.4) * (i / NODE_COUNT < nodeVis ? 1 : 0);
-      m.opacity = i === hovered ? Math.min(1, base * 3 + 0.25) : base;
+      const base = Math.max(constellationT * 0.45, finaleT * 0.35, 0.12);
+      m.opacity = i === hovered || i === (hovered - 1 + NODE_COUNT) % NODE_COUNT ? Math.min(1, base * 2.2) : base;
     });
-    nodeGroup.rotation.y = time * 0.0001;
+    nodeGroup.rotation.y = time * 0.00008;
 
     /* Data streams — records flow, validation drops the bad ones */
     streamMat.opacity = streamsT * 0.9;
