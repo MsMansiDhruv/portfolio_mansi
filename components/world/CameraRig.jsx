@@ -5,9 +5,9 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
 export const HOME_CAM = {
-  // Globe upper-right; type lower-left
-  position: [0.4, 0.15, 11.2],
-  lookAt: [2.4, 0.35, 0],
+  // Globe visual weight right; brand rail in negative space left
+  position: [0.35, 0.12, 11.0],
+  lookAt: [2.55, 0.3, 0],
   fov: 34,
 };
 

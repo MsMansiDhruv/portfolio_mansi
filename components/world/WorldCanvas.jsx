@@ -8,6 +8,11 @@ import DataGlobe from "./DataGlobe";
 import TechConstellation from "./TechConstellation";
 import InfraLayer from "./InfraLayer";
 import WorkField from "./WorkField";
+import ProjectPipeline from "./ProjectPipeline";
+import SemanticField from "./SemanticField";
+import ExperienceField from "./ExperienceField";
+import AboutField from "./AboutField";
+import ContactField from "./ContactField";
 import CursorBridge from "./CursorBridge";
 import CameraRig, { HOME_CAM } from "./CameraRig";
 
@@ -16,22 +21,22 @@ function Atmosphere({ themeId }) {
   const day = themeId === "day";
   return (
     <>
-      {!day && <fog attach="fog" args={[t.fog, t.fogNear, t.fogFar]} />}
-      <ambientLight intensity={t.ambient} color={day ? "#f4f0e8" : "#6a849c"} />
+      <fog attach="fog" args={[t.fog, t.fogNear, t.fogFar]} />
+      <ambientLight intensity={t.ambient} color={day ? "#f2f5f8" : "#6a849c"} />
       <hemisphereLight
-        intensity={day ? 0.48 : 0.34}
-        color={day ? "#f8f4ec" : "#7a9ab8"}
-        groundColor={day ? "#ddd6cc" : "#0a1018"}
+        intensity={day ? 0.52 : 0.34}
+        color={day ? "#ffffff" : "#7a9ab8"}
+        groundColor={day ? "#d0d6de" : "#0a1018"}
       />
       <directionalLight
         position={[5, 8, 6]}
         intensity={t.key}
-        color={day ? "#fff8f0" : "#d0e0f0"}
+        color={day ? "#ffffff" : "#d0e0f0"}
       />
       <directionalLight
         position={[-4, 2, -4]}
         intensity={t.rim}
-        color={day ? "#c8c0b4" : "#3a5a72"}
+        color={day ? "#b8c4d4" : "#3a5a72"}
       />
     </>
   );
@@ -50,6 +55,14 @@ export default function WorldCanvas({
   workSelected,
   onWorkHover,
   onWorkSelect,
+  onPipelineReady,
+  aiFocusWord,
+  onWordHover,
+  onWordSelect,
+  onModeSelect,
+  onExperienceHover,
+  onExperienceSelect,
+  onAboutHover,
 }) {
   const [mounted, setMounted] = useState(false);
   const t = THEME[themeId] || THEME.night;
@@ -57,6 +70,8 @@ export default function WorldCanvas({
     if (typeof window === "undefined") return false;
     return !!window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
   }, []);
+  const inPipeline = layer === "work" && !!workSelected;
+  const worldDim = layer !== "world" && !inPipeline;
 
   useEffect(() => setMounted(true), []);
   if (!mounted) return <div className="wd-stage" aria-hidden />;
@@ -64,7 +79,7 @@ export default function WorldCanvas({
   return (
     <div className="wd-stage">
       <Canvas
-        dpr={[1, 1.5]}
+        dpr={[1, typeof window !== "undefined" && window.innerWidth < 768 ? 1.25 : 1.5]}
         camera={{
           fov: HOME_CAM.fov,
           near: 0.08,
@@ -88,48 +103,117 @@ export default function WorldCanvas({
         <CameraRig cameraTargetRef={cameraTargetRef} cursorRef={cursorRef} />
         <CursorBridge cursorRef={cursorRef} />
         <group position={[2.45, 0.25, 0]}>
-          <Suspense fallback={null}>
-            <DataGlobe
-              key={themeId}
-              themeId={themeId}
-              cursorRef={cursorRef}
-              stateRef={stateRef}
-              reducedMotion={reduced}
-              layer={layer}
-            />
-          </Suspense>
-          <Suspense fallback={null}>
-            <TechConstellation
-              key={`tech-${themeId}`}
-              themeId={themeId}
-              hoverId={techHover}
-              onHover={onTechHover}
-              onSelect={(node, pos) => {
-                onTechSelect?.(node, [pos[0] + 2.45, pos[1] + 0.25, pos[2]]);
-              }}
-              stateRef={stateRef}
-              layer={layer}
-            />
-          </Suspense>
-          <Suspense fallback={null}>
-            <InfraLayer themeId={themeId} stateRef={stateRef} layer={layer} />
-          </Suspense>
-          <Suspense fallback={null}>
-            <WorkField
-              themeId={themeId}
-              active={layer === "work"}
-              hoverSlug={workHover}
-              selectedSlug={workSelected}
-              onHover={onWorkHover}
-              onSelect={(cluster, pos) => {
-                onWorkSelect?.(cluster, [
-                  pos[0] + 2.45,
-                  pos[1] + 0.25,
-                  pos[2],
-                ]);
-              }}
-            />
-          </Suspense>
+          {(layer === "world" || worldDim) && (
+            <>
+              <Suspense fallback={null}>
+                <DataGlobe
+                  key={themeId}
+                  themeId={themeId}
+                  cursorRef={cursorRef}
+                  stateRef={stateRef}
+                  reducedMotion={reduced}
+                  layer={layer}
+                />
+              </Suspense>
+              {layer === "world" && (
+                <>
+                  <Suspense fallback={null}>
+                    <TechConstellation
+                      key={`tech-${themeId}`}
+                      themeId={themeId}
+                      hoverId={techHover}
+                      onHover={onTechHover}
+                      onSelect={(node, pos) => {
+                        onTechSelect?.(node, [
+                          pos[0] + 2.45,
+                          pos[1] + 0.25,
+                          pos[2],
+                        ]);
+                      }}
+                      stateRef={stateRef}
+                      layer={layer}
+                    />
+                  </Suspense>
+                  <Suspense fallback={null}>
+                    <InfraLayer
+                      themeId={themeId}
+                      stateRef={stateRef}
+                      layer={layer}
+                    />
+                  </Suspense>
+                </>
+              )}
+            </>
+          )}
+
+          {layer === "work" && (
+            <>
+              <Suspense fallback={null}>
+                <WorkField
+                  themeId={themeId}
+                  active={!workSelected}
+                  hoverSlug={workHover}
+                  selectedSlug={workSelected?.slug || null}
+                  onHover={onWorkHover}
+                  onSelect={(cluster, pos) => {
+                    onWorkSelect?.(cluster, [
+                      pos[0] + 2.45,
+                      pos[1] + 0.25,
+                      pos[2],
+                    ]);
+                  }}
+                />
+              </Suspense>
+              <Suspense fallback={null}>
+                <ProjectPipeline
+                  themeId={themeId}
+                  cluster={workSelected}
+                  active={!!workSelected}
+                  onReady={onPipelineReady}
+                />
+              </Suspense>
+            </>
+          )}
+
+          {layer === "ai" && (
+            <Suspense fallback={null}>
+              <SemanticField
+                themeId={themeId}
+                active
+                focusWord={aiFocusWord}
+                onWordHover={onWordHover}
+                onWordSelect={onWordSelect}
+                onModeSelect={onModeSelect}
+              />
+            </Suspense>
+          )}
+
+          {layer === "experience" && (
+            <Suspense fallback={null}>
+              <ExperienceField
+                themeId={themeId}
+                active
+                onHover={onExperienceHover}
+                onSelect={onExperienceSelect}
+              />
+            </Suspense>
+          )}
+
+          {layer === "about" && (
+            <Suspense fallback={null}>
+              <AboutField
+                themeId={themeId}
+                active
+                onHover={onAboutHover}
+              />
+            </Suspense>
+          )}
+
+          {layer === "contact" && (
+            <Suspense fallback={null}>
+              <ContactField themeId={themeId} active />
+            </Suspense>
+          )}
         </group>
       </Canvas>
     </div>

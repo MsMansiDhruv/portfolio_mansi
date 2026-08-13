@@ -2,38 +2,53 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import "@/styles/mansi-world-of-data.css";
-import { WORLD_HERO, WORLD_NAV, STORY } from "@/lib/data/data-world";
+import {
+  WORLD_HERO,
+  WORLD_NAV,
+  STORY,
+  LAYER_CAM,
+} from "@/lib/data/data-world";
+import {
+  ABOUT_ME,
+  CAREER_TIMELINE,
+  getAboutHeroLine,
+  CURRENT_ROLE,
+} from "@/lib/data/career";
+import { SOCIAL_LINKS } from "@/lib/data/social-links";
 import WorldCanvas from "./WorldCanvas";
 import SystemCursor from "./SystemCursor";
 import { HOME_CAM, approachNode } from "./CameraRig";
 
 const THEME_KEY = "mansi-world-theme";
-
-const WORK_CAM = {
-  position: [0.2, 0.4, 9.2],
-  lookAt: [2.2, 0.1, 0],
-  fov: 36,
-};
+const RESUME_HREF = "/resume.pdf";
 
 /**
- * Living Data World — one continuous machine.
- * WORLD → WORK (orbit unfolds). Other layers attach as system states.
+ * Living Data Universe — one continuous production machine.
  */
 export default function WorldApp() {
   const [theme, setTheme] = useState("night");
+  const [themePulse, setThemePulse] = useState(false);
   const [ready, setReady] = useState(false);
   const [story, setStory] = useState("silence");
   const [layer, setLayer] = useState("world");
+  const [navOpen, setNavOpen] = useState(false);
   const [techHover, setTechHover] = useState(null);
   const [focused, setFocused] = useState(null);
   const [workHover, setWorkHover] = useState(null);
   const [workSelected, setWorkSelected] = useState(null);
+  const [pipelineReady, setPipelineReady] = useState(false);
+  const [aiFocus, setAiFocus] = useState(null);
+  const [aiHover, setAiHover] = useState(null);
+  const [expHover, setExpHover] = useState(null);
+  const [aboutHover, setAboutHover] = useState(null);
   const [meta, setMeta] = useState("SYSTEM / ONLINE");
+  const [isMobile, setIsMobile] = useState(false);
+  const [uiReady, setUiReady] = useState(false);
 
   const cameraTargetRef = useRef({
-    position: [...HOME_CAM.position],
-    lookAt: [...HOME_CAM.lookAt],
-    fov: HOME_CAM.fov,
+    position: [...(LAYER_CAM.world?.position || HOME_CAM.position)],
+    lookAt: [...(LAYER_CAM.world?.lookAt || HOME_CAM.lookAt)],
+    fov: LAYER_CAM.world?.fov || HOME_CAM.fov,
     mode: "stream",
     token: 1,
     mid: null,
@@ -64,15 +79,25 @@ export default function WorldApp() {
   const startedAt = useRef(null);
 
   useEffect(() => {
+    setUiReady(true);
     try {
       const s = localStorage.getItem(THEME_KEY);
       if (s === "day" || s === "night") setTheme(s);
     } catch {
       /* ignore */
     }
-    const t = setTimeout(() => setReady(true), 380);
+    const t = setTimeout(() => setReady(true), 320);
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    if (!uiReady) return undefined;
+    const mq = window.matchMedia("(max-width: 768px)");
+    const apply = () => setIsMobile(mq.matches);
+    apply();
+    mq.addEventListener?.("change", apply);
+    return () => mq.removeEventListener?.("change", apply);
+  }, [uiReady]);
 
   useEffect(() => {
     document.documentElement.classList.add("wd-active");
@@ -157,6 +182,8 @@ export default function WorldApp() {
   }, []);
 
   const toggleTheme = useCallback(() => {
+    setThemePulse(true);
+    window.setTimeout(() => setThemePulse(false), 1400);
     setTheme((prev) => {
       const next = prev === "night" ? "day" : "night";
       try {
@@ -181,7 +208,11 @@ export default function WorldApp() {
   const onWorkSelect = useCallback(
     (cluster, pos) => {
       setWorkSelected(cluster);
-      setCam(approachNode(pos, 2.8), "enter");
+      setPipelineReady(false);
+      setCam(approachNode(pos, 2.2), "enter");
+      window.setTimeout(() => {
+        setCam(LAYER_CAM.pipeline, "enter");
+      }, 700);
     },
     [setCam]
   );
@@ -191,30 +222,35 @@ export default function WorldApp() {
     setTechHover(null);
     setWorkSelected(null);
     setWorkHover(null);
+    setPipelineReady(false);
+    setAiFocus(null);
     setLayer("world");
-    setCam(HOME_CAM, "stream");
+    setNavOpen(false);
+    setCam(LAYER_CAM.world, "stream");
   }, [setCam]);
 
   const goLayer = useCallback(
     (id) => {
-      if (id !== "world" && id !== "work") {
-        // Layers attach progressively — keep visitor in one machine
-        return;
-      }
       setFocused(null);
       setTechHover(null);
       setWorkSelected(null);
       setWorkHover(null);
+      setPipelineReady(false);
+      setAiFocus(null);
+      setExpHover(null);
+      setAboutHover(null);
       setLayer(id);
-      if (id === "work") setCam(WORK_CAM, "enter");
-      else setCam(HOME_CAM, "stream");
+      setNavOpen(false);
+      const cam = LAYER_CAM[id] || LAYER_CAM.world;
+      setCam(cam, id === "world" ? "stream" : "enter");
     },
     [setCam]
   );
 
   const closeProject = useCallback(() => {
     setWorkSelected(null);
-    setCam(WORK_CAM, "stream");
+    setPipelineReady(false);
+    setCam(LAYER_CAM.work, "stream");
   }, [setCam]);
 
   const explored = story === "explore" || story === "identity";
@@ -222,15 +258,36 @@ export default function WorldApp() {
   const showRole = story === "identity" || story === "explore";
   const showLine = story === "explore";
   const showHint = explored && layer === "world" && !focused;
-  const cursorMode = workSelected || focused || techHover || workHover
-    ? "target"
-    : cursorRef.current?.active
-      ? "data"
-      : "idle";
+
+  const cursorMode =
+    workSelected || focused || techHover || workHover || aiHover || aboutHover
+      ? "target"
+      : "data";
+
+  const statusLine = (() => {
+    if (workSelected)
+      return pipelineReady
+        ? `INSIDE · PROJECT ${workSelected.code}`
+        : `ENTERING · PROJECT ${workSelected.code}`;
+    if (focused) return `NODE · ${focused.label}`;
+    if (techHover) return `LINK · ${techHover.label}`;
+    if (workHover) return `CLUSTER · ${workHover.cardTitle}`;
+    if (aiHover) return `CONCEPT · ${aiHover}`;
+    if (aiFocus) return `FOCUS · ${aiFocus}`;
+    if (expHover) return `${expHover.year} · ${expHover.title}`;
+    if (aboutHover) return aboutHover.label;
+    if (!explored) return STORY[story]?.label || "";
+    if (layer === "work") return "SELECT A SYSTEM · ENTER THE PIPELINE";
+    if (layer === "ai") return "CLICK A CONCEPT · OPEN A MODE";
+    if (layer === "experience") return "TRACE THE SYSTEM EVOLUTION";
+    if (layer === "about") return "DISCOVER THE PERSON";
+    if (layer === "contact") return "ONE SIGNAL";
+    return "HOVER NODE · CLICK TO ENTER";
+  })();
 
   return (
     <div
-      className={`wd-root${ready ? " is-ready" : ""}`}
+      className={`wd-root${ready ? " is-ready" : ""}${themePulse ? " is-theme-shift" : ""}`}
       data-theme={theme}
       data-story={story}
       data-layer={layer}
@@ -240,30 +297,43 @@ export default function WorldApp() {
         <span className="wd-loader__mark">Entering the data system</span>
       </div>
 
-      <SystemCursor mode={cursorMode} enabled={ready} />
+      {uiReady && !isMobile && (
+        <SystemCursor mode={cursorMode} enabled={ready} />
+      )}
 
       <header className="wd-bar">
         <div className="wd-bar__left">
           <button type="button" className="wd-brand" onClick={onHome}>
             Mansi
           </button>
-          <nav className="wd-nav" aria-label="System">
-            {WORLD_NAV.map((item) => {
-              const live = item.id === "world" || item.id === "work";
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={`wd-nav__item${layer === item.id ? " is-active" : ""}${live ? "" : " is-soon"}`}
-                  onClick={() => live && goLayer(item.id)}
-                  disabled={!live || !explored}
-                  aria-current={layer === item.id ? "page" : undefined}
-                >
-                  {layer === item.id && <span className="wd-nav__signal" aria-hidden />}
-                  {item.label}
-                </button>
-              );
-            })}
+          <button
+            type="button"
+            className="wd-nav-toggle"
+            aria-expanded={navOpen}
+            aria-label="Open navigation"
+            onClick={() => setNavOpen((v) => !v)}
+          >
+            Menu
+          </button>
+          <nav
+            className={`wd-nav${navOpen ? " is-open" : ""}`}
+            aria-label="System"
+          >
+            {WORLD_NAV.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`wd-nav__item${layer === item.id ? " is-active" : ""}`}
+                onClick={() => explored && goLayer(item.id)}
+                disabled={!explored}
+                aria-current={layer === item.id ? "page" : undefined}
+              >
+                {layer === item.id && (
+                  <span className="wd-nav__signal" aria-hidden />
+                )}
+                {item.label}
+              </button>
+            ))}
           </nav>
         </div>
         <button
@@ -273,7 +343,9 @@ export default function WorldApp() {
           aria-label={`Switch to ${theme === "night" ? "day" : "night"} mode`}
         >
           <span className="wd-theme__pip" />
-          <span suppressHydrationWarning>{theme === "night" ? "Night" : "Day"}</span>
+          <span suppressHydrationWarning>
+            {theme === "night" ? "Night" : "Day"}
+          </span>
         </button>
       </header>
 
@@ -290,37 +362,38 @@ export default function WorldApp() {
         }}
         onTechSelect={onTechSelect}
         workHover={workHover?.slug || null}
-        workSelected={workSelected?.slug || null}
+        workSelected={workSelected}
         onWorkHover={(c) => {
-          if (layer !== "work") return;
+          if (layer !== "work" || workSelected) return;
           setWorkHover(c);
         }}
         onWorkSelect={onWorkSelect}
+        onPipelineReady={() => setPipelineReady(true)}
+        aiFocusWord={aiFocus}
+        onWordHover={setAiHover}
+        onWordSelect={setAiFocus}
+        onModeSelect={(chamber) => {
+          if (chamber?.href) window.location.href = chamber.href;
+        }}
+        onExperienceHover={setExpHover}
+        onExperienceSelect={(stage, pos) => {
+          if (pos) setCam(approachNode([pos[0] + 2.45, pos[1] + 0.25, pos[2]]), "enter");
+          setExpHover(stage);
+        }}
+        onAboutHover={setAboutHover}
       />
 
       <div className="wd-hud">
         <div className="wd-meta wd-meta--tl">
-          {layer === "work" ? "SYSTEM / WORK" : "DATA ORBIT"}
+          {layer === "world"
+            ? "DATA ORBIT"
+            : `SYSTEM / ${layer.replace("-", " ").toUpperCase()}`}
         </div>
         <div className="wd-meta wd-meta--tr">
-          {theme === "day" ? "DAY · MACHINE LIGHT" : "NIGHT · DEEP COMPUTE"}
+          {theme === "day" ? "DAY · CLARITY" : "NIGHT · DEEP COMPUTE"}
         </div>
         <div className="wd-coords">{meta}</div>
-        <div className="wd-meta wd-meta--br">
-          {workSelected
-            ? `PROJECT ${workSelected.code} · ${workSelected.story}`
-            : focused
-              ? `NODE · ${focused.label}`
-              : techHover
-                ? `LINK · ${techHover.label}`
-                : workHover
-                  ? `CLUSTER · ${workHover.cardTitle}`
-                  : explored
-                    ? layer === "work"
-                      ? "SELECT A SYSTEM CLUSTER"
-                      : "HOVER NODE · CLICK TO ENTER"
-                    : STORY[story]?.label || ""}
-        </div>
+        <div className="wd-meta wd-meta--br">{statusLine}</div>
 
         {layer === "world" && (
           <div className={`wd-hero${focused ? " is-dim" : ""}`}>
@@ -328,7 +401,8 @@ export default function WorldApp() {
             <h1 className={showName ? "is-in" : ""}>{WORLD_HERO.name}</h1>
             <p className={`wd-hero__role${showRole ? " is-in" : ""}`}>
               {WORLD_HERO.role}
-              <span className="wd-hero__sep"> · </span>
+            </p>
+            <p className={`wd-hero__sub${showRole ? " is-in" : ""}`}>
               {WORLD_HERO.roleLine}
             </p>
             <p className={`wd-hero__line${showLine ? " is-in" : ""}`}>
@@ -338,34 +412,37 @@ export default function WorldApp() {
         )}
 
         {layer === "work" && !workSelected && (
-          <div className="wd-hero wd-hero--work">
+          <div className="wd-hero wd-hero--layer">
             <p className="wd-hero__rail">SYSTEM 01 · WORK</p>
             <h1 className="is-in">WORK</h1>
-            <p className="wd-hero__role is-in">Four system exhibits</p>
+            <p className="wd-hero__sub is-in">Four system exhibits</p>
             <p className="wd-hero__line is-in">
-              The orbit unfolds. Architecture becomes the hero.
+              Select a cluster. Enter the architecture. Watch the data move.
             </p>
           </div>
         )}
 
         {workSelected && (
-          <aside className="wd-exhibit" aria-label="Project exhibit">
+          <aside
+            className={`wd-exhibit${pipelineReady ? " is-ready" : ""}`}
+            aria-label="Project exhibit"
+          >
             <p className="wd-exhibit__code">PROJECT {workSelected.code}</p>
             <h2>{workSelected.cardTitle}</h2>
             <p className="wd-exhibit__story">{workSelected.story}</p>
-            {workSelected.problem && (
+            {pipelineReady && workSelected.problem && (
               <div className="wd-exhibit__block">
                 <span>PROBLEM</span>
                 <p>{workSelected.problem}</p>
               </div>
             )}
-            {workSelected.purpose && (
+            {pipelineReady && workSelected.purpose && (
               <div className="wd-exhibit__block">
                 <span>APPROACH</span>
                 <p>{workSelected.purpose}</p>
               </div>
             )}
-            {workSelected.tech?.length > 0 && (
+            {pipelineReady && workSelected.tech?.length > 0 && (
               <div className="wd-exhibit__block">
                 <span>TECHNOLOGY</span>
                 <p className="wd-exhibit__tech">
@@ -373,10 +450,92 @@ export default function WorldApp() {
                 </p>
               </div>
             )}
-            <button type="button" className="wd-exhibit__close" onClick={closeProject}>
-              Return to orbit
+            {pipelineReady && workSelected.outcomes?.[0] && (
+              <div className="wd-exhibit__block">
+                <span>OUTCOME</span>
+                <p>{workSelected.outcomes[0]}</p>
+              </div>
+            )}
+            <button
+              type="button"
+              className="wd-exhibit__close"
+              onClick={closeProject}
+            >
+              Return through the pathway
             </button>
           </aside>
+        )}
+
+        {layer === "ai" && (
+          <div className="wd-hero wd-hero--layer">
+            <p className="wd-hero__rail">SYSTEM 02 · AI LAB</p>
+            <h1 className="is-in">AI LAB</h1>
+            <p className="wd-hero__sub is-in">Semantic field</p>
+            <p className="wd-hero__line is-in">
+              Concepts reorganize on contact. Modes open from the field.
+            </p>
+          </div>
+        )}
+
+        {layer === "experience" && (
+          <div className="wd-panel">
+            <p className="wd-hero__rail">SYSTEM 03 · EXPERIENCE</p>
+            <h2>System evolution</h2>
+            <ul className="wd-timeline">
+              {[...CAREER_TIMELINE].reverse().map((row) => (
+                <li
+                  key={row.id}
+                  className={expHover?.id === row.id ? "is-hot" : ""}
+                >
+                  <span>{row.year}</span>
+                  <strong>{row.title}</strong>
+                  <em>{row.focus}</em>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {layer === "about" && (
+          <div className="wd-panel wd-panel--about">
+            <p className="wd-hero__rail">SYSTEM 04 · ABOUT</p>
+            <h2>Mansi</h2>
+            <p className="wd-panel__lead">{getAboutHeroLine()}</p>
+            {ABOUT_ME.map((p) => (
+              <p key={p.slice(0, 24)} className="wd-panel__body">
+                {p}
+              </p>
+            ))}
+            <p className="wd-panel__meta">{CURRENT_ROLE}</p>
+            {aboutHover && (
+              <p className="wd-panel__insight">
+                <span>{aboutHover.label}</span>
+                {aboutHover.insight}
+              </p>
+            )}
+          </div>
+        )}
+
+        {layer === "contact" && (
+          <div className="wd-panel wd-panel--contact">
+            <p className="wd-hero__rail">SYSTEM 05 · CONTACT</p>
+            <h2>Let&apos;s build what&apos;s next.</h2>
+            <p className="wd-panel__lead">
+              One clean signal. The world stays alive behind it.
+            </p>
+            <div className="wd-contact-links">
+              <a href={`mailto:${SOCIAL_LINKS.email}`}>Email</a>
+              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noreferrer">
+                LinkedIn
+              </a>
+              <a href={SOCIAL_LINKS.github} target="_blank" rel="noreferrer">
+                GitHub
+              </a>
+              <a href={RESUME_HREF} target="_blank" rel="noreferrer">
+                Resume
+              </a>
+            </div>
+          </div>
         )}
 
         <p className={`wd-hint${showHint ? " is-in" : ""}`}>

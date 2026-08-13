@@ -55,14 +55,17 @@ export default function DataGlobe({
   const MICRO = reducedMotion ? 700 : 1600;
   const ACTIVE = reducedMotion ? 90 : 220;
 
-  // Apparent sizes: ~3–5px micro, ~5–8px active at home distance
-  const SIZE_MICRO = day ? 0.2 : 0.18;
-  const SIZE_ACTIVE = day ? 0.32 : 0.3;
+  // Readable information units — not star dust
+  const SIZE_MICRO = day ? 0.28 : 0.26;
+  const SIZE_ACTIVE = day ? 0.42 : 0.4;
 
   const { microGeom, activeGeom, baseMicro, baseActive, seeds } = useMemo(() => {
     const spectrum = PARTICLE_SPECTRUM.map((hex) => new THREE.Color(hex));
-    if (!day) {
-      spectrum.forEach((c) => c.offsetHSL(0, -0.02, -0.08));
+    if (day) {
+      // Cool day: keep chroma, pull lightness down for contrast on paper
+      spectrum.forEach((c) => c.offsetHSL(0, 0.05, -0.18));
+    } else {
+      spectrum.forEach((c) => c.offsetHSL(0, -0.02, -0.06));
     }
 
     const microPos = new Float32Array(MICRO * 3);
@@ -198,11 +201,12 @@ export default function DataGlobe({
 
     orient.current.x = THREE.MathUtils.damp(orient.current.x, target.current.x, 1.6, dt);
     orient.current.y = THREE.MathUtils.damp(orient.current.y, target.current.y, 1.6, dt);
+    // Breathe — do not continuously spin
     group.current.rotation.x = orient.current.x;
-    group.current.rotation.y = orient.current.y + time * 0.012;
-    const lift = 1 + breath.current * 0.015 + Math.sin(time * 0.28) * 0.008;
-    group.current.scale.setScalar(lift * (0.35 + reveal.current * 0.65));
-    group.current.position.y = Math.sin(time * 0.22) * 0.05;
+    group.current.rotation.y = orient.current.y + Math.sin(time * 0.04) * 0.08;
+    const lift = 1 + breath.current * 0.02 + Math.sin(time * 0.22) * 0.01;
+    group.current.scale.setScalar(lift * (0.38 + reveal.current * 0.62));
+    group.current.position.y = Math.sin(time * 0.18) * 0.04;
     group.current.updateMatrixWorld();
 
     const e = energy.current;

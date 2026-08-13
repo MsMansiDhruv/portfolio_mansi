@@ -16,6 +16,25 @@ import {
 
 const FLOW_PER_LINK = 5;
 
+/** Circular point map — without this, PointsMaterial draws squares */
+function cellMap() {
+  const c = document.createElement("canvas");
+  c.width = 64;
+  c.height = 64;
+  const ctx = c.getContext("2d");
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 28);
+  g.addColorStop(0, "rgba(255,255,255,1)");
+  g.addColorStop(0.55, "rgba(255,255,255,0.9)");
+  g.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(32, 32, 28, 0, Math.PI * 2);
+  ctx.fill();
+  const t = new THREE.CanvasTexture(c);
+  t.needsUpdate = true;
+  return t;
+}
+
 function connectedIds(hoverId) {
   if (!hoverId) return null;
   const set = new Set([hoverId]);
@@ -38,15 +57,16 @@ function nodeWorldPos(node, orbitPhase) {
  */
 function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
   const ref = useRef();
-  const ring = useRef();
   const point = useRef();
   const livePos = useRef([0, 0, 0]);
+  const pulse = useRef(0);
+  const map = useMemo(() => cellMap(), []);
   const t = THEME[themeId] || THEME.night;
   const color = semanticColor(node.kind, themeId);
   const isCore = node.tier === "core";
-  const size = isCore ? 0.42 : 0.28;
+  const size = isCore ? 0.55 : 0.38;
 
-  useFrame((_, dt) => {
+  useFrame((state, dt) => {
     if (!ref.current) return;
     const d = Math.min(dt, 0.05);
     const reveal = stateRef?.current?.reveal ?? 1;
@@ -54,22 +74,16 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
     const phase = stateRef?.current?.orbitPhase || {};
     const pos = orbitPosition(node.orbit, node.angle + (phase[node.orbit] || 0));
     livePos.current = pos;
-    const s = (hot ? 1.25 : dimmed ? 0.72 : 1) * reveal;
+    pulse.current = hot ? 0.5 + Math.sin(state.clock.elapsedTime * 3.2) * 0.5 : 0;
+    const s = (hot ? 1.2 + pulse.current * 0.12 : dimmed ? 0.72 : 1) * reveal;
     ref.current.scale.setScalar(
       THREE.MathUtils.damp(ref.current.scale.x || 0.001, Math.max(0.001, s), 6, d)
     );
     ref.current.position.set(pos[0], pos[1], pos[2]);
-    if (ring.current) {
-      ring.current.material.opacity = THREE.MathUtils.damp(
-        ring.current.material.opacity,
-        hot ? 0.55 : 0,
-        6,
-        d
-      );
-    }
     if (point.current?.material) {
-      point.current.material.opacity = 0.2 + reveal * 0.75;
-      point.current.material.size = size * (hot ? 1.15 : 1) * (0.9 + colourWake * 0.2);
+      point.current.material.opacity = 0.25 + reveal * 0.75;
+      point.current.material.size =
+        size * (hot ? 1.2 + pulse.current * 0.15 : 1) * (0.9 + colourWake * 0.2);
       point.current.material.color.set(hot ? t.accent : color);
     }
   });
@@ -98,29 +112,21 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
     >
       <points ref={point} geometry={geom} frustumCulled={false}>
         <pointsMaterial
+          map={map}
           size={size}
           sizeAttenuation
           color={color}
           transparent
           opacity={0.85}
           depthWrite={false}
+          alphaTest={0.15}
           toneMapped={false}
         />
       </points>
       {/* Invisible pick field — not rendered as decorative geometry */}
       <mesh visible={false}>
-        <sphereGeometry args={[0.18, 8, 8]} />
+        <sphereGeometry args={[0.2, 8, 8]} />
         <meshBasicMaterial />
-      </mesh>
-      <mesh ref={ring} rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.1, 0.115, 36]} />
-        <meshBasicMaterial
-          color={t.accent}
-          transparent
-          opacity={0}
-          depthWrite={false}
-          side={THREE.DoubleSide}
-        />
       </mesh>
       {hot && (
         <Text
@@ -160,6 +166,7 @@ export default function TechConstellation({
   const net = connectedIds(hoverId);
   const nodePosCache = useRef({});
   const inWork = layer === "work";
+  const flowMap = useMemo(() => cellMap(), []);
 
   const orbitGeoms = useMemo(
     () =>
@@ -383,12 +390,14 @@ export default function TechConstellation({
 
       <points ref={flowRef} geometry={flowGeom} frustumCulled={false}>
         <pointsMaterial
+          map={flowMap}
           size={0.065}
           sizeAttenuation
           vertexColors
           transparent
           opacity={0.5}
           depthWrite={false}
+          alphaTest={0.12}
           toneMapped={false}
         />
       </points>

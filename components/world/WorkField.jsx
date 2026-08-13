@@ -6,6 +6,24 @@ import { Text } from "@react-three/drei";
 import * as THREE from "three";
 import { getWorkClusters, THEME, semanticColor } from "@/lib/data/data-world";
 
+function cellMap() {
+  const c = document.createElement("canvas");
+  c.width = 64;
+  c.height = 64;
+  const ctx = c.getContext("2d");
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 28);
+  g.addColorStop(0, "rgba(255,255,255,1)");
+  g.addColorStop(0.55, "rgba(255,255,255,0.9)");
+  g.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(32, 32, 28, 0, Math.PI * 2);
+  ctx.fill();
+  const t = new THREE.CanvasTexture(c);
+  t.needsUpdate = true;
+  return t;
+}
+
 /** Build topology point/line networks for each project metaphor */
 function buildTopology(topology, seed = 0) {
   const pts = [];
@@ -82,6 +100,7 @@ function Cluster({
   const pointsRef = useRef();
   const linesRef = useRef();
   const progress = useRef(0);
+  const map = useMemo(() => cellMap(), []);
   const t = THEME[themeId] || THEME.night;
   const color = selected
     ? t.accent
@@ -176,12 +195,14 @@ function Cluster({
     >
       <points ref={pointsRef} geometry={pointGeom} frustumCulled={false}>
         <pointsMaterial
-          size={0.1}
+          map={map}
+          size={0.14}
           sizeAttenuation
           color={color}
           transparent
           opacity={0}
           depthWrite={false}
+          alphaTest={0.12}
           toneMapped={false}
         />
       </points>
