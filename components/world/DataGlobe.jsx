@@ -206,7 +206,7 @@ export default function DataGlobe({
       let cIdx = -1;
       let opa = 0.55 + hash(i + 9) * 0.45;
 
-      if (h < 0.55) {
+      if (h < 0.42) {
         const w = weather[i % weather.length];
         if (hash(i + 2) > w.dens) continue;
         const a = hash(i + 7) * Math.PI * 2;
@@ -218,7 +218,7 @@ export default function DataGlobe({
         role = 1;
         cIdx = i % 4;
         opa = 0.65 + hash(i + 15) * 0.35;
-      } else if (h < 0.68) {
+      } else if (h < 0.52) {
         const riv = rivers[i % rivers.length];
         const u = hash(i + 17);
         const p = riv.curve.getPoint(u);
@@ -231,9 +231,9 @@ export default function DataGlobe({
         role = 2;
         cIdx = i % 4;
         opa = 0.75;
-      } else if (h < 0.8) {
-        // Quiet voids — keep spherical envelope sparse
-        if (hash(i + 29) < 0.78) continue;
+      } else if (h < 0.62) {
+        // Quiet voids — interior emptiness, not broken silhouette
+        if (hash(i + 29) < 0.82) continue;
         const lat = (hash(i + 33) - 0.5) * 160;
         const lon = hash(i + 37) * 360 - 180;
         const p = onSphere(lat, lon, 1.55 + hash(i + 41) * 0.3);
@@ -243,18 +243,18 @@ export default function DataGlobe({
         role = 3;
         opa = 0.25 + hash(i + 45) * 0.25;
       } else {
-        // Silhouette shell — complete sphere, sparse
-        if (hash(i + 29) < 0.55) continue;
+        // Complete spherical silhouette — denser than voids, quieter than islands
+        if (hash(i + 29) < 0.22) continue;
         const yy = 1 - (mi / Math.max(1, MICRO - 1)) * 2;
         const rr = Math.sqrt(Math.max(0, 1 - yy * yy));
         const theta = Math.PI * (3 - Math.sqrt(5)) * mi;
-        const r = 1.78 + hash(i + 31) * 0.12;
+        const r = 1.8 + hash(i + 31) * 0.08;
         x = Math.cos(theta) * rr * r;
         y = yy * r;
         z = Math.sin(theta) * rr * r;
         role = 0;
         cIdx = Math.floor(((Math.atan2(z, x) + Math.PI) / (Math.PI * 2)) * 4) % 4;
-        opa = 0.4 + hash(i + 50) * 0.35;
+        opa = 0.45 + hash(i + 50) * 0.4;
       }
 
       // Enforce spherical silhouette
