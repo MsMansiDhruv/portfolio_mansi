@@ -289,8 +289,8 @@ export default function TechConstellation({
         const target = selectedHot
           ? related
             ? streamReveal * reveal * layerFade * (0.55 + colourWake * 0.35)
-            : 0.015 * reveal
-          : streamReveal * reveal * layerFade * (tr.important ? 0.04 : 0.012);
+            : 0.01 * reveal
+          : streamReveal * reveal * layerFade * (tr.important ? 0.018 : 0.004);
         mat.opacity = THREE.MathUtils.damp(mat.opacity, target, 5, d);
         const c = new THREE.Color(
           related ? (tr.signal ? t.accent : semanticColor(tr.kind, themeId)) : t.steel

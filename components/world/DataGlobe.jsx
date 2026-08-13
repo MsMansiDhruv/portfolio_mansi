@@ -71,9 +71,9 @@ export default function DataGlobe({
   const SECRET = 36;
 
   // Screen-space grains (px) — collective behaviour is the spectacle
-  const SIZE_DATA = day ? 1.55 : 1.45;
-  const SIZE_SIGNAL = day ? 2.1 : 2.0;
-  const SIZE_SECRET = day ? 2.6 : 2.5;
+  const SIZE_DATA = day ? 1.35 : 1.25;
+  const SIZE_SIGNAL = day ? 1.9 : 1.8;
+  const SIZE_SECRET = day ? 2.4 : 2.3;
 
   const steel = useMemo(() => new THREE.Color(day ? "#4a5564" : "#9aaec0"), [day]);
   const mute = useMemo(() => new THREE.Color(day ? "#6a7686" : "#7e92a6"), [day]);
@@ -134,45 +134,50 @@ export default function DataGlobe({
       let role = 0;
       let cIdx = -1;
 
-      if (h < 0.34) {
+      if (h < 0.52) {
+        // Dense islands — the living mass of the core
         cIdx = i % islands.length;
         const c = islands[cIdx];
-        const s = 0.12 + hash(i + 3) * 0.38;
+        const s = 0.08 + hash(i + 3) * 0.42;
         const a = hash(i + 7) * Math.PI * 2;
         const b = hash(i + 11) * Math.PI;
-        x = c[0] + Math.sin(b) * Math.cos(a) * s;
-        y = c[1] + Math.sin(b) * Math.sin(a) * s * 0.8;
-        z = c[2] + Math.cos(b) * s;
+        // Squash some islands into filaments
+        const filament = hash(i + 13) < 0.35;
+        x = c[0] + Math.sin(b) * Math.cos(a) * s * (filament ? 1.55 : 1);
+        y = c[1] + Math.sin(b) * Math.sin(a) * s * (filament ? 0.35 : 0.75);
+        z = c[2] + Math.cos(b) * s * (filament ? 0.55 : 1);
         role = 1;
-      } else if (h < 0.46) {
+      } else if (h < 0.64) {
         const u = hash(i + 17);
         const p = secretCurve.getPoint(u);
         const tang = secretCurve.getTangent(u);
         const n = new THREE.Vector3(-tang.z, 0.15, tang.x).normalize();
-        const off = (hash(i + 19) - 0.5) * 0.28;
+        const off = (hash(i + 19) - 0.5) * 0.22;
         x = p.x + n.x * off;
-        y = p.y + (hash(i + 23) - 0.5) * 0.22;
+        y = p.y + (hash(i + 23) - 0.5) * 0.16;
         z = p.z + n.z * off;
         role = 2;
         cIdx = Math.floor(u * 4) % 4;
-      } else if (h < 0.62) {
-        // Dormant / almost empty regions — intentional voids
-        const yy = (hash(i + 33) * 2 - 1) * 1.6;
+      } else if (h < 0.78) {
+        // Intentional voids — almost empty sectors
+        if (hash(i + 29) < 0.7) continue;
+        const yy = (hash(i + 33) * 2 - 1) * 1.7;
         const a = hash(i + 37) * Math.PI * 2;
-        const r = 1.35 + hash(i + 41) * 0.45;
-        x = Math.cos(a) * r * 0.55;
+        const r = 1.2 + hash(i + 41) * 0.55;
+        x = Math.cos(a) * r * 0.4;
         y = yy;
-        z = Math.sin(a) * r * 0.55;
+        z = Math.sin(a) * r * 0.4;
         role = 3;
       } else {
-        // Sparse shell for silhouette — not filled
-        if (hash(i + 29) < 0.45) continue;
-        const yy = 1 - (mi / Math.max(1, MICRO - 1)) * 2;
-        const rr = Math.sqrt(Math.max(0, 1 - yy * yy));
-        const theta = Math.PI * (3 - Math.sqrt(5)) * mi * 1.7;
-        const r = 1.78 + hash(i + 31) * 0.14;
+        // Bare silhouette — skip most shell points so denseness is uneven
+        if (hash(i + 29) < 0.72) continue;
+        // Prefer equator arcs; leave poles sparse
+        const yy = (hash(i + 44) - 0.5) * 1.2;
+        const rr = Math.sqrt(Math.max(0.15, 1 - (yy / 1.85) ** 2));
+        const theta = Math.PI * (3 - Math.sqrt(5)) * mi * 2.4;
+        const r = 1.82 + hash(i + 31) * 0.1;
         x = Math.cos(theta) * rr * r;
-        y = yy * r;
+        y = yy * r * 0.85;
         z = Math.sin(theta) * rr * r;
         role = 0;
         cIdx = Math.floor(((Math.atan2(z, x) + Math.PI) / (Math.PI * 2)) * 4) % 4;
