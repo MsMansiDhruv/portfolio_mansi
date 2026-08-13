@@ -6,32 +6,31 @@ import * as THREE from "three";
 import { THEME } from "@/lib/data/data-world";
 import DataGlobe from "./DataGlobe";
 import TechConstellation from "./TechConstellation";
-import ProjectOrbit from "./ProjectOrbit";
+import InfraLayer from "./InfraLayer";
 import CursorBridge from "./CursorBridge";
-import CameraRig from "./CameraRig";
+import CameraRig, { HOME_CAM } from "./CameraRig";
 
 function Atmosphere({ themeId }) {
   const t = THEME[themeId] || THEME.night;
+  const day = themeId === "day";
   return (
     <>
-      <color attach="background" args={[t.bg]} />
-      <fog attach="fog" args={[t.fog, t.fogNear, t.fogFar]} />
-      <ambientLight intensity={t.ambient} />
+      {!day && <fog attach="fog" args={[t.fog, t.fogNear, t.fogFar]} />}
+      <ambientLight intensity={t.ambient} color={day ? "#ffffff" : "#7a9ab8"} />
       <hemisphereLight
-        intensity={themeId === "day" ? 0.42 : 0.28}
-        color={themeId === "day" ? "#f4efe6" : "#9eb0c4"}
-        groundColor={themeId === "day" ? "#c8c0b2" : "#06080c"}
+        intensity={day ? 0.5 : 0.36}
+        color={day ? "#f8f9fb" : "#8ab0d0"}
+        groundColor={day ? "#e6e8ee" : "#0c1420"}
       />
       <directionalLight
-        position={themeId === "day" ? [5, 8, 4] : [3, 5, 6]}
+        position={[5, 8, 6]}
         intensity={t.key}
-        color={themeId === "day" ? "#fff8ee" : "#dfe8f2"}
+        color={day ? "#ffffff" : "#d8e8f8"}
       />
-      <pointLight
-        position={[0, 0, 0]}
-        intensity={themeId === "day" ? 0.15 : 0.35}
-        distance={8}
-        color={t.accent}
+      <directionalLight
+        position={[-4, 2, -4]}
+        intensity={t.rim}
+        color={day ? "#d0d4e0" : "#3a6a8a"}
       />
     </>
   );
@@ -42,14 +41,9 @@ export default function WorldCanvas({
   cameraTargetRef,
   cursorRef,
   stateRef,
-  projects,
-  view,
   techHover,
-  projectHover,
-  activeSlug,
   onTechHover,
-  onProjectHover,
-  onProjectSelect,
+  onTechSelect,
 }) {
   const [mounted, setMounted] = useState(false);
   const t = THEME[themeId] || THEME.night;
@@ -61,58 +55,58 @@ export default function WorldCanvas({
   useEffect(() => setMounted(true), []);
   if (!mounted) return <div className="wd-stage" aria-hidden />;
 
-  const showTech = view === "home" || view === "ai-lab" || view === "work";
-  const showProjects = view === "work" || view === "project";
-
   return (
     <div className="wd-stage">
       <Canvas
-        dpr={[1, 1.25]}
-        camera={{ fov: 42, near: 0.1, far: 50, position: [0, 0.35, 7.2] }}
+        dpr={[1, 1.5]}
+        camera={{
+          fov: HOME_CAM.fov,
+          near: 0.08,
+          far: 70,
+          position: HOME_CAM.position,
+        }}
         gl={{
           antialias: true,
-          alpha: false,
+          alpha: true,
           powerPreference: "high-performance",
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.02,
+          toneMappingExposure: t.exposure,
         }}
         shadows={false}
         onCreated={({ gl }) => {
-          gl.setClearColor(t.bg);
-          gl.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
+          gl.setClearColor(0x000000, 0);
+          gl.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
         }}
       >
         <Atmosphere themeId={themeId} />
-        <CameraRig cameraTargetRef={cameraTargetRef} />
+        <CameraRig cameraTargetRef={cameraTargetRef} cursorRef={cursorRef} />
         <CursorBridge cursorRef={cursorRef} />
-        <Suspense fallback={null}>
-          <DataGlobe
-            themeId={themeId}
-            cursorRef={cursorRef}
-            stateRef={stateRef}
-            reducedMotion={reduced}
-          />
-        </Suspense>
-        <Suspense fallback={null}>
-          <TechConstellation
-            themeId={themeId}
-            hoverId={techHover}
-            onHover={onTechHover}
-            stateRef={stateRef}
-            visible={showTech && view !== "project"}
-          />
-        </Suspense>
-        <Suspense fallback={null}>
-          <ProjectOrbit
-            projects={projects}
-            themeId={themeId}
-            hoverSlug={projectHover?.slug || null}
-            activeSlug={activeSlug}
-            visible={showProjects}
-            onHover={onProjectHover}
-            onSelect={onProjectSelect}
-          />
-        </Suspense>
+        <group position={[2.45, 0.25, 0]}>
+          <Suspense fallback={null}>
+            <DataGlobe
+              key={themeId}
+              themeId={themeId}
+              cursorRef={cursorRef}
+              stateRef={stateRef}
+              reducedMotion={reduced}
+            />
+          </Suspense>
+          <Suspense fallback={null}>
+            <TechConstellation
+              key={`tech-${themeId}`}
+              themeId={themeId}
+              hoverId={techHover}
+              onHover={onTechHover}
+              onSelect={(node, pos) => {
+                onTechSelect?.(node, [pos[0] + 2.45, pos[1] + 0.25, pos[2]]);
+              }}
+              stateRef={stateRef}
+            />
+          </Suspense>
+          <Suspense fallback={null}>
+            <InfraLayer themeId={themeId} stateRef={stateRef} />
+          </Suspense>
+        </group>
       </Canvas>
     </div>
   );
