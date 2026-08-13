@@ -63,8 +63,8 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
   const map = useMemo(() => cellMap(), []);
   const t = THEME[themeId] || THEME.night;
   const isCore = node.tier === "core";
-  // Screen-space NODE sizes — elegant, not glowing spheres
-  const size = isCore ? 4.2 : 3.1;
+  // SYSTEM NODE scale — rare, 6–12px; dormant until discovered
+  const size = isCore ? 9 : 6.5;
 
   useFrame((state, dt) => {
     if (!ref.current) return;
@@ -84,12 +84,14 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
     );
     ref.current.position.set(pos[0], pos[1], pos[2]);
     if (point.current?.material) {
-      point.current.material.opacity = 0.3 + reveal * 0.7;
+      // DORMANT → DISCOVERED → CONNECTED
+      const baseOp = dimmed ? 0.12 : 0.22 + colourWake * 0.35;
+      point.current.material.opacity = 0.15 + reveal * (hot ? 0.85 : baseOp);
       point.current.material.size =
-        size * (hot ? 1.25 + pulse.current * 0.18 : 1) * (0.92 + colourWake * 0.12);
-      const idle = t.steel;
-      const lit = semanticColor(node.kind, themeId, hot ? 1 : colourWake);
-      point.current.material.color.set(hot ? t.accent : lit || idle);
+        size * (hot ? 1.2 + pulse.current * 0.12 : dimmed ? 0.75 : 0.9);
+      point.current.material.color.set(
+        hot ? t.accent : colourWake > 0.35 || !dimmed ? t.steel : t.steel
+      );
     }
   });
 

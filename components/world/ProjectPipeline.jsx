@@ -8,8 +8,8 @@ import { getPointMap } from "./pointMap";
 import { THEME, semanticColor } from "@/lib/data/data-world";
 import { getProjectMeta } from "@/lib/data/project-meta";
 
-const FLOW_PER_PATH = 14;
-const SCALE = 3.4;
+const FLOW_PER_PATH = 18;
+const SCALE = 4.2;
 
 function rnd(seed, i) {
   const x = Math.sin(seed * 12.9 + i * 78.1) * 43758.5453;
@@ -250,9 +250,10 @@ export default function ProjectPipeline({
     );
 
     root.current.visible = fade.current > 0.015;
-    // Enter the data — scale grows around the viewer
-    root.current.scale.setScalar(SCALE * (0.55 + fade.current * 0.55));
-    root.current.position.z = THREE.MathUtils.lerp(0.8, -0.35, fade.current);
+    // ENTER THE SYSTEM — data surrounds the visitor
+    root.current.scale.setScalar(SCALE * (0.4 + fade.current * 0.75));
+    root.current.position.z = THREE.MathUtils.lerp(1.4, -0.55, fade.current);
+    root.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.08) * 0.04 * fade.current;
 
     if (fade.current > 0.82 && active && !readySent.current) {
       readySent.current = true;

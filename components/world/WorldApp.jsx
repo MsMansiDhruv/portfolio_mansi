@@ -419,7 +419,7 @@ export default function WorldApp() {
         }}
         onExperienceHover={setExpHover}
         onExperienceSelect={(stage, pos) => {
-          if (pos) setCam(approachNode([pos[0] + 1.55, pos[1] + 0.05, pos[2]]), "enter");
+          if (pos) setCam(approachNode([pos[0] + 1.35, pos[1] + 0.04, pos[2]]), "enter");
           setExpHover(stage);
         }}
         onAboutHover={setAboutHover}
@@ -441,7 +441,6 @@ export default function WorldApp() {
           <div
             className={`wd-hero${heroSettled ? " is-settled" : ""}${!showName ? " is-waiting" : ""}${routeFound ? " is-route" : ""}`}
           >
-            <p className="wd-hero__rail">SYSTEM 00 · IDENTITY</p>
             <h1 className={showName ? "is-in" : ""}>{WORLD_HERO.name}</h1>
             <p className={`wd-hero__role${showRole ? " is-in" : ""}`}>
               {WORLD_HERO.role}
@@ -450,20 +449,19 @@ export default function WorldApp() {
               {WORLD_HERO.roleLine}
             </p>
             <p className={`wd-hero__line${showLine ? " is-in" : ""}`}>
-              {routeFound
-                ? "A hidden route is open. The core was an index."
-                : WORLD_HERO.line}
+              {WORLD_HERO.line}
             </p>
-            {routeFound && (
-              <button
-                type="button"
-                className="wd-hero__follow"
-                onClick={followRoute}
-              >
-                Follow into WORK
-              </button>
-            )}
           </div>
+        )}
+
+        {layer === "world" && routeFound && !focused && (
+          <button
+            type="button"
+            className="wd-route-cue"
+            onClick={followRoute}
+          >
+            Follow the route into WORK
+          </button>
         )}
 
         {layer === "world" && focused && (
@@ -494,9 +492,9 @@ export default function WorldApp() {
           <div className="wd-hero wd-hero--layer wd-hero--compact">
             <p className="wd-hero__rail">SYSTEM 01 · WORK</p>
             <h1 className="is-in">WORK</h1>
-            <p className="wd-hero__sub is-in">The core becomes four systems</p>
+            <p className="wd-hero__sub is-in">The planet opens</p>
             <p className="wd-hero__line is-in">
-              Approach to wake. Click to enter the data.
+              Four living systems. Enter one.
             </p>
           </div>
         )}

@@ -5,10 +5,10 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
 export const HOME_CAM = {
-  // Optical center on Data Core — narrow FOV keeps the sphere circular
-  position: [1.55, 0.08, 10.6],
-  lookAt: [1.55, 0.05, 0],
-  fov: 30,
+  // Optical center on Data Core — sphere owns the field
+  position: [1.35, 0.06, 9.8],
+  lookAt: [1.35, 0.04, 0],
+  fov: 32,
 };
 
 const ZOOM_MIN = 4.2;
