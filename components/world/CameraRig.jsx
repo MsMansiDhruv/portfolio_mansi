@@ -5,10 +5,10 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
 export const HOME_CAM = {
-  // Globe visual weight right; brand rail in negative space left
-  position: [0.35, 0.12, 11.0],
-  lookAt: [2.55, 0.3, 0],
-  fov: 34,
+  // Optical center on Data Core — narrow FOV keeps the sphere circular
+  position: [1.55, 0.08, 10.6],
+  lookAt: [1.55, 0.05, 0],
+  fov: 30,
 };
 
 const ZOOM_MIN = 4.2;

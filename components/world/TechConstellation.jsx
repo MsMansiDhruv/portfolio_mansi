@@ -160,28 +160,12 @@ export default function TechConstellation({
   const root = useRef();
   const orbitPhase = useRef({ cloud: 0, platform: 0, analytics: 0, ai: 0 });
   const flowRef = useRef();
-  const orbitMats = useRef([]);
   const linkMats = useRef([]);
   const t = THEME[themeId] || THEME.night;
   const net = connectedIds(hoverId);
   const nodePosCache = useRef({});
   const inWork = layer === "work";
   const flowMap = useMemo(() => cellMap(), []);
-
-  const orbitGeoms = useMemo(
-    () =>
-      ORBITS.map((orbit) => {
-        const pts = [];
-        const steps = 96;
-        for (let i = 0; i <= steps; i++) {
-          const a = (i / steps) * Math.PI * 2;
-          const [x, y, z] = orbitPosition(orbit.id, a);
-          pts.push(new THREE.Vector3(x, y, z));
-        }
-        return new THREE.BufferGeometry().setFromPoints(pts);
-      }),
-    []
-  );
 
   const { curves, baseLines, flowCount } = useMemo(() => {
     const curves = [];
@@ -222,7 +206,7 @@ export default function TechConstellation({
         const g = new THREE.BufferGeometry();
         g.setAttribute(
           "position",
-          new THREE.BufferAttribute(new Float32Array(58 * 3), 3)
+          new THREE.BufferAttribute(new Float32Array(74 * 3), 3)
         );
         return g;
       }),
@@ -257,34 +241,31 @@ export default function TechConstellation({
       nodePosCache.current[node.id] = nodeWorldPos(node, orbitPhase.current);
     });
 
-    orbitMats.current.forEach((mat, i) => {
-      if (!mat) return;
-      const orbit = ORBITS[i];
-      const lit =
-        !hoverId ||
-        TECH_NODES.some((n) => n.id === hoverId && n.orbit === orbit.id);
-      const idle = themeId === "day" ? 0.05 : 0.07;
-      const hot = themeId === "day" ? 0.2 : 0.26;
-      const target = reveal * layerFade * (lit ? (net ? hot : idle) : idle * 0.4);
-      mat.opacity = THREE.MathUtils.damp(mat.opacity, target, 4, d);
-      mat.color.set(semanticColor(orbit.colorKey, themeId));
-    });
-
     curves.forEach((tr, i) => {
       const pa = nodePosCache.current[tr.a];
       const pb = nodePosCache.current[tr.b];
       if (!pa || !pb || !linkGeoms[i]) return;
       const va = new THREE.Vector3(...pa);
       const vb = new THREE.Vector3(...pb);
-      const mid = va
+      // Organic fiber route — cubic spline, not diagram chord
+      const mid = va.clone().add(vb).multiplyScalar(0.5);
+      const lift = va.clone().cross(vb).normalize().multiplyScalar(0.35 + (i % 3) * 0.12);
+      if (!Number.isFinite(lift.x)) lift.set(0, 0.4, 0);
+      const c1 = va
         .clone()
-        .add(vb)
-        .multiplyScalar(0.5)
+        .lerp(mid, 0.45)
+        .add(lift)
         .normalize()
-        .multiplyScalar((va.length() + vb.length()) * 0.55);
-      const curve = new THREE.QuadraticBezierCurve3(va, mid, vb);
+        .multiplyScalar((va.length() + vb.length()) * 0.52);
+      const c2 = vb
+        .clone()
+        .lerp(mid, 0.45)
+        .add(lift.clone().multiplyScalar(-0.65))
+        .normalize()
+        .multiplyScalar((va.length() + vb.length()) * 0.52);
+      const curve = new THREE.CubicBezierCurve3(va, c1, c2, vb);
       tr.curve = curve;
-      const pts = curve.getPoints(28);
+      const pts = curve.getPoints(36);
       const arr = linkGeoms[i].attributes.position.array;
       for (let k = 0; k < pts.length; k++) {
         arr[k * 3] = pts[k].x;
@@ -360,20 +341,6 @@ export default function TechConstellation({
 
   return (
     <group ref={root}>
-      {orbitGeoms.map((g, i) => (
-        <lineLoop key={ORBITS[i].id} geometry={g}>
-          <lineBasicMaterial
-            ref={(m) => {
-              orbitMats.current[i] = m;
-            }}
-            color={t.steel}
-            transparent
-            opacity={0.07}
-            depthWrite={false}
-          />
-        </lineLoop>
-      ))}
-
       {linkGeoms.map((g, i) => (
         <line key={baseLines[i].a + baseLines[i].b} geometry={g}>
           <lineBasicMaterial

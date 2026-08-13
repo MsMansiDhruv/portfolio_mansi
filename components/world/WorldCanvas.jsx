@@ -104,7 +104,8 @@ export default function WorldCanvas({
         <Atmosphere themeId={themeId} />
         <CameraRig cameraTargetRef={cameraTargetRef} cursorRef={cursorRef} />
         <CursorBridge cursorRef={cursorRef} />
-        <group position={[2.45, 0.25, 0]}>
+        {/* Data Core centered in optical axis — left CSS rail owns identity copy */}
+        <group position={[1.55, 0.05, 0]}>
           {layer === "world" && (
             <>
               <Suspense fallback={null}>
@@ -125,8 +126,8 @@ export default function WorldCanvas({
                   onHover={onTechHover}
                   onSelect={(node, pos) => {
                     onTechSelect?.(node, [
-                      pos[0] + 2.45,
-                      pos[1] + 0.25,
+                      pos[0] + 1.55,
+                      pos[1] + 0.05,
                       pos[2],
                     ]);
                   }}
@@ -155,8 +156,8 @@ export default function WorldCanvas({
                   onHover={onWorkHover}
                   onSelect={(cluster, pos) => {
                     onWorkSelect?.(cluster, [
-                      pos[0] + 2.45,
-                      pos[1] + 0.25,
+                      pos[0] + 1.55,
+                      pos[1] + 0.05,
                       pos[2],
                     ]);
                   }}

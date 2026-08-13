@@ -5,24 +5,27 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { PARTICLE_SPECTRUM, THEME } from "@/lib/data/data-world";
 
-/** Precision data-cell texture — hard unit with soft edge, not a glowing star */
+/** Crisp circular data unit — sharp disc, minimal soft falloff */
 function cellTex() {
   const c = document.createElement("canvas");
   c.width = 64;
   c.height = 64;
   const ctx = c.getContext("2d");
   ctx.clearRect(0, 0, 64, 64);
-  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 28);
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 30);
   g.addColorStop(0, "rgba(255,255,255,1)");
-  g.addColorStop(0.45, "rgba(255,255,255,0.95)");
-  g.addColorStop(0.72, "rgba(255,255,255,0.35)");
+  g.addColorStop(0.62, "rgba(255,255,255,1)");
+  g.addColorStop(0.82, "rgba(255,255,255,0.55)");
   g.addColorStop(1, "rgba(255,255,255,0)");
   ctx.fillStyle = g;
   ctx.beginPath();
-  ctx.arc(32, 32, 26, 0, Math.PI * 2);
+  ctx.arc(32, 32, 30, 0, Math.PI * 2);
   ctx.fill();
   const t = new THREE.CanvasTexture(c);
   t.needsUpdate = true;
+  t.generateMipmaps = false;
+  t.minFilter = THREE.LinearFilter;
+  t.magFilter = THREE.LinearFilter;
   return t;
 }
 
@@ -201,12 +204,12 @@ export default function DataGlobe({
 
     orient.current.x = THREE.MathUtils.damp(orient.current.x, target.current.x, 1.6, dt);
     orient.current.y = THREE.MathUtils.damp(orient.current.y, target.current.y, 1.6, dt);
-    // Breathe — do not continuously spin
-    group.current.rotation.x = orient.current.x;
-    group.current.rotation.y = orient.current.y + Math.sin(time * 0.04) * 0.08;
-    const lift = 1 + breath.current * 0.02 + Math.sin(time * 0.22) * 0.01;
-    group.current.scale.setScalar(lift * (0.38 + reveal.current * 0.62));
-    group.current.position.y = Math.sin(time * 0.18) * 0.04;
+    // Uniform scale only — never distort the sphere silhouette
+    group.current.rotation.x = orient.current.x * 0.65;
+    group.current.rotation.y = orient.current.y * 0.65 + Math.sin(time * 0.035) * 0.05;
+    const lift = 1 + breath.current * 0.012;
+    group.current.scale.setScalar(lift * (0.55 + reveal.current * 0.45));
+    group.current.position.set(0, Math.sin(time * 0.15) * 0.02, 0);
     group.current.updateMatrixWorld();
 
     const e = energy.current;
@@ -233,25 +236,17 @@ export default function DataGlobe({
         const nx = ndcTmp.current.x;
         const ny = ndcTmp.current.y;
 
-        // Clear editorial rail (lower-left)
-        if (nx < 0.12 && ny < 0.45) {
-          const sx = THREE.MathUtils.clamp((0.12 - nx) / 0.85, 0, 1);
-          const sy = THREE.MathUtils.clamp((0.45 - ny) / 1.1, 0, 1);
-          const strength = Math.pow(sx * sy, 0.85);
-          x += strength * 1.35;
-          if (strength > 0.35) y -= 12;
-        }
-
-        // Cursor field — local repel + gentle attract when a node is awake
+        // Never carve holes in the Data Core — composition keeps text clear of the silhouette.
+        // Cursor field only: gentle repel / attract (spring falloff).
         if (cursor?.active && story !== "silence") {
           const dx = nx - cursor.nx;
           const dy = ny - cursor.ny;
           const d2 = dx * dx + dy * dy;
-          if (d2 < 0.2) {
-            const f = (0.2 - d2) * 0.5;
-            const attract = wake > 0.4 ? -0.35 : 1;
-            x += dx * f * 1.35 * attract + cursor.vx * 0.0007;
-            y += dy * f * 1.35 * attract + cursor.vy * 0.0007;
+          if (d2 < 0.18) {
+            const f = (0.18 - d2) * 0.42;
+            const attract = wake > 0.45 ? -0.4 : 1;
+            x += dx * f * 1.15 * attract + cursor.vx * 0.0005;
+            y += dy * f * 1.15 * attract + cursor.vy * 0.0005;
           }
         }
 
@@ -273,21 +268,14 @@ export default function DataGlobe({
         worldTmp.current.set(x, y, z);
         group.current.localToWorld(worldTmp.current);
         ndcTmp.current.copy(worldTmp.current).project(camera);
-        if (ndcTmp.current.x < 0.12 && ndcTmp.current.y < 0.45) {
-          const sx = THREE.MathUtils.clamp((0.12 - ndcTmp.current.x) / 0.85, 0, 1);
-          const sy = THREE.MathUtils.clamp((0.45 - ndcTmp.current.y) / 1.1, 0, 1);
-          const strength = Math.pow(sx * sy, 0.85);
-          x += strength * 1.4;
-          if (strength > 0.35) y -= 12;
-        }
         if (cursor?.active) {
           const dx = ndcTmp.current.x - cursor.nx;
           const dy = ndcTmp.current.y - cursor.ny;
           const d2 = dx * dx + dy * dy;
-          if (d2 < 0.16) {
-            const f = (0.16 - d2) * 0.7;
-            x += dx * f * 1.6;
-            y += dy * f * 1.6;
+          if (d2 < 0.15) {
+            const f = (0.15 - d2) * 0.55;
+            x += dx * f * 1.25;
+            y += dy * f * 1.25;
           }
         }
         pos[i3] = x;
@@ -330,7 +318,7 @@ export default function DataGlobe({
           transparent
           opacity={0.9}
           depthWrite={false}
-          alphaTest={0.15}
+          alphaTest={0.38}
           toneMapped={false}
         />
       </points>
@@ -342,9 +330,9 @@ export default function DataGlobe({
           sizeAttenuation
           vertexColors
           transparent
-          opacity={0.95}
+          opacity={0.96}
           depthWrite={false}
-          alphaTest={0.12}
+          alphaTest={0.35}
           toneMapped={false}
         />
       </points>

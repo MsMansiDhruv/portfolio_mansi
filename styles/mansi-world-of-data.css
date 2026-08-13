@@ -324,14 +324,23 @@ html.wd-active body {
   color: var(--wd-faint);
 }
 
-/* Hero — brand of the universe */
+/* Editorial identity rail — outside Data Core silhouette (left breathing room) */
 .wd-hero {
   position: absolute;
-  left: clamp(1.4rem, 5vw, 4.5rem);
-  bottom: clamp(12%, 14vh, 20%);
-  width: min(34rem, 40vw);
-  max-width: 90vw;
-  transition: opacity 0.7s var(--wd-ease);
+  left: clamp(1.2rem, 3.5vw, 2.8rem);
+  top: 42%;
+  bottom: auto;
+  transform: translateY(-42%);
+  width: min(22rem, 26vw);
+  max-width: 30vw;
+  z-index: 22;
+  transition: opacity 0.7s var(--wd-ease), top 1.1s var(--wd-ease),
+    width 1.1s var(--wd-ease), transform 1.1s var(--wd-ease);
+}
+
+/* Keep a clear sphere zone — never park copy under the Data Core */
+.wd-root[data-layer="world"] .wd-hero {
+  max-width: min(26vw, 20rem);
 }
 
 .wd-hero.is-dim {
@@ -374,9 +383,9 @@ html.wd-active body {
   margin: 0;
   font-family: var(--wd-font-display);
   font-weight: 600;
-  font-size: clamp(3.6rem, 10vw, 7rem);
-  line-height: 0.9;
-  letter-spacing: 0.06em;
+  font-size: clamp(2.8rem, 6.5vw, 4.8rem);
+  line-height: 0.92;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--wd-ink);
   transition: font-size 1.1s var(--wd-ease), opacity 1.1s var(--wd-ease),
@@ -384,17 +393,26 @@ html.wd-active body {
 }
 
 .wd-hero.is-settled {
-  bottom: clamp(10%, 12vh, 16%);
-  width: min(22rem, 30vw);
+  top: auto;
+  bottom: clamp(5.5rem, 9vh, 7rem);
+  transform: none;
+  width: min(16rem, 22vw);
 }
 
 .wd-hero.is-settled h1 {
-  font-size: clamp(1.6rem, 3.2vw, 2.2rem);
-  letter-spacing: 0.14em;
-  opacity: 0.92;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  letter-spacing: 0.18em;
+  opacity: 0.9;
 }
 
-.wd-hero.is-settled .wd-hero__line {
+.wd-hero.is-settled .wd-hero__role,
+.wd-hero.is-settled .wd-hero__sub {
+  font-size: 0.72rem;
+  margin-top: 0.45rem;
+}
+
+.wd-hero.is-settled .wd-hero__line,
+.wd-hero.is-settled .wd-hero__rail {
   display: none;
 }
 
@@ -774,6 +792,18 @@ html.wd-active body {
 }
 
 @media (max-width: 960px) {
+  .wd-hero {
+    top: auto;
+    bottom: 14%;
+    transform: none;
+    width: min(88vw, 22rem);
+    max-width: 88vw;
+  }
+
+  .wd-root[data-layer="world"] .wd-hero {
+    max-width: 88vw;
+  }
+
   .wd-nav-toggle {
     display: inline-flex;
     align-items: center;

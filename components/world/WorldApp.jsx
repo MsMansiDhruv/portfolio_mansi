@@ -391,7 +391,7 @@ export default function WorldApp() {
         }}
         onExperienceHover={setExpHover}
         onExperienceSelect={(stage, pos) => {
-          if (pos) setCam(approachNode([pos[0] + 2.45, pos[1] + 0.25, pos[2]]), "enter");
+          if (pos) setCam(approachNode([pos[0] + 1.55, pos[1] + 0.05, pos[2]]), "enter");
           setExpHover(stage);
         }}
         onAboutHover={setAboutHover}
