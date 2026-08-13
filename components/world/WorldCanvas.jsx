@@ -6,7 +6,6 @@ import * as THREE from "three";
 import { THEME } from "@/lib/data/data-world";
 import DataGlobe from "./DataGlobe";
 import TechConstellation from "./TechConstellation";
-import InfraLayer from "./InfraLayer";
 import WorkField from "./WorkField";
 import ProjectPipeline from "./ProjectPipeline";
 import SemanticField from "./SemanticField";
@@ -135,13 +134,6 @@ export default function WorldCanvas({
                       pos[2],
                     ]);
                   }}
-                  stateRef={stateRef}
-                  layer={layer}
-                />
-              </Suspense>
-              <Suspense fallback={null}>
-                <InfraLayer
-                  themeId={themeId}
                   stateRef={stateRef}
                   layer={layer}
                 />

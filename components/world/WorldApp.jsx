@@ -171,7 +171,7 @@ export default function WorldApp() {
   // MANSI hero impact → settles into nav identity
   useEffect(() => {
     if (story !== "explore" || layer !== "world") return undefined;
-    const t = window.setTimeout(() => setHeroSettled(true), 2400);
+    const t = window.setTimeout(() => setHeroSettled(true), 3800);
     return () => clearTimeout(t);
   }, [story, layer]);
 
@@ -428,7 +428,7 @@ export default function WorldApp() {
       <div className="wd-hud">
         <div className="wd-meta wd-meta--tl">
           {layer === "world"
-            ? "DATA ORBIT"
+            ? "DATA CORE"
             : `SYSTEM / ${layer.replace("-", " ").toUpperCase()}`}
         </div>
         <div className="wd-meta wd-meta--tr">
