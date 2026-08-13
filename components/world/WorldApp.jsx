@@ -47,6 +47,7 @@ export default function WorldApp() {
   const [uiReady, setUiReady] = useState(false);
   const [heroSettled, setHeroSettled] = useState(false);
   const [routeFound, setRouteFound] = useState(false);
+  const [exhibitOpen, setExhibitOpen] = useState(false);
 
   const cameraTargetRef = useRef({
     position: [...(LAYER_CAM.world?.position || HOME_CAM.position)],
@@ -171,7 +172,7 @@ export default function WorldApp() {
   // MANSI hero impact → settles into nav identity
   useEffect(() => {
     if (story !== "explore" || layer !== "world") return undefined;
-    const t = window.setTimeout(() => setHeroSettled(true), 3800);
+    const t = window.setTimeout(() => setHeroSettled(true), 3200);
     return () => clearTimeout(t);
   }, [story, layer]);
 
@@ -237,10 +238,12 @@ export default function WorldApp() {
     (cluster, pos) => {
       setWorkSelected(cluster);
       setPipelineReady(false);
+      setExhibitOpen(false);
       setCam(approachNode(pos, 2.2), "enter");
       window.setTimeout(() => {
         setCam(LAYER_CAM.pipeline, "enter");
       }, 700);
+      window.setTimeout(() => setExhibitOpen(true), 1400);
     },
     [setCam]
   );
@@ -290,6 +293,7 @@ export default function WorldApp() {
   const closeProject = useCallback(() => {
     setWorkSelected(null);
     setPipelineReady(false);
+    setExhibitOpen(false);
     setCam(LAYER_CAM.work, "stream");
   }, [setCam]);
 
@@ -419,7 +423,7 @@ export default function WorldApp() {
         }}
         onExperienceHover={setExpHover}
         onExperienceSelect={(stage, pos) => {
-          if (pos) setCam(approachNode([pos[0] + 1.35, pos[1] + 0.04, pos[2]]), "enter");
+          if (pos) setCam(approachNode([pos[0] + 1.2, pos[1] + 0.02, pos[2]]), "enter");
           setExpHover(stage);
         }}
         onAboutHover={setAboutHover}
@@ -434,7 +438,6 @@ export default function WorldApp() {
         <div className="wd-meta wd-meta--tr">
           {theme === "day" ? "DAY · CLARITY" : "NIGHT · DEEP COMPUTE"}
         </div>
-        <div className="wd-coords">{meta}</div>
         <div className="wd-meta wd-meta--br">{statusLine}</div>
 
         {layer === "world" && !focused && (
@@ -499,27 +502,38 @@ export default function WorldApp() {
           </div>
         )}
 
+        {workSelected && pipelineReady && !exhibitOpen && (
+          <button
+            type="button"
+            className="wd-route-cue"
+            onClick={() => setExhibitOpen(true)}
+          >
+            Open project notes
+          </button>
+        )}
+
         {workSelected && (
           <aside
-            className={`wd-exhibit${pipelineReady ? " is-ready" : ""}`}
+            className={`wd-exhibit${exhibitOpen ? " is-open is-ready" : ""}`}
             aria-label="Project exhibit"
+            aria-hidden={!exhibitOpen}
           >
             <p className="wd-exhibit__code">PROJECT {workSelected.code}</p>
             <h2>{workSelected.cardTitle}</h2>
             <p className="wd-exhibit__story">{workSelected.story}</p>
-            {pipelineReady && workSelected.problem && (
+            {workSelected.problem && (
               <div className="wd-exhibit__block">
                 <span>PROBLEM</span>
                 <p>{workSelected.problem}</p>
               </div>
             )}
-            {pipelineReady && workSelected.purpose && (
+            {workSelected.purpose && (
               <div className="wd-exhibit__block">
                 <span>APPROACH</span>
                 <p>{workSelected.purpose}</p>
               </div>
             )}
-            {pipelineReady && workSelected.tech?.length > 0 && (
+            {workSelected.tech?.length > 0 && (
               <div className="wd-exhibit__block">
                 <span>TECHNOLOGY</span>
                 <p className="wd-exhibit__tech">
@@ -527,7 +541,7 @@ export default function WorldApp() {
                 </p>
               </div>
             )}
-            {pipelineReady && workSelected.outcomes?.[0] && (
+            {workSelected.outcomes?.[0] && (
               <div className="wd-exhibit__block">
                 <span>OUTCOME</span>
                 <p>{workSelected.outcomes[0]}</p>
@@ -536,9 +550,16 @@ export default function WorldApp() {
             <button
               type="button"
               className="wd-exhibit__close"
+              onClick={() => setExhibitOpen(false)}
+            >
+              Close notes
+            </button>
+            <button
+              type="button"
+              className="wd-exhibit__close"
               onClick={closeProject}
             >
-              Return through the pathway
+              Return to systems
             </button>
           </aside>
         )}

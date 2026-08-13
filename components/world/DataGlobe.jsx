@@ -5,35 +5,29 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { THEME, getWorkClusters } from "@/lib/data/data-world";
 
-/** Material grain — sharp digital fragment, not a soft marble */
+/** Crisp circular grain — hard edge, minimal halo */
 function grainTex() {
   const c = document.createElement("canvas");
-  c.width = 32;
-  c.height = 32;
+  c.width = 64;
+  c.height = 64;
   const ctx = c.getContext("2d");
-  ctx.clearRect(0, 0, 32, 32);
-  // Hard luminous core
+  ctx.clearRect(0, 0, 64, 64);
   ctx.fillStyle = "rgba(255,255,255,1)";
   ctx.beginPath();
-  ctx.moveTo(16, 8);
-  ctx.lineTo(22, 14);
-  ctx.lineTo(16, 24);
-  ctx.lineTo(10, 14);
-  ctx.closePath();
+  ctx.arc(32, 32, 11, 0, Math.PI * 2);
   ctx.fill();
-  // Tiny controlled bloom — only on the fragment
-  const g = ctx.createRadialGradient(16, 15, 2, 16, 15, 11);
-  g.addColorStop(0, "rgba(255,255,255,0.35)");
-  g.addColorStop(0.55, "rgba(255,255,255,0.08)");
+  // One-pixel soft falloff only (not bloom)
+  const g = ctx.createRadialGradient(32, 32, 10, 32, 32, 14);
+  g.addColorStop(0, "rgba(255,255,255,0.55)");
   g.addColorStop(1, "rgba(255,255,255,0)");
   ctx.fillStyle = g;
   ctx.beginPath();
-  ctx.arc(16, 15, 11, 0, Math.PI * 2);
+  ctx.arc(32, 32, 14, 0, Math.PI * 2);
   ctx.fill();
   const tex = new THREE.CanvasTexture(c);
   tex.generateMipmaps = false;
   tex.minFilter = THREE.LinearFilter;
-  tex.magFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.NearestFilter;
   tex.needsUpdate = true;
   return tex;
 }
@@ -91,14 +85,15 @@ export default function DataGlobe({
   const CIRCUIT = 42;
 
   // Three scales — screen px
-  const SIZE_MICRO = day ? 2.0 : 1.85;
-  const SIZE_SIGNAL = day ? 3.4 : 3.2;
-  const SIZE_RIVER = day ? 3.1 : 2.9;
-  const SIZE_CIRCUIT = day ? 3.8 : 3.6;
+  // ~2–3px micro · ~3–4px signal · crisp, not blobs
+  const SIZE_MICRO = day ? 2.55 : 2.35;
+  const SIZE_SIGNAL = day ? 3.7 : 3.5;
+  const SIZE_RIVER = day ? 3.4 : 3.2;
+  const SIZE_CIRCUIT = day ? 4.2 : 4.0;
 
-  const steel = useMemo(() => new THREE.Color(day ? "#3d4654" : "#c4d0dc"), [day]);
-  const silver = useMemo(() => new THREE.Color(day ? "#5a6574" : "#e8eef4"), [day]);
-  const mute = useMemo(() => new THREE.Color(day ? "#6a7686" : "#8a9eb2"), [day]);
+  const steel = useMemo(() => new THREE.Color(day ? "#2a3340" : "#d0dce8"), [day]);
+  const silver = useMemo(() => new THREE.Color(day ? "#3d4a5a" : "#eef3f8"), [day]);
+  const mute = useMemo(() => new THREE.Color(day ? "#556274" : "#8a9eb2"), [day]);
   const dataBlue = useMemo(() => new THREE.Color(t.data), [t.data]);
   const teal = useMemo(() => new THREE.Color(t.transform), [t.transform]);
   const accent = useMemo(() => new THREE.Color(t.accent), [t.accent]);

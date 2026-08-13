@@ -5,17 +5,18 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
 export const HOME_CAM = {
-  // Optical center on Data Core — sphere owns the field
-  position: [1.35, 0.06, 9.8],
-  lookAt: [1.35, 0.04, 0],
+  position: [1.2, 0.05, 9.6],
+  lookAt: [1.2, 0.02, 0],
   fov: 32,
 };
 
 const ZOOM_MIN = 4.2;
 const ZOOM_MAX = 16;
+const ORBIT_YAW = 0.18; // ~10°
+const ORBIT_PITCH = 0.1; // ~5.7°
 
 /**
- * Smooth camera with cursor parallax, approach-to-node, and wheel zoom.
+ * Camera with limited orbital mouse influence, inertia, approach, wheel zoom.
  */
 export default function CameraRig({ cameraTargetRef, cursorRef }) {
   const { camera } = useThree();
@@ -33,7 +34,7 @@ export default function CameraRig({ cameraTargetRef, cursorRef }) {
   const blend = useRef(1);
   const token = useRef(0);
   const from = useRef(null);
-  const parallax = useRef({ x: 0, y: 0 });
+  const orbit = useRef({ yaw: 0, pitch: 0, vYaw: 0, vPitch: 0 });
   const zoomDist = useRef(
     new THREE.Vector3(...HOME_CAM.position).distanceTo(
       new THREE.Vector3(...HOME_CAM.lookAt)
@@ -53,13 +54,11 @@ export default function CameraRig({ cameraTargetRef, cursorRef }) {
         lookAt: [look.current.x, look.current.y, look.current.z],
         fov: fov.current,
       };
-      // Sync zoom distance to new target
       const tp = new THREE.Vector3(...target.position);
       const tl = new THREE.Vector3(...(target.lookAt || HOME_CAM.lookAt));
       zoomDist.current = tp.distanceTo(tl);
     }
 
-    // Wheel zoom — pull camera along view ray
     if (typeof target.zoomDelta === "number" && target.zoomDelta !== 0) {
       const factor = Math.exp(target.zoomDelta * 0.0015);
       zoomDist.current = THREE.MathUtils.clamp(
@@ -82,10 +81,6 @@ export default function CameraRig({ cameraTargetRef, cursorRef }) {
       if (dir.lengthSq() < 1e-6) dir.set(0, 0.2, 1);
       dir.normalize().multiplyScalar(zoomDist.current);
       target.position = [lookV.x + dir.x, lookV.y + dir.y, lookV.z + dir.z];
-      // Keep stream mode so we don't snap into enter animation
-      if (target.mode === "enter") {
-        /* still allow zoom while focused */
-      }
     }
 
     const rate = target.mode === "enter" ? 1.05 : 1.35;
@@ -138,20 +133,41 @@ export default function CameraRig({ cameraTargetRef, cursorRef }) {
       }
     }
 
+    // Limited orbital mouse — expensive, not a spin
     const cursor = cursorRef?.current;
-    const px = cursor?.active ? cursor.nx * 0.18 : 0;
-    const py = cursor?.active ? cursor.ny * 0.12 : 0;
-    parallax.current.x = THREE.MathUtils.damp(parallax.current.x, px, 2.4, dt);
-    parallax.current.y = THREE.MathUtils.damp(parallax.current.y, py, 2.4, dt);
+    const stream = target.mode !== "enter";
+    const yawT = stream && cursor?.active ? cursor.nx * ORBIT_YAW : 0;
+    const pitchT = stream && cursor?.active ? cursor.ny * ORBIT_PITCH : 0;
+    orbit.current.vYaw += (yawT - orbit.current.yaw) * 3.2 * dt;
+    orbit.current.vPitch += (pitchT - orbit.current.pitch) * 3.2 * dt;
+    orbit.current.vYaw *= 0.9;
+    orbit.current.vPitch *= 0.9;
+    orbit.current.yaw += orbit.current.vYaw;
+    orbit.current.pitch += orbit.current.vPitch;
+    orbit.current.yaw = THREE.MathUtils.clamp(orbit.current.yaw, -ORBIT_YAW, ORBIT_YAW);
+    orbit.current.pitch = THREE.MathUtils.clamp(
+      orbit.current.pitch,
+      -ORBIT_PITCH,
+      ORBIT_PITCH
+    );
 
-    if (target.mode !== "enter") {
-      desired.position[0] += parallax.current.x;
-      desired.position[1] += parallax.current.y;
-      desired.lookAt[0] += parallax.current.x * 0.35;
-      desired.lookAt[1] += parallax.current.y * 0.35;
+    if (stream) {
+      const lookV = new THREE.Vector3(...desired.lookAt);
+      const camV = new THREE.Vector3(...desired.position);
+      const offset = camV.clone().sub(lookV);
+      const qYaw = new THREE.Quaternion().setFromAxisAngle(
+        new THREE.Vector3(0, 1, 0),
+        orbit.current.yaw
+      );
+      const right = new THREE.Vector3(1, 0, 0).applyQuaternion(qYaw);
+      const qPitch = new THREE.Quaternion().setFromAxisAngle(right, orbit.current.pitch);
+      offset.applyQuaternion(qYaw).applyQuaternion(qPitch);
+      desired.position = [lookV.x + offset.x, lookV.y + offset.y, lookV.z + offset.z];
+      desired.lookAt[0] += orbit.current.yaw * 0.35;
+      desired.lookAt[1] += orbit.current.pitch * 0.45;
     }
 
-    const k = 1 - Math.exp(-3.4 * dt);
+    const k = 1 - Math.exp(-3.2 * dt);
     pos.current.x += (desired.position[0] - pos.current.x) * k;
     pos.current.y += (desired.position[1] - pos.current.y) * k;
     pos.current.z += (desired.position[2] - pos.current.z) * k;

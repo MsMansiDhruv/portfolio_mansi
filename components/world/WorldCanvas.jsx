@@ -104,7 +104,7 @@ export default function WorldCanvas({
         <CameraRig cameraTargetRef={cameraTargetRef} cursorRef={cursorRef} />
         <CursorBridge cursorRef={cursorRef} />
         {/* Data Core centered in optical axis — left CSS rail owns identity copy */}
-        <group position={[1.35, 0.04, 0]}>
+        <group position={[1.2, 0.02, 0]}>
           {/* Data Core persists into WORK — decomposes into four systems */}
           {(layer === "world" || layer === "work") && (
             <Suspense fallback={null}>
@@ -129,8 +129,8 @@ export default function WorldCanvas({
                   onHover={onTechHover}
                   onSelect={(node, pos) => {
                     onTechSelect?.(node, [
-                      pos[0] + 1.35,
-                      pos[1] + 0.04,
+                      pos[0] + 1.2,
+                      pos[1] + 0.02,
                       pos[2],
                     ]);
                   }}
@@ -154,8 +154,8 @@ export default function WorldCanvas({
                   onHover={onWorkHover}
                   onSelect={(cluster, pos) => {
                     onWorkSelect?.(cluster, [
-                      pos[0] + 1.35,
-                      pos[1] + 0.04,
+                      pos[0] + 1.2,
+                      pos[1] + 0.02,
                       pos[2],
                     ]);
                   }}

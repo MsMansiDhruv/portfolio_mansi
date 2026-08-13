@@ -63,8 +63,8 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
   const map = useMemo(() => cellMap(), []);
   const t = THEME[themeId] || THEME.night;
   const isCore = node.tier === "core";
-  // SYSTEM NODE scale — rare, 6–12px; dormant until discovered
-  const size = isCore ? 9 : 6.5;
+  // SYSTEM NODE — 6–10px
+  const size = isCore ? 9.5 : 7;
 
   useFrame((state, dt) => {
     if (!ref.current) return;
