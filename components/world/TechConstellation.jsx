@@ -62,9 +62,8 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
   const pulse = useRef(0);
   const map = useMemo(() => cellMap(), []);
   const t = THEME[themeId] || THEME.night;
-  const color = semanticColor(node.kind, themeId);
   const isCore = node.tier === "core";
-  const size = isCore ? 0.68 : 0.48;
+  const size = isCore ? 0.72 : 0.5;
 
   useFrame((state, dt) => {
     if (!ref.current) return;
@@ -74,17 +73,22 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
     const phase = stateRef?.current?.orbitPhase || {};
     const pos = orbitPosition(node.orbit, node.angle + (phase[node.orbit] || 0));
     livePos.current = pos;
-    pulse.current = hot ? 0.5 + Math.sin(state.clock.elapsedTime * 3.2) * 0.5 : 0;
-    const s = (hot ? 1.2 + pulse.current * 0.12 : dimmed ? 0.72 : 1) * reveal;
+    // Heartbeat only on selected / hovered node — propagates via wake
+    pulse.current = hot
+      ? 0.5 + Math.sin(state.clock.elapsedTime * 3.2) * 0.5
+      : 0;
+    const s = (hot ? 1.25 + pulse.current * 0.14 : dimmed ? 0.68 : 1) * reveal;
     ref.current.scale.setScalar(
       THREE.MathUtils.damp(ref.current.scale.x || 0.001, Math.max(0.001, s), 6, d)
     );
     ref.current.position.set(pos[0], pos[1], pos[2]);
     if (point.current?.material) {
-      point.current.material.opacity = 0.25 + reveal * 0.75;
+      point.current.material.opacity = 0.3 + reveal * 0.7;
       point.current.material.size =
-        size * (hot ? 1.2 + pulse.current * 0.15 : 1) * (0.9 + colourWake * 0.2);
-      point.current.material.color.set(hot ? t.accent : color);
+        size * (hot ? 1.25 + pulse.current * 0.18 : 1) * (0.92 + colourWake * 0.12);
+      const idle = t.steel;
+      const lit = semanticColor(node.kind, themeId, hot ? 1 : colourWake);
+      point.current.material.color.set(hot ? t.accent : lit || idle);
     }
   });
 
@@ -115,11 +119,11 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
           map={map}
           size={size}
           sizeAttenuation
-          color={color}
+          color={t.steel}
           transparent
           opacity={0.85}
           depthWrite={false}
-          alphaTest={0.15}
+          alphaTest={0.35}
           toneMapped={false}
         />
       </points>
@@ -277,16 +281,19 @@ export default function TechConstellation({
 
       const mat = linkMats.current[i];
       if (mat) {
-        const lit = !net || net.has(tr.a) || net.has(tr.b);
-        const base = tr.important ? 0.2 : 0.08;
-        const target =
-          streamReveal *
-          reveal *
-          layerFade *
-          (lit ? (net ? 0.5 : base) * (0.4 + colourWake * 0.55) : 0.025);
+        // Arcs only when relationship matters — idle nearly invisible
+        const related = !!net && (net.has(tr.a) || net.has(tr.b));
+        const selectedHot = !!net;
+        const target = selectedHot
+          ? related
+            ? streamReveal * reveal * layerFade * (0.55 + colourWake * 0.35)
+            : 0.015 * reveal
+          : streamReveal * reveal * layerFade * (tr.important ? 0.04 : 0.012);
         mat.opacity = THREE.MathUtils.damp(mat.opacity, target, 5, d);
-        const c = new THREE.Color(semanticColor(tr.kind, themeId));
-        if (colourWake < 0.25) c.lerp(new THREE.Color(t.steel), 0.65);
+        const c = new THREE.Color(
+          related ? (tr.signal ? t.accent : semanticColor(tr.kind, themeId)) : t.steel
+        );
+        if (!related) c.lerp(new THREE.Color(t.steel), 0.85);
         mat.color.copy(c);
       }
     });
@@ -297,15 +304,15 @@ export default function TechConstellation({
       const tmp = new THREE.Color();
       let fi = 0;
       curves.forEach((tr) => {
-        const lit = !net || net.has(tr.a) || net.has(tr.b);
-        const speed = lit && net ? 0.28 : 0.09;
-        // Semantic stream colour — restrained path units
-        if (tr.signal && lit && net) tmp.set(t.accent);
-        else tmp.set(semanticColor(tr.kind, themeId));
-        if (colourWake < 0.28) tmp.lerp(new THREE.Color(t.steel), 0.55);
+        const related = !!net && (net.has(tr.a) || net.has(tr.b));
+        const speed = related ? 0.32 : 0.06;
+        if (tr.signal && related) tmp.set(t.accent);
+        else if (related) tmp.set(semanticColor(tr.kind, themeId));
+        else tmp.set(t.steel);
         for (let k = 0; k < FLOW_PER_LINK; k++) {
           const i3 = fi * 3;
-          if (tr.curve && lit && streamReveal > 0.15 && !inWork) {
+          // Flow particles only when a relationship is active
+          if (tr.curve && related && streamReveal > 0.15 && !inWork) {
             const u = (time * speed + tr.phase + k / FLOW_PER_LINK) % 1;
             const p = tr.curve.getPoint(u);
             pos[i3] = p.x;
@@ -322,10 +329,10 @@ export default function TechConstellation({
       });
       flowRef.current.geometry.attributes.position.needsUpdate = true;
       flowRef.current.geometry.attributes.color.needsUpdate = true;
-      flowRef.current.material.opacity =
-        streamReveal * layerFade * (0.35 + colourWake * 0.55) * (net ? 0.95 : 0.55);
-      // Travelling units must be clearly visible
-      flowRef.current.material.size = net ? 0.09 : 0.065;
+      flowRef.current.material.opacity = net
+        ? streamReveal * layerFade * 0.9
+        : 0;
+      flowRef.current.material.size = net ? 0.1 : 0.05;
     }
 
     if (stateRef?.current) {

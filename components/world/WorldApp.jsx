@@ -46,6 +46,7 @@ export default function WorldApp() {
   const [isMobile, setIsMobile] = useState(false);
   const [uiReady, setUiReady] = useState(false);
   const [heroSettled, setHeroSettled] = useState(false);
+  const [routeFound, setRouteFound] = useState(false);
 
   const cameraTargetRef = useRef({
     position: [...(LAYER_CAM.world?.position || HOME_CAM.position)],
@@ -88,7 +89,8 @@ export default function WorldApp() {
     } catch {
       /* ignore */
     }
-    const t = setTimeout(() => setReady(true), 320);
+    // Show shell immediately; 3D densifies progressively
+    const t = setTimeout(() => setReady(true), 90);
     return () => clearTimeout(t);
   }, []);
 
@@ -142,12 +144,18 @@ export default function WorldApp() {
     const id = window.setInterval(() => {
       const e = stateRef.current.globeEnergy || 0;
       const y = stateRef.current.globeRotY || 0;
+      const secret = stateRef.current.secretWake || 0;
+      if (secret > 0.72 && layer === "world" && !routeFound) {
+        setRouteFound(true);
+      }
       setMeta(
-        `E ${e.toFixed(2)} · θ ${(((y % (Math.PI * 2)) / (Math.PI * 2)) * 360).toFixed(1)}°`
+        secret > 0.45
+          ? `ROUTE · ${(secret * 100).toFixed(0)}%`
+          : `E ${e.toFixed(2)} · θ ${(((y % (Math.PI * 2)) / (Math.PI * 2)) * 360).toFixed(1)}°`
       );
     }, 160);
     return () => clearInterval(id);
-  }, []);
+  }, [layer, routeFound]);
 
   useEffect(() => {
     stateRef.current.story = story;
@@ -230,6 +238,18 @@ export default function WorldApp() {
     [setCam]
   );
 
+  const followRoute = useCallback(() => {
+    setFocused(null);
+    setTechHover(null);
+    setWorkSelected(null);
+    setWorkHover(null);
+    setPipelineReady(false);
+    setAiFocus(null);
+    setLayer("work");
+    setNavOpen(false);
+    setCam(LAYER_CAM.work, "enter");
+  }, [setCam]);
+
   const onHome = useCallback(() => {
     setFocused(null);
     setTechHover(null);
@@ -290,12 +310,13 @@ export default function WorldApp() {
     if (expHover) return `${expHover.year} · ${expHover.title}`;
     if (aboutHover) return aboutHover.label;
     if (!explored) return STORY[story]?.label || "";
-    if (layer === "work") return "SELECT A SYSTEM · ENTER THE PIPELINE";
+    if (layer === "work") return "APPROACH A SYSTEM · ENTER THE PIPELINE";
     if (layer === "ai") return "CLICK A CONCEPT · OPEN A MODE";
     if (layer === "experience") return "TRACE THE SYSTEM EVOLUTION";
     if (layer === "about") return "DISCOVER THE PERSON";
     if (layer === "contact") return "ONE SIGNAL";
-    return "HOVER NODE · CLICK TO ENTER";
+    if (routeFound) return "THE GLOBE WAS A MAP · FOLLOW THE ROUTE";
+    return "TOUCH THE FIELD · FIND THE ARCHITECTURE";
   })();
 
   return (
@@ -411,7 +432,7 @@ export default function WorldApp() {
 
         {layer === "world" && !focused && (
           <div
-            className={`wd-hero${heroSettled ? " is-settled" : ""}${!showName ? " is-waiting" : ""}`}
+            className={`wd-hero${heroSettled ? " is-settled" : ""}${!showName ? " is-waiting" : ""}${routeFound ? " is-route" : ""}`}
           >
             <p className="wd-hero__rail">SYSTEM 00 · IDENTITY</p>
             <h1 className={showName ? "is-in" : ""}>{WORLD_HERO.name}</h1>
@@ -422,8 +443,19 @@ export default function WorldApp() {
               {WORLD_HERO.roleLine}
             </p>
             <p className={`wd-hero__line${showLine ? " is-in" : ""}`}>
-              {WORLD_HERO.line}
+              {routeFound
+                ? "A hidden route is open. The core was an index."
+                : WORLD_HERO.line}
             </p>
+            {routeFound && (
+              <button
+                type="button"
+                className="wd-hero__follow"
+                onClick={followRoute}
+              >
+                Follow into WORK
+              </button>
+            )}
           </div>
         )}
 
@@ -454,10 +486,10 @@ export default function WorldApp() {
         {layer === "work" && !workSelected && (
           <div className="wd-hero wd-hero--layer wd-hero--compact">
             <p className="wd-hero__rail">SYSTEM 01 · WORK</p>
-            <h1 className="is-in">WORK</h1>
-            <p className="wd-hero__sub is-in">Four system exhibits</p>
+            <h1 className="is-in">SYSTEMS</h1>
+            <p className="wd-hero__sub is-in">Four dormant machines</p>
             <p className="wd-hero__line is-in">
-              Select a cluster. Enter the architecture.
+              Approach to wake. Click to enter the pipeline.
             </p>
           </div>
         )}

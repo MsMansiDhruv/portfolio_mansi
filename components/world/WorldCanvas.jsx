@@ -153,6 +153,7 @@ export default function WorldCanvas({
                   active={!workSelected}
                   hoverSlug={workHover}
                   selectedSlug={workSelected?.slug || null}
+                  cursorRef={cursorRef}
                   onHover={onWorkHover}
                   onSelect={(cluster, pos) => {
                     onWorkSelect?.(cluster, [

@@ -416,6 +416,41 @@ html.wd-active body {
   display: none;
 }
 
+.wd-hero.is-route .wd-hero__line {
+  display: block;
+  color: var(--wd-accent, #d4a05a);
+}
+
+.wd-hero__follow {
+  margin-top: 1rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--wd-font-mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--wd-accent, #d4a05a);
+  cursor: pointer;
+  opacity: 0;
+  animation: wd-follow-in 0.8s var(--wd-ease) 0.15s forwards;
+}
+
+.wd-hero__follow:hover {
+  color: var(--wd-ink);
+}
+
+@keyframes wd-follow-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .wd-hero--compact {
   width: min(22rem, 32vw);
 }

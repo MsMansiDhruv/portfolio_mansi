@@ -95,11 +95,14 @@ function Cluster({
   unfold,
   onHover,
   onSelect,
+  cursorRef,
 }) {
   const root = useRef();
   const pointsRef = useRef();
   const linesRef = useRef();
+  const flowRef = useRef();
   const progress = useRef(0);
+  const wake = useRef(0);
   const map = useMemo(() => cellMap(), []);
   const t = THEME[themeId] || THEME.night;
   const color = selected
@@ -147,33 +150,74 @@ function Cluster({
     return g;
   }, [pts, links]);
 
-  useFrame((_, dt) => {
+  const flowGeom = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    const n = Math.min(links.length, 8) * 3;
+    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+    return g;
+  }, [links.length]);
+
+  useFrame((state, dt) => {
     if (!root.current) return;
     const d = Math.min(dt, 0.05);
+    const time = state.clock.elapsedTime;
     progress.current = THREE.MathUtils.damp(
       progress.current,
       unfold ? 1 : 0,
       2.2,
       d
     );
+    wake.current = THREE.MathUtils.damp(
+      wake.current,
+      active || selected ? 1 : 0.12,
+      3.2,
+      d
+    );
     const u = progress.current;
+    const w = wake.current;
     root.current.position.set(
       THREE.MathUtils.lerp(home[0], target[0], u),
       THREE.MathUtils.lerp(home[1], target[1], u),
       THREE.MathUtils.lerp(home[2], target[2], u)
     );
-    const s = THREE.MathUtils.lerp(0.2, selected ? 1.35 : 1.05, u);
+    // Dormant machine → wakes on approach
+    const s = THREE.MathUtils.lerp(0.18, selected ? 1.4 : 0.55 + w * 0.55, u);
     root.current.scale.setScalar(s);
     root.current.visible = u > 0.02;
 
     if (pointsRef.current?.material) {
-      pointsRef.current.material.opacity = 0.15 + u * 0.8;
+      pointsRef.current.material.opacity = 0.12 + u * (0.35 + w * 0.55);
       pointsRef.current.material.color.set(color);
-      pointsRef.current.material.size = selected ? 0.14 : 0.1;
+      pointsRef.current.material.size = selected ? 0.16 : 0.08 + w * 0.05;
     }
     if (linesRef.current?.material) {
-      linesRef.current.material.opacity = 0.05 + u * (selected ? 0.55 : 0.28);
+      linesRef.current.material.opacity =
+        u * (selected ? 0.55 : 0.06 + w * 0.32);
       linesRef.current.material.color.set(color);
+    }
+
+    // Local gravity + flow only when waking
+    if (flowRef.current && w > 0.25 && links.length) {
+      const pos = flowRef.current.geometry.attributes.position.array;
+      let fi = 0;
+      const maxF = Math.floor(pos.length / 3);
+      for (let li = 0; li < links.length && fi < maxF; li++) {
+        const [a, b] = links[li];
+        for (let k = 0; k < 3 && fi < maxF; k++) {
+          const tU = (time * (0.15 + w * 0.25) + li * 0.17 + k / 3) % 1;
+          const i3 = fi * 3;
+          pos[i3] = THREE.MathUtils.lerp(pts[a][0], pts[b][0], tU);
+          pos[i3 + 1] = THREE.MathUtils.lerp(pts[a][1], pts[b][1], tU);
+          pos[i3 + 2] = THREE.MathUtils.lerp(pts[a][2], pts[b][2], tU);
+          fi++;
+        }
+      }
+      flowRef.current.geometry.setDrawRange(0, fi);
+      flowRef.current.geometry.attributes.position.needsUpdate = true;
+      flowRef.current.material.opacity = u * w * 0.75;
+      flowRef.current.material.color.set(color);
+    } else if (flowRef.current) {
+      flowRef.current.material.opacity = 0;
     }
   });
 
@@ -209,11 +253,24 @@ function Cluster({
       <lineSegments ref={linesRef} geometry={lineGeom}>
         <lineBasicMaterial color={color} transparent opacity={0} depthWrite={false} />
       </lineSegments>
+      <points ref={flowRef} geometry={flowGeom} frustumCulled={false}>
+        <pointsMaterial
+          map={map}
+          size={0.07}
+          sizeAttenuation
+          color={color}
+          transparent
+          opacity={0}
+          depthWrite={false}
+          alphaTest={0.2}
+          toneMapped={false}
+        />
+      </points>
       <mesh visible={false}>
         <sphereGeometry args={[0.55, 10, 10]} />
         <meshBasicMaterial />
       </mesh>
-      {unfold && (
+      {unfold && (active || selected) && (
         <Text
           position={[0, 0.85, 0]}
           fontSize={0.07}
@@ -255,6 +312,7 @@ export default function WorkField({
   selectedSlug,
   onHover,
   onSelect,
+  cursorRef,
 }) {
   const clusters = useMemo(() => getWorkClusters(), []);
 
@@ -270,6 +328,7 @@ export default function WorkField({
           unfold={active}
           onHover={onHover}
           onSelect={onSelect}
+          cursorRef={cursorRef}
         />
       ))}
     </group>

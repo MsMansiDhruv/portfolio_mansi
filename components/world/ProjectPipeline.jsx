@@ -8,7 +8,7 @@ import { getPointMap } from "./pointMap";
 import { THEME, semanticColor } from "@/lib/data/data-world";
 import { getProjectMeta } from "@/lib/data/project-meta";
 
-const FLOW_PER_PATH = 4;
+const FLOW_PER_PATH = 10;
 const SCALE = 2.5;
 
 function rnd(seed, i) {
