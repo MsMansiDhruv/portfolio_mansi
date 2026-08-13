@@ -3,20 +3,19 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Precision reticle with spring interpolation.
+ * Minimal precision instrument — small point, subtle state ring.
  */
 export default function SystemCursor({ mode = "idle", enabled = true }) {
   const ref = useRef(null);
-  const pos = useRef({ x: -100, y: -100 });
-  const vel = useRef({ x: 0, y: 0 });
-  const smooth = useRef({ x: -100, y: -100 });
+  const pos = useRef({ x: -40, y: -40 });
+  const smooth = useRef({ x: -40, y: -40 });
   const [visible, setVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
 
   useEffect(() => {
     if (!enabled) return undefined;
     const root = document.querySelector(".wd-root");
-    if (root) root.classList.add("wd-has-cursor");
+    root?.classList.add("wd-has-cursor");
 
     let raf = 0;
     const onMove = (e) => {
@@ -29,23 +28,16 @@ export default function SystemCursor({ mode = "idle", enabled = true }) {
     const onUp = () => setPressed(false);
 
     const tick = () => {
-      // Spring toward pointer
-      const stiffness = 0.18;
-      const damping = 0.72;
-      const dx = pos.current.x - smooth.current.x;
-      const dy = pos.current.y - smooth.current.y;
-      vel.current.x = (vel.current.x + dx * stiffness) * damping;
-      vel.current.y = (vel.current.y + dy * stiffness) * damping;
-      smooth.current.x += vel.current.x;
-      smooth.current.y += vel.current.y;
+      smooth.current.x += (pos.current.x - smooth.current.x) * 0.28;
+      smooth.current.y += (pos.current.y - smooth.current.y) * 0.28;
       if (ref.current) {
-        const s = pressed ? 0.86 : 1;
+        const s = pressed ? 0.78 : 1;
         ref.current.style.transform = `translate3d(${smooth.current.x}px, ${smooth.current.y}px, 0) scale(${s})`;
       }
       raf = requestAnimationFrame(tick);
     };
 
-    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerleave", onLeave);
     window.addEventListener("pointerdown", onDown);
     window.addEventListener("pointerup", onUp);
@@ -65,11 +57,11 @@ export default function SystemCursor({ mode = "idle", enabled = true }) {
   return (
     <div
       ref={ref}
-      className={`wd-cursor wd-cursor--${mode}${visible ? " is-on" : ""}`}
+      className={`wd-cursor wd-cursor--${mode}${visible ? " is-on" : ""}${pressed ? " is-press" : ""}`}
       aria-hidden
     >
-      <span className="wd-cursor__ring" />
-      <span className="wd-cursor__core" />
+      <span className="wd-cursor__dot" />
+      <span className="wd-cursor__halo" />
     </div>
   );
 }

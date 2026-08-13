@@ -162,7 +162,7 @@ function Cluster({
       THREE.MathUtils.lerp(home[1], target[1], u),
       THREE.MathUtils.lerp(home[2], target[2], u)
     );
-    const s = THREE.MathUtils.lerp(0.15, selected ? 1.15 : 0.85, u);
+    const s = THREE.MathUtils.lerp(0.2, selected ? 1.35 : 1.05, u);
     root.current.scale.setScalar(s);
     root.current.visible = u > 0.02;
 

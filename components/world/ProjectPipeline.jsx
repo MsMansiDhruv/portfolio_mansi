@@ -162,7 +162,13 @@ function buildPipeline(topology, seed = 1, stageLabels = []) {
 /**
  * Immersive project pipeline — POINT + LINE field when a work cluster is entered.
  */
-export default function ProjectPipeline({ themeId, cluster, active, onReady }) {
+export default function ProjectPipeline({
+  themeId,
+  cluster,
+  active,
+  onReady,
+  cursorRef,
+}) {
   const root = useRef();
   const pointsRef = useRef();
   const linesRef = useRef();
@@ -285,6 +291,7 @@ export default function ProjectPipeline({ themeId, cluster, active, onReady }) {
     if (flowRef.current && paths.length) {
       const fArr = flowGeom.attributes.position.array;
       const time = state.clock.elapsedTime;
+      const cursor = cursorRef?.current;
       let fi = 0;
       paths.forEach((curve, pi) => {
         for (let k = 0; k < FLOW_PER_PATH; k++) {
@@ -292,9 +299,23 @@ export default function ProjectPipeline({ themeId, cluster, active, onReady }) {
           if (fade.current > 0.2 && u > 0.35) {
             const speed = cluster?.topology === "split" ? 0.14 : 0.22;
             const pt = curve.getPoint((time * speed + pi * 0.13 + k / FLOW_PER_PATH) % 1);
-            fArr[i3] = pt.x;
-            fArr[i3 + 1] = pt.y;
-            fArr[i3 + 2] = pt.z;
+            let px = pt.x;
+            let py = pt.y;
+            let pz = pt.z;
+            // Local field — cursor gently displaces nearby travelling data
+            if (cursor?.active) {
+              const dx = px * 0.15 - cursor.nx * 0.4;
+              const dy = py * 0.15 - cursor.ny * 0.4;
+              const d2 = dx * dx + dy * dy;
+              if (d2 < 0.35) {
+                const f = (0.35 - d2) * 0.12;
+                px += dx * f;
+                py += dy * f;
+              }
+            }
+            fArr[i3] = px;
+            fArr[i3 + 1] = py;
+            fArr[i3 + 2] = pz;
           } else {
             fArr[i3 + 1] = -99;
           }
@@ -303,6 +324,7 @@ export default function ProjectPipeline({ themeId, cluster, active, onReady }) {
       });
       flowGeom.attributes.position.needsUpdate = true;
       flowRef.current.material.opacity = fade.current * (0.35 + u * 0.45);
+      flowRef.current.material.size = cursor?.active ? 0.09 : 0.07;
     }
 
     const kind =

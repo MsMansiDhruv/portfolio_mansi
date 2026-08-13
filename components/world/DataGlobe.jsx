@@ -52,12 +52,12 @@ export default function DataGlobe({
   const day = themeId === "day";
   const map = useMemo(() => cellTex(), []);
 
-  const MICRO = reducedMotion ? 700 : 1600;
-  const ACTIVE = reducedMotion ? 90 : 220;
+  const MICRO = reducedMotion ? 900 : 2000;
+  const ACTIVE = reducedMotion ? 110 : 260;
 
-  // Readable information units — not star dust
-  const SIZE_MICRO = day ? 0.28 : 0.26;
-  const SIZE_ACTIVE = day ? 0.42 : 0.4;
+  // Readable information units — 3–8px apparent at home distance
+  const SIZE_MICRO = day ? 0.36 : 0.34;
+  const SIZE_ACTIVE = day ? 0.52 : 0.5;
 
   const { microGeom, activeGeom, baseMicro, baseActive, seeds } = useMemo(() => {
     const spectrum = PARTICLE_SPECTRUM.map((hex) => new THREE.Color(hex));
@@ -82,11 +82,11 @@ export default function DataGlobe({
         0.72 +
         Math.sin(i * 0.017) * Math.cos(i * 0.031) * 0.22 +
         ((i % 11) / 11) * 0.08;
-      if (dens < 0.55 && i % 2 !== 0) continue;
-      if (i % 5 === 0) continue;
+      // Fuller orbit — fewer holes so the sphere reads as a complete object
+      if (dens < 0.42 && i % 3 !== 0) continue;
 
-      const jitter = 1 + (Math.sin(i * 19.1) * 0.5 + 0.5) * 0.08;
-      const r = 1.72 * jitter * (0.9 + dens * 0.16);
+      const jitter = 1 + (Math.sin(i * 19.1) * 0.5 + 0.5) * 0.07;
+      const r = 1.78 * jitter * (0.92 + dens * 0.14);
       const x = Math.cos(theta) * rr * r;
       const z = Math.sin(theta) * rr * r;
       const yy = y * r;
@@ -242,16 +242,16 @@ export default function DataGlobe({
           if (strength > 0.35) y -= 12;
         }
 
-        // Cursor field — gentle bend / drift (scientific instrument)
+        // Cursor field — local repel + gentle attract when a node is awake
         if (cursor?.active && story !== "silence") {
           const dx = nx - cursor.nx;
           const dy = ny - cursor.ny;
           const d2 = dx * dx + dy * dy;
-          if (d2 < 0.18) {
-            const f = (0.18 - d2) * 0.55;
-            // Align + slight outward — not violent push
-            x += dx * f * 1.4 + cursor.vx * 0.0008;
-            y += dy * f * 1.4 + cursor.vy * 0.0008;
+          if (d2 < 0.2) {
+            const f = (0.2 - d2) * 0.5;
+            const attract = wake > 0.4 ? -0.35 : 1;
+            x += dx * f * 1.35 * attract + cursor.vx * 0.0007;
+            y += dy * f * 1.35 * attract + cursor.vy * 0.0007;
           }
         }
 

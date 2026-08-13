@@ -64,7 +64,7 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
   const t = THEME[themeId] || THEME.night;
   const color = semanticColor(node.kind, themeId);
   const isCore = node.tier === "core";
-  const size = isCore ? 0.55 : 0.38;
+  const size = isCore ? 0.68 : 0.48;
 
   useFrame((state, dt) => {
     if (!ref.current) return;

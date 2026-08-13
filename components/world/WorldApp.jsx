@@ -7,6 +7,7 @@ import {
   WORLD_NAV,
   STORY,
   LAYER_CAM,
+  TECH_META,
 } from "@/lib/data/data-world";
 import {
   ABOUT_ME,
@@ -44,6 +45,7 @@ export default function WorldApp() {
   const [meta, setMeta] = useState("SYSTEM / ONLINE");
   const [isMobile, setIsMobile] = useState(false);
   const [uiReady, setUiReady] = useState(false);
+  const [heroSettled, setHeroSettled] = useState(false);
 
   const cameraTargetRef = useRef({
     position: [...(LAYER_CAM.world?.position || HOME_CAM.position)],
@@ -153,6 +155,17 @@ export default function WorldApp() {
 
   useEffect(() => {
     stateRef.current.layer = layer;
+  }, [layer]);
+
+  // MANSI hero impact → settles so the world becomes the hero again
+  useEffect(() => {
+    if (story !== "explore" || layer !== "world") return undefined;
+    const t = window.setTimeout(() => setHeroSettled(true), 4200);
+    return () => clearTimeout(t);
+  }, [story, layer]);
+
+  useEffect(() => {
+    if (layer !== "world") setHeroSettled(false);
   }, [layer]);
 
   const setCam = useCallback((cam, mode = "stream") => {
@@ -291,6 +304,7 @@ export default function WorldApp() {
       data-theme={theme}
       data-story={story}
       data-layer={layer}
+      data-hero={heroSettled && layer === "world" ? "settled" : "impact"}
       suppressHydrationWarning
     >
       <div className={`wd-loader${ready ? " is-done" : ""}`} aria-hidden>
@@ -395,8 +409,10 @@ export default function WorldApp() {
         <div className="wd-coords">{meta}</div>
         <div className="wd-meta wd-meta--br">{statusLine}</div>
 
-        {layer === "world" && (
-          <div className={`wd-hero${focused ? " is-dim" : ""}`}>
+        {layer === "world" && !focused && (
+          <div
+            className={`wd-hero${heroSettled ? " is-settled" : ""}${!showName ? " is-waiting" : ""}`}
+          >
             <p className="wd-hero__rail">SYSTEM 00 · IDENTITY</p>
             <h1 className={showName ? "is-in" : ""}>{WORLD_HERO.name}</h1>
             <p className={`wd-hero__role${showRole ? " is-in" : ""}`}>
@@ -411,13 +427,37 @@ export default function WorldApp() {
           </div>
         )}
 
+        {layer === "world" && focused && (
+          <aside className="wd-tech-rail" aria-label="Technology detail">
+            <p className="wd-tech-rail__code">NODE · {focused.label}</p>
+            <h2>{focused.label}</h2>
+            <p className="wd-tech-rail__role">
+              {TECH_META[focused.id]?.role || focused.kind?.toUpperCase?.() || "SYSTEM"}
+            </p>
+            <p className="wd-tech-rail__blurb">
+              {TECH_META[focused.id]?.blurb ||
+                "Connected in the live technology constellation."}
+            </p>
+            <p className="wd-tech-rail__orbit">
+              ORBIT · {(focused.orbit || "").toUpperCase()}
+            </p>
+            <button
+              type="button"
+              className="wd-tech-rail__close"
+              onClick={onHome}
+            >
+              Release node
+            </button>
+          </aside>
+        )}
+
         {layer === "work" && !workSelected && (
-          <div className="wd-hero wd-hero--layer">
+          <div className="wd-hero wd-hero--layer wd-hero--compact">
             <p className="wd-hero__rail">SYSTEM 01 · WORK</p>
             <h1 className="is-in">WORK</h1>
             <p className="wd-hero__sub is-in">Four system exhibits</p>
             <p className="wd-hero__line is-in">
-              Select a cluster. Enter the architecture. Watch the data move.
+              Select a cluster. Enter the architecture.
             </p>
           </div>
         )}
@@ -467,12 +507,12 @@ export default function WorldApp() {
         )}
 
         {layer === "ai" && (
-          <div className="wd-hero wd-hero--layer">
+          <div className="wd-hero wd-hero--layer wd-hero--compact">
             <p className="wd-hero__rail">SYSTEM 02 · AI LAB</p>
             <h1 className="is-in">AI LAB</h1>
             <p className="wd-hero__sub is-in">Semantic field</p>
             <p className="wd-hero__line is-in">
-              Concepts reorganize on contact. Modes open from the field.
+              Click a concept. Open a mode from the field.
             </p>
           </div>
         )}

@@ -42,6 +42,10 @@ function Atmosphere({ themeId }) {
   );
 }
 
+/**
+ * ONE shared WebGL scene. Only the active layer system runs.
+ * Homepage globe never competes with Work / AI / etc.
+ */
 export default function WorldCanvas({
   themeId,
   layer = "world",
@@ -70,8 +74,6 @@ export default function WorldCanvas({
     if (typeof window === "undefined") return false;
     return !!window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
   }, []);
-  const inPipeline = layer === "work" && !!workSelected;
-  const worldDim = layer !== "world" && !inPipeline;
 
   useEffect(() => setMounted(true), []);
   if (!mounted) return <div className="wd-stage" aria-hidden />;
@@ -79,7 +81,7 @@ export default function WorldCanvas({
   return (
     <div className="wd-stage">
       <Canvas
-        dpr={[1, typeof window !== "undefined" && window.innerWidth < 768 ? 1.25 : 1.5]}
+        dpr={[1, typeof window !== "undefined" && window.innerWidth < 768 ? 1.2 : 1.5]}
         camera={{
           fov: HOME_CAM.fov,
           near: 0.08,
@@ -103,7 +105,7 @@ export default function WorldCanvas({
         <CameraRig cameraTargetRef={cameraTargetRef} cursorRef={cursorRef} />
         <CursorBridge cursorRef={cursorRef} />
         <group position={[2.45, 0.25, 0]}>
-          {(layer === "world" || worldDim) && (
+          {layer === "world" && (
             <>
               <Suspense fallback={null}>
                 <DataGlobe
@@ -115,34 +117,30 @@ export default function WorldCanvas({
                   layer={layer}
                 />
               </Suspense>
-              {layer === "world" && (
-                <>
-                  <Suspense fallback={null}>
-                    <TechConstellation
-                      key={`tech-${themeId}`}
-                      themeId={themeId}
-                      hoverId={techHover}
-                      onHover={onTechHover}
-                      onSelect={(node, pos) => {
-                        onTechSelect?.(node, [
-                          pos[0] + 2.45,
-                          pos[1] + 0.25,
-                          pos[2],
-                        ]);
-                      }}
-                      stateRef={stateRef}
-                      layer={layer}
-                    />
-                  </Suspense>
-                  <Suspense fallback={null}>
-                    <InfraLayer
-                      themeId={themeId}
-                      stateRef={stateRef}
-                      layer={layer}
-                    />
-                  </Suspense>
-                </>
-              )}
+              <Suspense fallback={null}>
+                <TechConstellation
+                  key={`tech-${themeId}`}
+                  themeId={themeId}
+                  hoverId={techHover}
+                  onHover={onTechHover}
+                  onSelect={(node, pos) => {
+                    onTechSelect?.(node, [
+                      pos[0] + 2.45,
+                      pos[1] + 0.25,
+                      pos[2],
+                    ]);
+                  }}
+                  stateRef={stateRef}
+                  layer={layer}
+                />
+              </Suspense>
+              <Suspense fallback={null}>
+                <InfraLayer
+                  themeId={themeId}
+                  stateRef={stateRef}
+                  layer={layer}
+                />
+              </Suspense>
             </>
           )}
 
@@ -169,6 +167,7 @@ export default function WorldCanvas({
                   themeId={themeId}
                   cluster={workSelected}
                   active={!!workSelected}
+                  cursorRef={cursorRef}
                   onReady={onPipelineReady}
                 />
               </Suspense>
