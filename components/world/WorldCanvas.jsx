@@ -7,6 +7,7 @@ import { THEME } from "@/lib/data/data-world";
 import DataGlobe from "./DataGlobe";
 import TechConstellation from "./TechConstellation";
 import InfraLayer from "./InfraLayer";
+import WorkField from "./WorkField";
 import CursorBridge from "./CursorBridge";
 import CameraRig, { HOME_CAM } from "./CameraRig";
 
@@ -16,21 +17,21 @@ function Atmosphere({ themeId }) {
   return (
     <>
       {!day && <fog attach="fog" args={[t.fog, t.fogNear, t.fogFar]} />}
-      <ambientLight intensity={t.ambient} color={day ? "#ffffff" : "#7a9ab8"} />
+      <ambientLight intensity={t.ambient} color={day ? "#f4f0e8" : "#6a849c"} />
       <hemisphereLight
-        intensity={day ? 0.5 : 0.36}
-        color={day ? "#f8f9fb" : "#8ab0d0"}
-        groundColor={day ? "#e6e8ee" : "#0c1420"}
+        intensity={day ? 0.48 : 0.34}
+        color={day ? "#f8f4ec" : "#7a9ab8"}
+        groundColor={day ? "#ddd6cc" : "#0a1018"}
       />
       <directionalLight
         position={[5, 8, 6]}
         intensity={t.key}
-        color={day ? "#ffffff" : "#d8e8f8"}
+        color={day ? "#fff8f0" : "#d0e0f0"}
       />
       <directionalLight
         position={[-4, 2, -4]}
         intensity={t.rim}
-        color={day ? "#d0d4e0" : "#3a6a8a"}
+        color={day ? "#c8c0b4" : "#3a5a72"}
       />
     </>
   );
@@ -38,12 +39,17 @@ function Atmosphere({ themeId }) {
 
 export default function WorldCanvas({
   themeId,
+  layer = "world",
   cameraTargetRef,
   cursorRef,
   stateRef,
   techHover,
   onTechHover,
   onTechSelect,
+  workHover,
+  workSelected,
+  onWorkHover,
+  onWorkSelect,
 }) {
   const [mounted, setMounted] = useState(false);
   const t = THEME[themeId] || THEME.night;
@@ -89,6 +95,7 @@ export default function WorldCanvas({
               cursorRef={cursorRef}
               stateRef={stateRef}
               reducedMotion={reduced}
+              layer={layer}
             />
           </Suspense>
           <Suspense fallback={null}>
@@ -101,10 +108,27 @@ export default function WorldCanvas({
                 onTechSelect?.(node, [pos[0] + 2.45, pos[1] + 0.25, pos[2]]);
               }}
               stateRef={stateRef}
+              layer={layer}
             />
           </Suspense>
           <Suspense fallback={null}>
-            <InfraLayer themeId={themeId} stateRef={stateRef} />
+            <InfraLayer themeId={themeId} stateRef={stateRef} layer={layer} />
+          </Suspense>
+          <Suspense fallback={null}>
+            <WorkField
+              themeId={themeId}
+              active={layer === "work"}
+              hoverSlug={workHover}
+              selectedSlug={workSelected}
+              onHover={onWorkHover}
+              onSelect={(cluster, pos) => {
+                onWorkSelect?.(cluster, [
+                  pos[0] + 2.45,
+                  pos[1] + 0.25,
+                  pos[2],
+                ]);
+              }}
+            />
           </Suspense>
         </group>
       </Canvas>

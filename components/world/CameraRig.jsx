@@ -171,14 +171,14 @@ export default function CameraRig({ cameraTargetRef, cursorRef }) {
   return null;
 }
 
-export function approachNode(nodePos) {
+export function approachNode(nodePos, distance = 2.8) {
   const p = new THREE.Vector3(...nodePos);
   const dir = p.clone().normalize();
   return {
     position: [
       p.x * 0.45 + dir.x * 0.2,
       p.y * 0.45 + 0.35,
-      p.z * 0.45 + 2.8,
+      p.z * 0.45 + distance,
     ],
     lookAt: [p.x * 0.92, p.y * 0.92, p.z * 0.92],
     fov: 34,

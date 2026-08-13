@@ -53,3 +53,4 @@ Thumbs.db
 build.log
 vercel-build-test.log
 .vercel
+.env*
