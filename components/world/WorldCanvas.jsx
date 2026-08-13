@@ -42,8 +42,7 @@ function Atmosphere({ themeId }) {
 }
 
 /**
- * ONE shared WebGL scene. Only the active layer system runs.
- * Homepage globe never competes with Work / AI / etc.
+ * ONE persistent WebGL world. Layers change state — they do not swap scenes.
  */
 export default function WorldCanvas({
   themeId,
@@ -77,6 +76,13 @@ export default function WorldCanvas({
   useEffect(() => setMounted(true), []);
   if (!mounted) return <div className="wd-stage" aria-hidden />;
 
+  const inWorld = layer === "world";
+  const inWork = layer === "work";
+  const inAi = layer === "ai";
+  const inExp = layer === "experience";
+  const inAbout = layer === "about";
+  const inContact = layer === "contact";
+
   return (
     <div className="wd-stage">
       <Canvas
@@ -103,45 +109,36 @@ export default function WorldCanvas({
         <Atmosphere themeId={themeId} />
         <CameraRig cameraTargetRef={cameraTargetRef} cursorRef={cursorRef} />
         <CursorBridge cursorRef={cursorRef} />
-        {/* Data Core centered in optical axis — left CSS rail owns identity copy */}
         <group position={[1.2, 0.02, 0]}>
-          {/* Data Core persists into WORK — decomposes into four systems */}
-          {(layer === "world" || layer === "work") && (
+          {/* Persistent Data Core — morphs through every system state */}
+          <Suspense fallback={null}>
+            <DataGlobe
+              key={themeId}
+              themeId={themeId}
+              cursorRef={cursorRef}
+              stateRef={stateRef}
+              reducedMotion={reduced}
+              layer={layer}
+            />
+          </Suspense>
+
+          {inWorld && (
             <Suspense fallback={null}>
-              <DataGlobe
-                key={themeId}
+              <TechConstellation
+                key={`tech-${themeId}`}
                 themeId={themeId}
-                cursorRef={cursorRef}
+                hoverId={techHover}
+                onHover={onTechHover}
+                onSelect={(node, pos) => {
+                  onTechSelect?.(node, [pos[0] + 1.2, pos[1] + 0.02, pos[2]]);
+                }}
                 stateRef={stateRef}
-                reducedMotion={reduced}
                 layer={layer}
               />
             </Suspense>
           )}
 
-          {layer === "world" && (
-            <>
-              <Suspense fallback={null}>
-                <TechConstellation
-                  key={`tech-${themeId}`}
-                  themeId={themeId}
-                  hoverId={techHover}
-                  onHover={onTechHover}
-                  onSelect={(node, pos) => {
-                    onTechSelect?.(node, [
-                      pos[0] + 1.2,
-                      pos[1] + 0.02,
-                      pos[2],
-                    ]);
-                  }}
-                  stateRef={stateRef}
-                  layer={layer}
-                />
-              </Suspense>
-            </>
-          )}
-
-          {layer === "work" && (
+          {inWork && (
             <>
               <Suspense fallback={null}>
                 <WorkField
@@ -173,7 +170,7 @@ export default function WorldCanvas({
             </>
           )}
 
-          {layer === "ai" && (
+          {inAi && (
             <Suspense fallback={null}>
               <SemanticField
                 themeId={themeId}
@@ -186,7 +183,7 @@ export default function WorldCanvas({
             </Suspense>
           )}
 
-          {layer === "experience" && (
+          {inExp && (
             <Suspense fallback={null}>
               <ExperienceField
                 themeId={themeId}
@@ -197,17 +194,13 @@ export default function WorldCanvas({
             </Suspense>
           )}
 
-          {layer === "about" && (
+          {inAbout && (
             <Suspense fallback={null}>
-              <AboutField
-                themeId={themeId}
-                active
-                onHover={onAboutHover}
-              />
+              <AboutField themeId={themeId} active onHover={onAboutHover} />
             </Suspense>
           )}
 
-          {layer === "contact" && (
+          {inContact && (
             <Suspense fallback={null}>
               <ContactField themeId={themeId} active />
             </Suspense>

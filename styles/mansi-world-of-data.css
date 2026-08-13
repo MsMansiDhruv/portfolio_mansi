@@ -229,6 +229,10 @@ html.wd-active body {
   color: var(--wd-ink);
 }
 
+.wd-nav__item.is-route {
+  color: var(--wd-accent);
+}
+
 .wd-nav__item:disabled {
   opacity: 0.35;
   cursor: default;
@@ -778,17 +782,99 @@ html.wd-active body {
 }
 
 .wd-hint {
+  display: none;
+}
+
+.wd-ai-surface {
   position: absolute;
-  left: 50%;
-  bottom: 1.55rem;
-  transform: translateX(-50%) translateY(6px);
-  font-family: var(--wd-font-body);
-  font-size: 0.78rem;
+  left: clamp(1.4rem, 3.5vw, 3rem);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(26rem, 36vw);
+  max-height: min(72vh, 36rem);
+  overflow: auto;
+  z-index: 26;
+  padding: 1.2rem 1.4rem 1.2rem 0;
+  border-right: 1px solid var(--wd-line);
+  pointer-events: auto;
+}
+
+.wd-ai-surface__code {
+  margin: 0 0 0.4rem;
+  font-family: var(--wd-font-mono);
+  font-size: 0.65rem;
   letter-spacing: 0.18em;
-  text-transform: uppercase;
+  color: var(--wd-accent);
+}
+
+.wd-ai-surface__hint {
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
   color: var(--wd-muted);
-  opacity: 0;
-  transition: opacity 1s ease, transform 1s ease;
+  line-height: 1.45;
+}
+
+.wd-ai-surface__input {
+  width: 100%;
+  resize: vertical;
+  min-height: 5rem;
+  border: 1px solid var(--wd-line);
+  background: color-mix(in srgb, var(--wd-bg) 88%, transparent);
+  color: var(--wd-ink);
+  font-family: var(--wd-font-body);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  padding: 0.75rem 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.wd-ai-surface__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.wd-ai-surface__actions button {
+  appearance: none;
+  border: 1px solid var(--wd-line);
+  background: transparent;
+  color: var(--wd-muted);
+  font-family: var(--wd-font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.6rem 0.85rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.wd-ai-surface__actions button:hover:not(:disabled) {
+  color: var(--wd-ink);
+  border-color: var(--wd-accent);
+}
+
+.wd-ai-surface__actions button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.wd-ai-surface__error {
+  color: #c07070;
+  font-size: 0.85rem;
+}
+
+.wd-ai-surface__reply {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--wd-ink);
+  white-space: pre-wrap;
+}
+
+.wd-meta--tl,
+.wd-meta--tr {
+  opacity: 0.55;
 }
 
 .wd-hint.is-in {

@@ -6,8 +6,6 @@ import { Text } from "@react-three/drei";
 import * as THREE from "three";
 import { getPointMap } from "./pointMap";
 import { THEME, semanticColor } from "@/lib/data/data-world";
-import { EXPERIENCE_CHAMBERS } from "@/lib/data/mansi-experience";
-
 /** Conceptual vocabulary for AI Lab — links only, no invented facts */
 export const SEMANTIC_WORDS = [
   {
@@ -87,11 +85,6 @@ function focusClusterPos(focusId) {
     const angle = (rel / SEMANTIC_WORDS.length) * Math.PI * 1.4;
     return [Math.sin(angle) * spread, Math.cos(angle) * spread * 0.6, rel * 0.04];
   });
-}
-
-function chamberPos(i, total) {
-  const a = (i / total) * Math.PI * 2 + 0.5;
-  return [Math.cos(a) * 1.35, -0.85 + Math.sin(a) * 0.25, Math.sin(a) * 0.2];
 }
 
 function connectedWords(hoverId, focusWord) {
@@ -200,67 +193,9 @@ function SemanticWord({
   );
 }
 
-function ChamberNode({ chamber, pos, themeId, onModeSelect }) {
-  const geom = useMemo(() => {
-    const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array([0, 0, 0]), 3));
-    return g;
-  }, []);
-  const t = THEME[themeId] || THEME.night;
-
-  return (
-    <group
-      position={pos}
-      onClick={(e) => {
-        e.stopPropagation();
-        onModeSelect?.(chamber);
-      }}
-    >
-      <points geometry={geom} frustumCulled={false}>
-        <pointsMaterial
-          map={getPointMap()}
-          size={3.6}
-          sizeAttenuation={false}
-          color={t.accent}
-          transparent
-          opacity={0.85}
-          depthWrite={false}
-          alphaTest={0.4}
-          toneMapped={false}
-        />
-      </points>
-      <mesh visible={false}>
-        <sphereGeometry args={[0.22, 8, 8]} />
-        <meshBasicMaterial />
-      </mesh>
-      <Text
-        position={[0, 0.18, 0]}
-        fontSize={0.055}
-        color={t.ink}
-        anchorX="center"
-        anchorY="bottom"
-        outlineWidth={0.0025}
-        outlineColor={t.bg}
-        maxWidth={1.4}
-      >
-        {chamber.label}
-      </Text>
-      <Text
-        position={[0, 0.06, 0]}
-        fontSize={0.032}
-        color={t.steel}
-        anchorX="center"
-        anchorY="bottom"
-        maxWidth={1.2}
-      >
-        {chamber.hint}
-      </Text>
-    </group>
-  );
-}
-
 /**
- * AI Lab semantic field — linked vocabulary + chamber destinations.
+ * AI Lab — semantic intelligence layer. Words are the geometry.
+ * Modes emerge from focused concepts (UI), not SaaS destination cards.
  */
 export default function SemanticField({
   themeId,
@@ -268,7 +203,6 @@ export default function SemanticField({
   focusWord,
   onWordHover,
   onWordSelect,
-  onModeSelect,
 }) {
   const root = useRef();
   const linesRef = useRef();
@@ -386,15 +320,6 @@ export default function SemanticField({
         />
       ))}
 
-      {EXPERIENCE_CHAMBERS.map((chamber, i) => (
-        <ChamberNode
-          key={chamber.id}
-          chamber={chamber}
-          pos={chamberPos(i, EXPERIENCE_CHAMBERS.length)}
-          themeId={themeId}
-          onModeSelect={onModeSelect}
-        />
-      ))}
     </group>
   );
 }

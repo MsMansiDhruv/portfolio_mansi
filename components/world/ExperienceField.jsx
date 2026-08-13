@@ -50,7 +50,7 @@ function TimelineNode({ entry, themeId, hot, dimmed, fadeRef, onHover, onSelect 
     live.current = [entry.x, entry.y, entry.z];
     if (point.current?.material) {
       point.current.material.opacity = fade * (hot ? 0.95 : dimmed ? 0.25 : 0.65);
-      point.current.material.size = hot ? 0.14 : 0.1;
+      point.current.material.size = hot ? 8 : 5.5;
       point.current.material.color.set(hot ? t.accent : color);
     }
   });
@@ -93,24 +93,26 @@ function TimelineNode({ entry, themeId, hot, dimmed, fadeRef, onHover, onSelect 
       <points ref={point} geometry={geom} frustumCulled={false}>
         <pointsMaterial
           map={getPointMap()}
-          size={0.1}
-          sizeAttenuation
+          size={5.5}
+          sizeAttenuation={false}
           color={color}
           transparent
           opacity={0.6}
           depthWrite={false}
+          alphaTest={0.35}
           toneMapped={false}
         />
       </points>
       <points geometry={satGeom} frustumCulled={false}>
         <pointsMaterial
           map={getPointMap()}
-          size={0.045}
-          sizeAttenuation
+          size={2.4}
+          sizeAttenuation={false}
           color={t.steel}
           transparent
-          opacity={0.35}
+          opacity={0.4}
           depthWrite={false}
+          alphaTest={0.35}
           toneMapped={false}
         />
       </points>
@@ -118,29 +120,33 @@ function TimelineNode({ entry, themeId, hot, dimmed, fadeRef, onHover, onSelect 
         <sphereGeometry args={[0.2, 8, 8]} />
         <meshBasicMaterial />
       </mesh>
-      <Text
-        position={[0, 0.2, 0]}
-        fontSize={0.065}
-        color={hot ? t.accent : t.ink}
-        anchorX="center"
-        anchorY="bottom"
-        outlineWidth={0.0025}
-        outlineColor={t.bg}
-      >
-        {entry.stage.year}
-      </Text>
-      <Text
-        position={[0, 0.1, 0]}
-        fontSize={0.038}
-        color={t.steel}
-        anchorX="center"
-        anchorY="bottom"
-        maxWidth={1.1}
-        outlineWidth={0.002}
-        outlineColor={t.bg}
-      >
-        {entry.stage.title.toUpperCase()}
-      </Text>
+      {hot && (
+        <>
+          <Text
+            position={[0, 0.18, 0]}
+            fontSize={0.055}
+            color={t.accent}
+            anchorX="center"
+            anchorY="bottom"
+            outlineWidth={0.002}
+            outlineColor={t.bg}
+          >
+            {entry.stage.year}
+          </Text>
+          <Text
+            position={[0, 0.09, 0]}
+            fontSize={0.036}
+            color={t.ink}
+            anchorX="center"
+            anchorY="bottom"
+            maxWidth={1.2}
+            outlineWidth={0.002}
+            outlineColor={t.bg}
+          >
+            {entry.stage.title.toUpperCase()}
+          </Text>
+        </>
+      )}
     </group>
   );
 }

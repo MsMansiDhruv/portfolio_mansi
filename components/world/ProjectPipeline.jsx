@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
 import * as THREE from "three";
 import { getPointMap } from "./pointMap";
 import { THEME, semanticColor } from "@/lib/data/data-world";
@@ -183,14 +182,13 @@ export default function ProjectPipeline({
     [cluster?.slug]
   );
 
-  const { chaoticPts, chaoticLinks, cleanPts, cleanLinks, stages, paths } = useMemo(() => {
+  const { chaoticPts, chaoticLinks, cleanPts, cleanLinks, paths } = useMemo(() => {
     if (!cluster) {
       return {
         chaoticPts: [],
         chaoticLinks: [],
         cleanPts: [],
         cleanLinks: [],
-        stages: [],
         paths: [],
       };
     }
@@ -389,20 +387,6 @@ export default function ProjectPipeline({
           toneMapped={false}
         />
       </points>
-      {stages.map((s) => (
-        <Text
-          key={s.label + s.pos[0]}
-          position={s.pos}
-          fontSize={0.042}
-          color={t.steel}
-          anchorX="center"
-          anchorY="bottom"
-          outlineWidth={0.002}
-          outlineColor={t.bg}
-        >
-          {s.label}
-        </Text>
-      ))}
     </group>
   );
 }

@@ -356,28 +356,40 @@ export default function DataGlobe({
     const story = stateRef?.current?.story || "explore";
     const wake = stateRef?.current?.wake || 0;
     const inWork = layer === "work";
+    const inAi = layer === "ai";
+    const inExp = layer === "experience";
+    const inAbout = layer === "about";
+    const inContact = layer === "contact";
     const inPipeline = !!stateRef?.current?.pipelineActive;
 
     decompose.current = THREE.MathUtils.damp(
       decompose.current,
-      inWork && !inPipeline ? 1 : inPipeline ? 0.12 : 0,
+      inWork && !inPipeline ? 1 : inPipeline ? 0.12 : inAi || inExp ? 0.35 : 0,
       1.4,
       dt
     );
     const dec = decompose.current;
 
-    // Progressive birth of the planet
+    // Same material — different world states
     const densTarget = inPipeline
       ? 0.04
-      : inWork
-        ? 0.5
-        : story === "silence"
-          ? 0.28
-          : story === "emergence"
-            ? 0.55
-            : story === "connection"
-              ? 0.78
-              : 1;
+      : inAbout
+        ? 0.12
+        : inContact
+          ? 0.22
+          : inAi
+            ? 0.28
+            : inExp
+              ? 0.32
+              : inWork
+                ? 0.5
+                : story === "silence"
+                  ? 0.28
+                  : story === "emergence"
+                    ? 0.55
+                    : story === "connection"
+                      ? 0.78
+                      : 1;
     density.current = THREE.MathUtils.damp(density.current, densTarget, 1.15, dt);
     reveal.current = THREE.MathUtils.damp(
       reveal.current,
@@ -416,9 +428,13 @@ export default function DataGlobe({
     group.current.rotation.x = orient.current.x;
     group.current.rotation.y = orient.current.y + Math.sin(time * 0.012) * 0.004;
     const scaleBase = 0.78 + reveal.current * 0.22;
-    // WORK: planet opens — stretches outward, still readable as sphere→network
-    group.current.scale.setScalar(THREE.MathUtils.lerp(scaleBase, 1.45, dec * 0.65));
-    group.current.position.set(0, 0, 0);
+    let scaleMul = THREE.MathUtils.lerp(scaleBase, 1.45, dec * 0.65);
+    if (inAi) scaleMul = THREE.MathUtils.lerp(scaleBase, 1.15, 0.7);
+    if (inExp) scaleMul = THREE.MathUtils.lerp(scaleBase, 0.85, 0.6);
+    if (inAbout) scaleMul = THREE.MathUtils.lerp(scaleBase, 0.55, 0.8);
+    if (inContact) scaleMul = THREE.MathUtils.lerp(scaleBase, 0.7, 0.5);
+    group.current.scale.setScalar(scaleMul);
+    group.current.position.set(0, inAbout ? 0.15 : 0, inAi ? -0.2 : 0);
     group.current.updateMatrixWorld();
 
     let nearSecret = 0;
