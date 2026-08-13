@@ -25,13 +25,23 @@ export default function AiModeSurface({ modeId, onClose }) {
       const res = await fetch("/api/ai-lab/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: chamber.id, question: q, density: "concise" }),
+        body: JSON.stringify({
+          mode: chamber.id,
+          question: q,
+          density: "concise",
+          stream: false,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || "Request failed");
-      setReply(
-        data?.answer || data?.reply || data?.message || data?.content || "No response."
-      );
+      const text =
+        data?.answer ||
+        data?.reply ||
+        data?.message ||
+        data?.content ||
+        data?.text ||
+        (typeof data?.sections?.[0]?.body === "string" ? data.sections[0].body : "");
+      setReply(text || "No response.");
     } catch (e) {
       setError(e?.message || "Something went wrong.");
     } finally {
