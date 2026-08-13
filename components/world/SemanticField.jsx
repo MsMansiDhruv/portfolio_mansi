@@ -139,9 +139,9 @@ function SemanticWord({
       THREE.MathUtils.damp(ref.current.scale.x || 0.001, Math.max(0.001, s), 6, d)
     );
     if (point.current?.material) {
-      point.current.material.opacity = fade * (hot ? 0.95 : dimmed ? 0.2 : 0.55);
-      point.current.material.size = hot ? 0.12 : 0.08;
-      point.current.material.color.set(hot ? t.accent : color);
+      point.current.material.opacity = fade * (hot ? 0.95 : dimmed ? 0.25 : 0.7);
+      point.current.material.size = hot ? 3.4 : 2.4;
+      point.current.material.color.set(hot ? t.accent : t.steel);
     }
   });
 
@@ -170,12 +170,13 @@ function SemanticWord({
       <points ref={point} geometry={geom} frustumCulled={false}>
         <pointsMaterial
           map={getPointMap()}
-          size={0.08}
-          sizeAttenuation
-          color={color}
+          size={2.4}
+          sizeAttenuation={false}
+          color={t.steel}
           transparent
           opacity={0.5}
           depthWrite={false}
+          alphaTest={0.4}
           toneMapped={false}
         />
       </points>
@@ -183,19 +184,18 @@ function SemanticWord({
         <sphereGeometry args={[0.14, 8, 8]} />
         <meshBasicMaterial />
       </mesh>
-      {hot && (
-        <Text
-          position={[0, 0.12, 0]}
-          fontSize={0.048}
-          color={t.ink}
-          anchorX="center"
-          anchorY="bottom"
-          outlineWidth={0.002}
-          outlineColor={t.bg}
-        >
-          {word.label}
-        </Text>
-      )}
+      <Text
+        position={[0, 0.1, 0]}
+        fontSize={hot ? 0.055 : 0.042}
+        color={hot ? t.ink : t.steel}
+        anchorX="center"
+        anchorY="bottom"
+        outlineWidth={0.002}
+        outlineColor={t.bg}
+        fillOpacity={hot ? 1 : dimmed ? 0.25 : 0.72}
+      >
+        {word.label}
+      </Text>
     </group>
   );
 }
@@ -219,12 +219,13 @@ function ChamberNode({ chamber, pos, themeId, onModeSelect }) {
       <points geometry={geom} frustumCulled={false}>
         <pointsMaterial
           map={getPointMap()}
-          size={0.14}
-          sizeAttenuation
+          size={3.6}
+          sizeAttenuation={false}
           color={t.accent}
           transparent
-          opacity={0.7}
+          opacity={0.85}
           depthWrite={false}
+          alphaTest={0.4}
           toneMapped={false}
         />
       </points>

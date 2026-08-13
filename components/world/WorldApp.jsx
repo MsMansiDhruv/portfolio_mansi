@@ -68,7 +68,7 @@ export default function WorldApp() {
     active: false,
   });
   const stateRef = useRef({
-    globeEnergy: 0.08,
+    globeEnergy: 0.02,
     globeRotY: 0,
     globeRotX: 0,
     breath: 0,
@@ -78,6 +78,9 @@ export default function WorldApp() {
     infraWake: null,
     story: "silence",
     layer: "world",
+    decompose: 0,
+    secretWake: 0,
+    pipelineActive: false,
   });
   const startedAt = useRef(null);
 
@@ -165,16 +168,20 @@ export default function WorldApp() {
     stateRef.current.layer = layer;
   }, [layer]);
 
-  // MANSI hero impact → settles so the world becomes the hero again
+  // MANSI hero impact → settles into nav identity
   useEffect(() => {
     if (story !== "explore" || layer !== "world") return undefined;
-    const t = window.setTimeout(() => setHeroSettled(true), 4200);
+    const t = window.setTimeout(() => setHeroSettled(true), 2400);
     return () => clearTimeout(t);
   }, [story, layer]);
 
   useEffect(() => {
-    if (layer !== "world") setHeroSettled(false);
+    if (layer !== "world") setHeroSettled(true);
   }, [layer]);
+
+  useEffect(() => {
+    stateRef.current.pipelineActive = !!workSelected;
+  }, [workSelected]);
 
   const setCam = useCallback((cam, mode = "stream") => {
     const from = cameraTargetRef.current || {};
@@ -486,10 +493,10 @@ export default function WorldApp() {
         {layer === "work" && !workSelected && (
           <div className="wd-hero wd-hero--layer wd-hero--compact">
             <p className="wd-hero__rail">SYSTEM 01 · WORK</p>
-            <h1 className="is-in">SYSTEMS</h1>
-            <p className="wd-hero__sub is-in">Four dormant machines</p>
+            <h1 className="is-in">WORK</h1>
+            <p className="wd-hero__sub is-in">The core becomes four systems</p>
             <p className="wd-hero__line is-in">
-              Approach to wake. Click to enter the pipeline.
+              Approach to wake. Click to enter the data.
             </p>
           </div>
         )}

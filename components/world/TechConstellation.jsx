@@ -63,7 +63,8 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
   const map = useMemo(() => cellMap(), []);
   const t = THEME[themeId] || THEME.night;
   const isCore = node.tier === "core";
-  const size = isCore ? 0.72 : 0.5;
+  // Screen-space NODE sizes — elegant, not glowing spheres
+  const size = isCore ? 4.2 : 3.1;
 
   useFrame((state, dt) => {
     if (!ref.current) return;
@@ -118,12 +119,12 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
         <pointsMaterial
           map={map}
           size={size}
-          sizeAttenuation
+          sizeAttenuation={false}
           color={t.steel}
           transparent
-          opacity={0.85}
+          opacity={0.9}
           depthWrite={false}
-          alphaTest={0.35}
+          alphaTest={0.45}
           toneMapped={false}
         />
       </points>
@@ -237,8 +238,9 @@ export default function TechConstellation({
               : 1;
 
     ORBITS.forEach((o) => {
+      // Quiet field — orbits barely drift
       orbitPhase.current[o.id] +=
-        o.speed * d * (story === "explore" || story === "identity" ? 1 : 0.3);
+        o.speed * d * (story === "explore" || story === "identity" ? 0.28 : 0.08);
     });
 
     TECH_NODES.forEach((node) => {
@@ -332,7 +334,7 @@ export default function TechConstellation({
       flowRef.current.material.opacity = net
         ? streamReveal * layerFade * 0.9
         : 0;
-      flowRef.current.material.size = net ? 0.1 : 0.05;
+      flowRef.current.material.size = net ? 2.4 : 1.6;
     }
 
     if (stateRef?.current) {
@@ -365,13 +367,13 @@ export default function TechConstellation({
       <points ref={flowRef} geometry={flowGeom} frustumCulled={false}>
         <pointsMaterial
           map={flowMap}
-          size={0.065}
-          sizeAttenuation
+          size={2}
+          sizeAttenuation={false}
           vertexColors
           transparent
           opacity={0.5}
           depthWrite={false}
-          alphaTest={0.12}
+          alphaTest={0.4}
           toneMapped={false}
         />
       </points>

@@ -6,20 +6,20 @@ import { Text } from "@react-three/drei";
 import * as THREE from "three";
 import { getWorkClusters, THEME, semanticColor } from "@/lib/data/data-world";
 
-function cellMap() {
+function grainMap() {
   const c = document.createElement("canvas");
-  c.width = 64;
-  c.height = 64;
+  c.width = 32;
+  c.height = 32;
   const ctx = c.getContext("2d");
-  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 28);
-  g.addColorStop(0, "rgba(255,255,255,1)");
-  g.addColorStop(0.55, "rgba(255,255,255,0.9)");
-  g.addColorStop(1, "rgba(255,255,255,0)");
-  ctx.fillStyle = g;
+  ctx.clearRect(0, 0, 32, 32);
+  ctx.fillStyle = "#fff";
   ctx.beginPath();
-  ctx.arc(32, 32, 28, 0, Math.PI * 2);
+  ctx.arc(16, 16, 5, 0, Math.PI * 2);
   ctx.fill();
   const t = new THREE.CanvasTexture(c);
+  t.generateMipmaps = false;
+  t.minFilter = THREE.NearestFilter;
+  t.magFilter = THREE.NearestFilter;
   t.needsUpdate = true;
   return t;
 }
@@ -96,6 +96,7 @@ function Cluster({
   onHover,
   onSelect,
   cursorRef,
+  stateRef,
 }) {
   const root = useRef();
   const pointsRef = useRef();
@@ -103,12 +104,12 @@ function Cluster({
   const flowRef = useRef();
   const progress = useRef(0);
   const wake = useRef(0);
-  const map = useMemo(() => cellMap(), []);
+  const map = useMemo(() => grainMap(), []);
   const t = THEME[themeId] || THEME.night;
   const color = selected
     ? t.accent
     : active
-      ? semanticColor("data", themeId)
+      ? semanticColor("data", themeId, 0.55)
       : t.steel;
 
   const { pts, links, home, target } = useMemo(() => {
@@ -161,9 +162,10 @@ function Cluster({
     if (!root.current) return;
     const d = Math.min(dt, 0.05);
     const time = state.clock.elapsedTime;
+    const decReady = (stateRef?.current?.decompose ?? 1) > 0.28;
     progress.current = THREE.MathUtils.damp(
       progress.current,
-      unfold ? 1 : 0,
+      unfold && decReady ? 1 : 0,
       2.2,
       d
     );
@@ -186,13 +188,13 @@ function Cluster({
     root.current.visible = u > 0.02;
 
     if (pointsRef.current?.material) {
-      pointsRef.current.material.opacity = 0.12 + u * (0.35 + w * 0.55);
+      pointsRef.current.material.opacity = 0.2 + u * (0.45 + w * 0.45);
       pointsRef.current.material.color.set(color);
-      pointsRef.current.material.size = selected ? 0.16 : 0.08 + w * 0.05;
+      pointsRef.current.material.size = selected ? 3.2 : 1.7 + w * 0.6;
     }
     if (linesRef.current?.material) {
       linesRef.current.material.opacity =
-        u * (selected ? 0.55 : 0.06 + w * 0.32);
+        u * (selected ? 0.5 : 0.05 + w * 0.28);
       linesRef.current.material.color.set(color);
     }
 
@@ -214,8 +216,9 @@ function Cluster({
       }
       flowRef.current.geometry.setDrawRange(0, fi);
       flowRef.current.geometry.attributes.position.needsUpdate = true;
-      flowRef.current.material.opacity = u * w * 0.75;
+      flowRef.current.material.opacity = u * w * 0.8;
       flowRef.current.material.color.set(color);
+      flowRef.current.material.size = 2.1;
     } else if (flowRef.current) {
       flowRef.current.material.opacity = 0;
     }
@@ -240,13 +243,13 @@ function Cluster({
       <points ref={pointsRef} geometry={pointGeom} frustumCulled={false}>
         <pointsMaterial
           map={map}
-          size={0.14}
-          sizeAttenuation
+          size={2}
+          sizeAttenuation={false}
           color={color}
           transparent
           opacity={0}
           depthWrite={false}
-          alphaTest={0.12}
+          alphaTest={0.45}
           toneMapped={false}
         />
       </points>
@@ -256,13 +259,13 @@ function Cluster({
       <points ref={flowRef} geometry={flowGeom} frustumCulled={false}>
         <pointsMaterial
           map={map}
-          size={0.07}
-          sizeAttenuation
+          size={2}
+          sizeAttenuation={false}
           color={color}
           transparent
           opacity={0}
           depthWrite={false}
-          alphaTest={0.2}
+          alphaTest={0.4}
           toneMapped={false}
         />
       </points>
@@ -313,6 +316,7 @@ export default function WorkField({
   onHover,
   onSelect,
   cursorRef,
+  stateRef,
 }) {
   const clusters = useMemo(() => getWorkClusters(), []);
 
@@ -329,6 +333,7 @@ export default function WorkField({
           onHover={onHover}
           onSelect={onSelect}
           cursorRef={cursorRef}
+          stateRef={stateRef}
         />
       ))}
     </group>

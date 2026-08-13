@@ -106,18 +106,22 @@ export default function WorldCanvas({
         <CursorBridge cursorRef={cursorRef} />
         {/* Data Core centered in optical axis — left CSS rail owns identity copy */}
         <group position={[1.55, 0.05, 0]}>
+          {/* Data Core persists into WORK — decomposes into four systems */}
+          {(layer === "world" || layer === "work") && (
+            <Suspense fallback={null}>
+              <DataGlobe
+                key={themeId}
+                themeId={themeId}
+                cursorRef={cursorRef}
+                stateRef={stateRef}
+                reducedMotion={reduced}
+                layer={layer}
+              />
+            </Suspense>
+          )}
+
           {layer === "world" && (
             <>
-              <Suspense fallback={null}>
-                <DataGlobe
-                  key={themeId}
-                  themeId={themeId}
-                  cursorRef={cursorRef}
-                  stateRef={stateRef}
-                  reducedMotion={reduced}
-                  layer={layer}
-                />
-              </Suspense>
               <Suspense fallback={null}>
                 <TechConstellation
                   key={`tech-${themeId}`}
@@ -154,6 +158,7 @@ export default function WorldCanvas({
                   hoverSlug={workHover}
                   selectedSlug={workSelected?.slug || null}
                   cursorRef={cursorRef}
+                  stateRef={stateRef}
                   onHover={onWorkHover}
                   onSelect={(cluster, pos) => {
                     onWorkSelect?.(cluster, [

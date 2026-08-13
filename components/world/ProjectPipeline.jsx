@@ -8,8 +8,8 @@ import { getPointMap } from "./pointMap";
 import { THEME, semanticColor } from "@/lib/data/data-world";
 import { getProjectMeta } from "@/lib/data/project-meta";
 
-const FLOW_PER_PATH = 10;
-const SCALE = 2.5;
+const FLOW_PER_PATH = 14;
+const SCALE = 3.4;
 
 function rnd(seed, i) {
   const x = Math.sin(seed * 12.9 + i * 78.1) * 43758.5453;
@@ -250,9 +250,11 @@ export default function ProjectPipeline({
     );
 
     root.current.visible = fade.current > 0.015;
-    root.current.scale.setScalar(SCALE * (0.85 + fade.current * 0.15));
+    // Enter the data — scale grows around the viewer
+    root.current.scale.setScalar(SCALE * (0.55 + fade.current * 0.55));
+    root.current.position.z = THREE.MathUtils.lerp(0.8, -0.35, fade.current);
 
-    if (fade.current > 0.85 && active && !readySent.current) {
+    if (fade.current > 0.82 && active && !readySent.current) {
       readySent.current = true;
       onReady?.();
     }
@@ -264,9 +266,14 @@ export default function ProjectPipeline({
       const c = chaoticPts[i] || cleanPts[i] || [0, 0, 0];
       const r = cleanPts[i] || chaoticPts[i] || [0, 0, 0];
       const i3 = i * 3;
-      posArr[i3] = THREE.MathUtils.lerp(c[0], r[0], u);
-      posArr[i3 + 1] = THREE.MathUtils.lerp(c[1], r[1], u);
-      posArr[i3 + 2] = THREE.MathUtils.lerp(c[2], r[2], u);
+      let px = THREE.MathUtils.lerp(c[0], r[0], u);
+      let py = THREE.MathUtils.lerp(c[1], r[1], u);
+      let pz = THREE.MathUtils.lerp(c[2], r[2], u);
+      // Foreground grain near camera for immersion
+      if (i % 5 === 0) pz += 0.35 * fade.current;
+      posArr[i3] = px;
+      posArr[i3 + 1] = py;
+      posArr[i3 + 2] = pz;
     }
     pointGeom.setDrawRange(0, count);
     pointGeom.attributes.position.needsUpdate = true;
@@ -323,8 +330,8 @@ export default function ProjectPipeline({
         }
       });
       flowGeom.attributes.position.needsUpdate = true;
-      flowRef.current.material.opacity = fade.current * (0.35 + u * 0.45);
-      flowRef.current.material.size = cursor?.active ? 0.09 : 0.07;
+      flowRef.current.material.opacity = fade.current * (0.45 + u * 0.5);
+      flowRef.current.material.size = cursor?.active ? 2.6 : 2.1;
     }
 
     const kind =
@@ -335,16 +342,16 @@ export default function ProjectPipeline({
           : cluster?.topology === "split"
             ? "transform"
             : "infra";
-    const color = semanticColor(kind, themeId);
+    const color = semanticColor(kind, themeId, 0.45);
 
     if (pointsRef.current?.material) {
-      pointsRef.current.material.opacity = fade.current * (0.25 + u * 0.65);
+      pointsRef.current.material.opacity = fade.current * (0.4 + u * 0.55);
       pointsRef.current.material.color.set(color);
-      pointsRef.current.material.size = 0.08 + u * 0.04;
+      pointsRef.current.material.size = 1.8 + u * 0.6;
     }
     if (linesRef.current?.material) {
-      linesRef.current.material.opacity = fade.current * (0.08 + u * 0.42);
-      linesRef.current.material.color.set(color);
+      linesRef.current.material.opacity = fade.current * (0.1 + u * 0.4);
+      linesRef.current.material.color.set(t.steel);
     }
   });
 
@@ -355,12 +362,13 @@ export default function ProjectPipeline({
       <points ref={pointsRef} geometry={pointGeom} frustumCulled={false}>
         <pointsMaterial
           map={getPointMap()}
-          size={0.1}
-          sizeAttenuation
-          color={t.data}
+          size={2}
+          sizeAttenuation={false}
+          color={t.steel}
           transparent
           opacity={0}
           depthWrite={false}
+          alphaTest={0.4}
           toneMapped={false}
         />
       </points>
@@ -370,12 +378,13 @@ export default function ProjectPipeline({
       <points ref={flowRef} geometry={flowGeom} frustumCulled={false}>
         <pointsMaterial
           map={getPointMap()}
-          size={0.055}
-          sizeAttenuation
+          size={2.2}
+          sizeAttenuation={false}
           color={t.accent}
           transparent
           opacity={0}
           depthWrite={false}
+          alphaTest={0.4}
           toneMapped={false}
         />
       </points>
