@@ -188,9 +188,10 @@ function Cluster({
     root.current.visible = u > 0.02;
 
     if (pointsRef.current?.material) {
-      pointsRef.current.material.opacity = 0.2 + u * (0.45 + w * 0.45);
+      pointsRef.current.material.opacity = 0.35 + u * (0.5 + w * 0.45);
       pointsRef.current.material.color.set(color);
-      pointsRef.current.material.size = selected ? 3.2 : 1.7 + w * 0.6;
+      pointsRef.current.material.size =
+        (selected ? 3.8 : 2.4 + w * 0.8) * (themeId === "day" ? 1.25 : 1);
     }
     if (linesRef.current?.material) {
       linesRef.current.material.opacity =

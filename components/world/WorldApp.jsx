@@ -26,7 +26,7 @@ const THEME_KEY = "mansi-world-theme";
 const RESUME_HREF = "/resume.pdf";
 
 /**
- * Living Data Universe — one continuous production machine.
+ * One world. Contextual information only — never permanent side boxes.
  */
 export default function WorldApp() {
   const [theme, setTheme] = useState("night");
@@ -44,12 +44,11 @@ export default function WorldApp() {
   const [aiHover, setAiHover] = useState(null);
   const [expHover, setExpHover] = useState(null);
   const [aboutHover, setAboutHover] = useState(null);
-  const [meta, setMeta] = useState("SYSTEM / ONLINE");
   const [isMobile, setIsMobile] = useState(false);
   const [uiReady, setUiReady] = useState(false);
   const [heroSettled, setHeroSettled] = useState(false);
   const [routeFound, setRouteFound] = useState(false);
-  const [exhibitOpen, setExhibitOpen] = useState(false);
+  const [floatOpen, setFloatOpen] = useState(false);
   const [aiMode, setAiMode] = useState(null);
 
   const cameraTargetRef = useRef({
@@ -96,7 +95,6 @@ export default function WorldApp() {
     } catch {
       /* ignore */
     }
-    // Show shell immediately; 3D densifies progressively
     const t = setTimeout(() => setReady(true), 90);
     return () => clearTimeout(t);
   }, []);
@@ -149,17 +147,8 @@ export default function WorldApp() {
 
   useEffect(() => {
     const id = window.setInterval(() => {
-      const e = stateRef.current.globeEnergy || 0;
-      const y = stateRef.current.globeRotY || 0;
       const secret = stateRef.current.secretWake || 0;
-      if (secret > 0.72 && layer === "world" && !routeFound) {
-        setRouteFound(true);
-      }
-      setMeta(
-        secret > 0.45
-          ? `ROUTE · ${(secret * 100).toFixed(0)}%`
-          : `E ${e.toFixed(2)} · θ ${(((y % (Math.PI * 2)) / (Math.PI * 2)) * 360).toFixed(1)}°`
-      );
+      if (secret > 0.72 && layer === "world" && !routeFound) setRouteFound(true);
     }, 160);
     return () => clearInterval(id);
   }, [layer, routeFound]);
@@ -172,7 +161,6 @@ export default function WorldApp() {
     stateRef.current.layer = layer;
   }, [layer]);
 
-  // MANSI hero impact → settles into nav identity
   useEffect(() => {
     if (story !== "explore" || layer !== "world") return undefined;
     const t = window.setTimeout(() => setHeroSettled(true), 3200);
@@ -241,12 +229,9 @@ export default function WorldApp() {
     (cluster, pos) => {
       setWorkSelected(cluster);
       setPipelineReady(false);
-      setExhibitOpen(false);
+      setFloatOpen(false);
       setCam(approachNode(pos, 2.2), "enter");
-      window.setTimeout(() => {
-        setCam(LAYER_CAM.pipeline, "enter");
-      }, 700);
-      window.setTimeout(() => setExhibitOpen(true), 1400);
+      window.setTimeout(() => setCam(LAYER_CAM.pipeline, "enter"), 700);
     },
     [setCam]
   );
@@ -259,6 +244,7 @@ export default function WorldApp() {
     setPipelineReady(false);
     setAiFocus(null);
     setAiMode(null);
+    setFloatOpen(false);
     setLayer("world");
     setNavOpen(false);
     setCam(LAYER_CAM.world, "stream");
@@ -275,7 +261,7 @@ export default function WorldApp() {
       setAiMode(null);
       setExpHover(null);
       setAboutHover(null);
-      setExhibitOpen(false);
+      setFloatOpen(false);
       setLayer(id);
       setNavOpen(false);
       const cam = LAYER_CAM[id] || LAYER_CAM.world;
@@ -287,7 +273,7 @@ export default function WorldApp() {
   const closeProject = useCallback(() => {
     setWorkSelected(null);
     setPipelineReady(false);
-    setExhibitOpen(false);
+    setFloatOpen(false);
     setCam(LAYER_CAM.work, "stream");
   }, [setCam]);
 
@@ -295,34 +281,18 @@ export default function WorldApp() {
   const showName = story === "identity" || story === "explore";
   const showRole = story === "identity" || story === "explore";
   const showLine = story === "explore";
+
   const cursorMode =
     workSelected || focused || techHover || workHover || aiHover || aboutHover || aiMode
       ? "target"
       : "data";
 
-  // Quiet state readout — no instructional paste-ons
-  const statusLine = (() => {
-    if (aiMode) return `MODE · ${aiMode.toUpperCase()}`;
-    if (workSelected)
-      return pipelineReady
-        ? `INSIDE · ${workSelected.code}`
-        : `ENTERING · ${workSelected.code}`;
-    if (focused) return focused.label;
-    if (techHover) return techHover.label;
-    if (workHover) return workHover.cardTitle;
-    if (aiHover) return String(aiHover).toUpperCase();
-    if (aiFocus) return String(aiFocus).toUpperCase();
-    if (expHover) return `${expHover.year}`;
-    if (aboutHover) return aboutHover.label;
-    if (!explored) return STORY[story]?.label || "";
-    if (layer === "world" && routeFound) return "ROUTE";
-    return layer.replace("-", " ").toUpperCase();
-  })();
-
   const focusedWord = SEMANTIC_WORDS.find((w) => w.id === aiFocus);
   const modeFromConcept = focusedWord
     ? EXPERIENCE_CHAMBERS.find((c) => c.id === focusedWord.mode)
     : null;
+
+  const techMeta = focused ? TECH_META[focused.id] : null;
 
   return (
     <div
@@ -342,10 +312,26 @@ export default function WorldApp() {
       )}
 
       <header className="wd-bar">
-        <div className="wd-bar__left">
-          <button type="button" className="wd-brand" onClick={onHome}>
-            Mansi
-          </button>
+        <button type="button" className="wd-brand" onClick={onHome}>
+          Mansi
+        </button>
+        <nav className={`wd-nav${navOpen ? " is-open" : ""}`} aria-label="System">
+          {WORLD_NAV.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={`wd-nav__item${layer === item.id ? " is-active" : ""}${
+                item.id === "work" && routeFound && layer === "world" ? " is-route" : ""
+              }`}
+              onClick={() => explored && goLayer(item.id)}
+              disabled={!explored}
+              aria-current={layer === item.id ? "page" : undefined}
+            >
+              <span className="wd-nav__label">{item.label}</span>
+            </button>
+          ))}
+        </nav>
+        <div className="wd-bar__end">
           <button
             type="button"
             className="wd-nav-toggle"
@@ -355,42 +341,18 @@ export default function WorldApp() {
           >
             Menu
           </button>
-          <nav
-            className={`wd-nav${navOpen ? " is-open" : ""}`}
-            aria-label="System"
+          <button
+            type="button"
+            className="wd-theme"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === "night" ? "day" : "night"} mode`}
           >
-            {WORLD_NAV.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={`wd-nav__item${layer === item.id ? " is-active" : ""}${
-                  item.id === "work" && routeFound && layer === "world"
-                    ? " is-route"
-                    : ""
-                }`}
-                onClick={() => explored && goLayer(item.id)}
-                disabled={!explored}
-                aria-current={layer === item.id ? "page" : undefined}
-              >
-                {layer === item.id && (
-                  <span className="wd-nav__signal" aria-hidden />
-                )}
-                {item.label}
-              </button>
-            ))}
-          </nav>
+            <span className="wd-theme__pip" />
+            <span suppressHydrationWarning>
+              {theme === "night" ? "Night" : "Day"}
+            </span>
+          </button>
         </div>
-        <button
-          type="button"
-          className="wd-theme"
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === "night" ? "day" : "night"} mode`}
-        >
-          <span className="wd-theme__pip" />
-          <span suppressHydrationWarning>
-            {theme === "night" ? "Night" : "Day"}
-          </span>
-        </button>
       </header>
 
       <WorldCanvas
@@ -399,7 +361,8 @@ export default function WorldApp() {
         cameraTargetRef={cameraTargetRef}
         cursorRef={cursorRef}
         stateRef={stateRef}
-        techHover={techHover?.id || null}
+        techHover={techHover?.id || focused?.id || null}
+        focusedTechId={focused?.id || null}
         onTechHover={(n) => {
           if (!explored || layer !== "world") return;
           setTechHover(n);
@@ -426,19 +389,9 @@ export default function WorldApp() {
       />
 
       <div className="wd-hud">
-        <div className="wd-meta wd-meta--tl">
-          {layer === "world"
-            ? "DATA CORE"
-            : `SYSTEM / ${layer.replace("-", " ").toUpperCase()}`}
-        </div>
-        <div className="wd-meta wd-meta--tr">
-          {theme === "day" ? "DAY · CLARITY" : "NIGHT · DEEP COMPUTE"}
-        </div>
-        <div className="wd-meta wd-meta--br">{statusLine}</div>
-
         {layer === "world" && !focused && (
           <div
-            className={`wd-hero${heroSettled ? " is-settled" : ""}${!showName ? " is-waiting" : ""}${routeFound ? " is-route" : ""}`}
+            className={`wd-hero${heroSettled ? " is-settled" : ""}${!showName ? " is-waiting" : ""}`}
           >
             <h1 className={showName ? "is-in" : ""}>{WORLD_HERO.name}</h1>
             <p className={`wd-hero__role${showRole ? " is-in" : ""}`}>
@@ -453,105 +406,73 @@ export default function WorldApp() {
           </div>
         )}
 
-        {layer === "world" && focused && (
-          <aside className="wd-tech-rail" aria-label="Technology detail">
-            <p className="wd-tech-rail__code">NODE · {focused.label}</p>
-            <h2>{focused.label}</h2>
-            <p className="wd-tech-rail__role">
-              {TECH_META[focused.id]?.role || focused.kind?.toUpperCase?.() || "SYSTEM"}
-            </p>
-            <p className="wd-tech-rail__blurb">
-              {TECH_META[focused.id]?.blurb ||
-                "Connected in the live technology constellation."}
-            </p>
-            <p className="wd-tech-rail__orbit">
-              ORBIT · {(focused.orbit || "").toUpperCase()}
-            </p>
-            <button
-              type="button"
-              className="wd-tech-rail__close"
-              onClick={onHome}
-            >
-              Release node
+        {/* Contextual floats — typography only, no cards */}
+        {focused && techMeta && (
+          <div className="wd-float" role="status">
+            <p className="wd-float__kicker">{techMeta.role}</p>
+            <p className="wd-float__title">{focused.label}</p>
+            <p className="wd-float__body">{techMeta.blurb}</p>
+            <button type="button" className="wd-float__action" onClick={onHome}>
+              Release
             </button>
-          </aside>
+          </div>
         )}
 
-        {workSelected && pipelineReady && !exhibitOpen && (
-          <button
-            type="button"
-            className="wd-route-cue"
-            onClick={() => setExhibitOpen(true)}
-          >
-            Notes
-          </button>
+        {workHover && !workSelected && (
+          <div className="wd-float wd-float--quiet" role="status">
+            <p className="wd-float__kicker">PROJECT {workHover.code}</p>
+            <p className="wd-float__title">{workHover.cardTitle}</p>
+          </div>
         )}
 
-        {workSelected && (
-          <aside
-            className={`wd-exhibit${exhibitOpen ? " is-open is-ready" : ""}`}
-            aria-label="Project exhibit"
-            aria-hidden={!exhibitOpen}
-          >
-            <p className="wd-exhibit__code">PROJECT {workSelected.code}</p>
-            <h2>{workSelected.cardTitle}</h2>
-            <p className="wd-exhibit__story">{workSelected.story}</p>
-            {workSelected.problem && (
-              <div className="wd-exhibit__block">
-                <span>PROBLEM</span>
-                <p>{workSelected.problem}</p>
-              </div>
+        {workSelected && pipelineReady && (
+          <div className="wd-float" role="status">
+            <p className="wd-float__kicker">PROJECT {workSelected.code}</p>
+            <p className="wd-float__title">{workSelected.cardTitle}</p>
+            {!floatOpen ? (
+              <button
+                type="button"
+                className="wd-float__action"
+                onClick={() => setFloatOpen(true)}
+              >
+                Details
+              </button>
+            ) : (
+              <>
+                {workSelected.problem && (
+                  <p className="wd-float__body">{workSelected.problem}</p>
+                )}
+                {workSelected.purpose && (
+                  <p className="wd-float__body">{workSelected.purpose}</p>
+                )}
+                <button
+                  type="button"
+                  className="wd-float__action"
+                  onClick={() => setFloatOpen(false)}
+                >
+                  Hide
+                </button>
+              </>
             )}
-            {workSelected.purpose && (
-              <div className="wd-exhibit__block">
-                <span>APPROACH</span>
-                <p>{workSelected.purpose}</p>
-              </div>
-            )}
-            {workSelected.tech?.length > 0 && (
-              <div className="wd-exhibit__block">
-                <span>TECHNOLOGY</span>
-                <p className="wd-exhibit__tech">
-                  {workSelected.tech.slice(0, 8).join(" · ")}
-                </p>
-              </div>
-            )}
-            {workSelected.outcomes?.[0] && (
-              <div className="wd-exhibit__block">
-                <span>OUTCOME</span>
-                <p>{workSelected.outcomes[0]}</p>
-              </div>
-            )}
-            <button
-              type="button"
-              className="wd-exhibit__close"
-              onClick={() => setExhibitOpen(false)}
-            >
-              Close notes
+            <button type="button" className="wd-float__action" onClick={closeProject}>
+              Exit system
             </button>
-            <button
-              type="button"
-              className="wd-exhibit__close"
-              onClick={closeProject}
-            >
-              Return to systems
-            </button>
-          </aside>
+          </div>
         )}
 
         {layer === "ai" && !aiMode && modeFromConcept && (
-          <aside className="wd-exhibit is-open is-ready" aria-label="AI mode">
-            <p className="wd-exhibit__code">MODE</p>
-            <h2>{modeFromConcept.label}</h2>
-            <p className="wd-exhibit__story">{modeFromConcept.hint}</p>
+          <div className="wd-float" role="status">
+            <p className="wd-float__kicker">MODE</p>
+            <p className="wd-float__title">{modeFromConcept.label}</p>
+            <p className="wd-float__body">{modeFromConcept.hint}</p>
             <button
               type="button"
-              className="wd-exhibit__close"
+              className="wd-float__action"
               onClick={() => setAiMode(modeFromConcept.id)}
             >
-              Open in field
+              Open
             </button>
-          </aside>
+          </div>
         )}
 
         {layer === "ai" && aiMode && (
@@ -559,37 +480,32 @@ export default function WorldApp() {
         )}
 
         {layer === "experience" && expHover && (
-          <aside className="wd-exhibit is-open is-ready" aria-label="Experience">
-            <p className="wd-exhibit__code">{expHover.year}</p>
-            <h2>{expHover.title}</h2>
-            <p className="wd-exhibit__story">{expHover.focus}</p>
-          </aside>
+          <div className="wd-float" role="status">
+            <p className="wd-float__kicker">{expHover.year}</p>
+            <p className="wd-float__title">{expHover.title}</p>
+            <p className="wd-float__body">{expHover.focus}</p>
+          </div>
         )}
 
         {layer === "about" && (
-          <aside className="wd-exhibit is-open is-ready wd-exhibit--human">
-            <p className="wd-exhibit__code">MANSI</p>
-            <h2>{getAboutHeroLine()}</h2>
-            {ABOUT_ME.slice(0, 2).map((p) => (
-              <div key={p.slice(0, 24)} className="wd-exhibit__block">
-                <p>{p}</p>
-              </div>
-            ))}
-            <p className="wd-exhibit__story">{CURRENT_ROLE}</p>
+          <div className="wd-float wd-float--human" role="status">
+            <p className="wd-float__kicker">MANSI</p>
+            <p className="wd-float__title">{getAboutHeroLine()}</p>
+            <p className="wd-float__body">{ABOUT_ME[0]}</p>
+            <p className="wd-float__body wd-float__quiet">{CURRENT_ROLE}</p>
             {aboutHover && (
-              <div className="wd-exhibit__block">
-                <span>{aboutHover.label}</span>
-                <p>{aboutHover.insight}</p>
-              </div>
+              <p className="wd-float__body">
+                <em>{aboutHover.label}</em> — {aboutHover.insight}
+              </p>
             )}
-          </aside>
+          </div>
         )}
 
         {layer === "contact" && (
-          <aside className="wd-exhibit is-open is-ready">
-            <p className="wd-exhibit__code">SIGNAL</p>
-            <h2>Let&apos;s build what&apos;s next.</h2>
-            <div className="wd-contact-links">
+          <div className="wd-float" role="status">
+            <p className="wd-float__kicker">SIGNAL</p>
+            <p className="wd-float__title">Let&apos;s build what&apos;s next.</p>
+            <div className="wd-float__links">
               <a href={`mailto:${SOCIAL_LINKS.email}`}>Email</a>
               <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noreferrer">
                 LinkedIn
@@ -601,7 +517,7 @@ export default function WorldApp() {
                 Resume
               </a>
             </div>
-          </aside>
+          </div>
         )}
       </div>
     </div>

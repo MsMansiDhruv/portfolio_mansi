@@ -84,19 +84,27 @@ export default function DataGlobe({
   const RIVER = reducedMotion ? 80 : 220;
   const CIRCUIT = 42;
 
-  // Three scales — screen px
-  // ~2–3px micro · ~3–4px signal · crisp, not blobs
-  const SIZE_MICRO = day ? 2.55 : 2.35;
-  const SIZE_SIGNAL = day ? 3.7 : 3.5;
-  const SIZE_RIVER = day ? 3.4 : 3.2;
-  const SIZE_CIRCUIT = day ? 4.2 : 4.0;
+  // Day needs larger, darker grains — light fog washes thin particles away
+  const SIZE_MICRO = day ? 3.6 : 2.9;
+  const SIZE_SIGNAL = day ? 4.8 : 3.9;
+  const SIZE_RIVER = day ? 4.5 : 3.7;
+  const SIZE_CIRCUIT = day ? 5.4 : 4.4;
 
-  const steel = useMemo(() => new THREE.Color(day ? "#2a3340" : "#d0dce8"), [day]);
-  const silver = useMemo(() => new THREE.Color(day ? "#3d4a5a" : "#eef3f8"), [day]);
-  const mute = useMemo(() => new THREE.Color(day ? "#556274" : "#8a9eb2"), [day]);
-  const dataBlue = useMemo(() => new THREE.Color(t.data), [t.data]);
-  const teal = useMemo(() => new THREE.Color(t.transform), [t.transform]);
-  const accent = useMemo(() => new THREE.Color(t.accent), [t.accent]);
+  const steel = useMemo(() => new THREE.Color(day ? "#111820" : "#d0dce8"), [day]);
+  const silver = useMemo(() => new THREE.Color(day ? "#1a2430" : "#eef3f8"), [day]);
+  const mute = useMemo(() => new THREE.Color(day ? "#2c3a48" : "#8a9eb2"), [day]);
+  const dataBlue = useMemo(
+    () => new THREE.Color(day ? "#1a4f9c" : t.data),
+    [day, t.data]
+  );
+  const teal = useMemo(
+    () => new THREE.Color(day ? "#0f6563" : t.transform),
+    [day, t.transform]
+  );
+  const accent = useMemo(
+    () => new THREE.Color(day ? "#8f6418" : t.accent),
+    [day, t.accent]
+  );
   const tmpC = useRef(new THREE.Color());
 
   useMemo(() => {
@@ -524,8 +532,12 @@ export default function DataGlobe({
       }
       microRef.current.geometry.attributes.position.needsUpdate = true;
       microRef.current.geometry.attributes.color.needsUpdate = true;
-      microRef.current.material.opacity =
-        (0.78 + reveal.current * 0.2) * (inPipeline ? 0.06 : 1 - dec * 0.3);
+      microRef.current.material.opacity = Math.min(
+        1,
+        (0.88 + reveal.current * 0.12) *
+          (day ? 1.08 : 1) *
+          (inPipeline ? 0.06 : 1 - dec * 0.3)
+      );
       microRef.current.material.size = SIZE_MICRO * (1 + e * 0.04);
     }
 
@@ -556,7 +568,10 @@ export default function DataGlobe({
       signalRef.current.geometry.attributes.position.needsUpdate = true;
       signalRef.current.geometry.attributes.color.needsUpdate = true;
       signalRef.current.material.opacity =
-        reveal.current * riverAwake.current * 0.55 * (1 - dec * 0.6);
+        reveal.current *
+        riverAwake.current *
+        (day ? 0.92 : 0.55) *
+        (1 - dec * 0.6);
       signalRef.current.material.size = SIZE_SIGNAL;
       signalRef.current.visible = !inPipeline;
     }
@@ -593,7 +608,10 @@ export default function DataGlobe({
       riverRef.current.geometry.attributes.position.needsUpdate = true;
       riverRef.current.geometry.attributes.color.needsUpdate = true;
       riverRef.current.material.opacity =
-        reveal.current * riverAwake.current * (0.35 + secretWake.current * 0.35) * (1 - dec * 0.5);
+        reveal.current *
+        riverAwake.current *
+        (day ? 0.72 : 0.35 + secretWake.current * 0.35) *
+        (1 - dec * 0.5);
       riverRef.current.material.size = SIZE_RIVER * (1 + secretWake.current * 0.1);
       riverRef.current.visible = !inPipeline;
     }
@@ -643,7 +661,7 @@ export default function DataGlobe({
           transparent
           opacity={0.88}
           depthWrite={false}
-          alphaTest={0.35}
+          alphaTest={day ? 0.2 : 0.35}
           toneMapped={false}
         />
       </points>

@@ -8,6 +8,7 @@ import {
   ORBITS,
   TECH_NODES,
   TECH_LINKS,
+  TECH_META,
   THEME,
   INFRA_WAKE,
   orbitPosition,
@@ -55,7 +56,16 @@ function nodeWorldPos(node, orbitPhase) {
  * NODE = precision point + optional targeting ring (LINE).
  * No cubes, spheres, or decorative meshes.
  */
-function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
+function TechNode({
+  node,
+  themeId,
+  hot,
+  selected,
+  dimmed,
+  stateRef,
+  onHover,
+  onSelect,
+}) {
   const ref = useRef();
   const point = useRef();
   const livePos = useRef([0, 0, 0]);
@@ -63,8 +73,10 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
   const map = useMemo(() => cellMap(), []);
   const t = THEME[themeId] || THEME.night;
   const isCore = node.tier === "core";
-  // SYSTEM NODE — 6–10px
-  const size = isCore ? 9.5 : 7;
+  // SYSTEM NODE — 6–10px (day slightly larger for contrast)
+  const size = isCore ? (themeId === "day" ? 11 : 9.5) : themeId === "day" ? 8.5 : 7;
+  const meta = TECH_META[node.id];
+  const awake = hot || selected;
 
   useFrame((state, dt) => {
     if (!ref.current) return;
@@ -75,22 +87,29 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
     const pos = orbitPosition(node.orbit, node.angle + (phase[node.orbit] || 0));
     livePos.current = pos;
     // Heartbeat only on selected / hovered node — propagates via wake
-    pulse.current = hot
+    pulse.current = awake
       ? 0.5 + Math.sin(state.clock.elapsedTime * 3.2) * 0.5
       : 0;
-    const s = (hot ? 1.25 + pulse.current * 0.14 : dimmed ? 0.68 : 1) * reveal;
+    const s =
+      (awake ? 1.35 + pulse.current * 0.16 : dimmed ? 0.62 : 1) * reveal;
     ref.current.scale.setScalar(
       THREE.MathUtils.damp(ref.current.scale.x || 0.001, Math.max(0.001, s), 6, d)
     );
     ref.current.position.set(pos[0], pos[1], pos[2]);
     if (point.current?.material) {
-      // DORMANT → DISCOVERED → CONNECTED
-      const baseOp = dimmed ? 0.12 : 0.22 + colourWake * 0.35;
-      point.current.material.opacity = 0.15 + reveal * (hot ? 0.85 : baseOp);
+      // DORMANT → DISCOVERED → CONNECTED / PORTAL
+      const baseOp = dimmed ? 0.1 : 0.28 + colourWake * 0.4;
+      point.current.material.opacity =
+        0.18 + reveal * (awake ? 0.92 : baseOp);
       point.current.material.size =
-        size * (hot ? 1.2 + pulse.current * 0.12 : dimmed ? 0.75 : 0.9);
+        size *
+        (awake ? 1.28 + pulse.current * 0.14 : dimmed ? 0.7 : 0.95);
       point.current.material.color.set(
-        hot ? t.accent : colourWake > 0.35 || !dimmed ? t.steel : t.steel
+        selected
+          ? t.accent
+          : hot
+            ? semanticColor(node.kind, themeId, 1)
+            : t.steel
       );
     }
   });
@@ -135,17 +154,30 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
         <sphereGeometry args={[0.2, 8, 8]} />
         <meshBasicMaterial />
       </mesh>
-      {hot && (
+      {awake && (
         <Text
-          position={[0, 0.16, 0]}
-          fontSize={0.055}
+          position={[0, selected ? 0.22 : 0.16, 0]}
+          fontSize={selected ? 0.062 : 0.052}
           color={t.ink}
           anchorX="center"
           anchorY="bottom"
-          outlineWidth={0.0025}
+          outlineWidth={0.003}
           outlineColor={t.bg}
         >
           {node.label.toUpperCase()}
+        </Text>
+      )}
+      {selected && meta && (
+        <Text
+          position={[0, 0.12, 0]}
+          fontSize={0.038}
+          color={semanticColor(node.kind, themeId, 1)}
+          anchorX="center"
+          anchorY="top"
+          outlineWidth={0.002}
+          outlineColor={t.bg}
+        >
+          {meta.role}
         </Text>
       )}
     </group>
@@ -159,6 +191,7 @@ function TechNode({ node, themeId, hot, dimmed, stateRef, onHover, onSelect }) {
 export default function TechConstellation({
   themeId,
   hoverId,
+  selectedId = null,
   onHover,
   onSelect,
   stateRef,
@@ -169,7 +202,8 @@ export default function TechConstellation({
   const flowRef = useRef();
   const linkMats = useRef([]);
   const t = THEME[themeId] || THEME.night;
-  const net = connectedIds(hoverId);
+  const activeId = selectedId || hoverId;
+  const net = connectedIds(activeId);
   const nodePosCache = useRef({});
   const inWork = layer === "work";
   const flowMap = useMemo(() => cellMap(), []);
@@ -288,10 +322,11 @@ export default function TechConstellation({
         // Arcs only when relationship matters — idle nearly invisible
         const related = !!net && (net.has(tr.a) || net.has(tr.b));
         const selectedHot = !!net;
+        const portalBoost = selectedId ? 1.35 : 1;
         const target = selectedHot
           ? related
-            ? streamReveal * reveal * layerFade * (0.55 + colourWake * 0.35)
-            : 0.01 * reveal
+            ? streamReveal * reveal * layerFade * (0.62 + colourWake * 0.35) * portalBoost
+            : 0.008 * reveal
           : streamReveal * reveal * layerFade * (tr.important ? 0.018 : 0.004);
         mat.opacity = THREE.MathUtils.damp(mat.opacity, target, 5, d);
         const c = new THREE.Color(
@@ -336,14 +371,16 @@ export default function TechConstellation({
       flowRef.current.material.opacity = net
         ? streamReveal * layerFade * 0.9
         : 0;
-      flowRef.current.material.size = net ? 2.4 : 1.6;
+      flowRef.current.material.size = net ? (selectedId ? 3.2 : 2.6) : 1.6;
     }
 
     if (stateRef?.current) {
-      stateRef.current.wake = hoverId
-        ? 1
+      stateRef.current.wake = activeId
+        ? selectedId
+          ? 1
+          : 0.85
         : THREE.MathUtils.damp(stateRef.current.wake || 0, 0, 2, d);
-      stateRef.current.infraWake = hoverId ? INFRA_WAKE[hoverId] || null : null;
+      stateRef.current.infraWake = activeId ? INFRA_WAKE[activeId] || null : null;
       stateRef.current.orbitPhase = { ...orbitPhase.current };
     }
 
@@ -385,7 +422,8 @@ export default function TechConstellation({
           key={node.id}
           node={node}
           themeId={themeId}
-          hot={hoverId === node.id}
+          hot={hoverId === node.id || selectedId === node.id}
+          selected={selectedId === node.id}
           dimmed={!!net && !net.has(node.id)}
           stateRef={stateRef}
           onHover={onHover}

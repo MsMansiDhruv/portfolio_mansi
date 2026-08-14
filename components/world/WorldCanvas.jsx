@@ -51,6 +51,7 @@ export default function WorldCanvas({
   cursorRef,
   stateRef,
   techHover,
+  focusedTechId = null,
   onTechHover,
   onTechSelect,
   workHover,
@@ -128,6 +129,7 @@ export default function WorldCanvas({
                 key={`tech-${themeId}`}
                 themeId={themeId}
                 hoverId={techHover}
+                selectedId={focusedTechId}
                 onHover={onTechHover}
                 onSelect={(node, pos) => {
                   onTechSelect?.(node, [pos[0] + 1.2, pos[1] + 0.02, pos[2]]);
