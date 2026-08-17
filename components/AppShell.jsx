@@ -10,7 +10,6 @@ import PageTransition from "@/components/PageTransition";
 import ScrollToTop from "@/components/ScrollToTop";
 import { cn } from "@/lib/cn";
 import "@/styles/mansi-world.css";
-import "@/styles/mansi-experience.css";
 
 function ShellBody({ children, isLiving, showChrome, onCommandOpen }) {
   const { isDark } = useTheme();
@@ -18,9 +17,9 @@ function ShellBody({ children, isLiving, showChrome, onCommandOpen }) {
   return (
     <div
       className={cn(
-        "flex min-h-screen min-w-0 flex-col overflow-x-hidden transition-colors duration-700",
+        "flex min-h-screen min-w-0 flex-col overflow-x-hidden",
         isLiving
-          ? "bg-[var(--mx-ink,#0c121c)] text-[var(--mx-ivory,#f0f4f9)]"
+          ? "bg-transparent text-[var(--wd-ink,#f2f6fa)]"
           : "story-page mansi-world bg-[var(--story-midnight)] text-[var(--story-ivory)]"
       )}
       data-shell-theme={isDark ? "dark" : "light"}
@@ -29,7 +28,7 @@ function ShellBody({ children, isLiving, showChrome, onCommandOpen }) {
 
       <main className="min-w-0 w-full flex-grow">
         <div className="min-w-0 max-w-none px-0 py-0">
-          <PageTransition>{children}</PageTransition>
+          {isLiving ? children : <PageTransition>{children}</PageTransition>}
         </div>
       </main>
 
@@ -44,24 +43,28 @@ export default function AppShell({ children }) {
   const isAiLab = pathname?.startsWith("/tools/ai-lab");
   const isHome = pathname === "/";
   const isSister = pathname === "/sister";
+  const isLab = pathname?.startsWith("/lab/");
+  const isPortraitTest = pathname === "/particle-portrait-test";
   const isWork = pathname === "/projects" || pathname?.startsWith("/projects/");
-  const isLiving = isHome || isWork || isAiLab;
-  const showChrome = !isLiving;
+  const isJourney = pathname?.startsWith("/credentials") || pathname?.startsWith("/certification");
+  const isContact = pathname === "/contact";
+  const isLiving = isHome || isWork || isAiLab || isJourney || isContact;
+  const showChrome = !isLiving && !isLab && !isPortraitTest;
 
   useEffect(() => {
     document.getElementById("gpu-sparks-canvas")?.remove();
   }, [pathname]);
 
-  if (isSister) {
+  if (isSister || isLab || isPortraitTest) {
     return (
-      <DSv2ThemeProvider defaultTheme="system" storageKey="ds-v2-theme">
+      <DSv2ThemeProvider defaultTheme="dark" storageKey="ds-v2-theme">
         {children}
       </DSv2ThemeProvider>
     );
   }
 
   return (
-    <DSv2ThemeProvider defaultTheme="system" storageKey="ds-v2-theme">
+    <DSv2ThemeProvider defaultTheme="dark" storageKey="ds-v2-theme">
       <ShellBody isLiving={isLiving} showChrome={showChrome} onCommandOpen={() => setCommandOpen(true)}>
         {children}
       </ShellBody>

@@ -17,7 +17,7 @@ export const SEMANTIC_WORDS = [
   {
     id: "model",
     label: "MODEL",
-    links: ["reason", "evaluation", "pipeline"],
+    links: ["reason", "evaluation", "pipeline", "sql"],
     mode: "pipeline",
   },
   {
@@ -35,8 +35,14 @@ export const SEMANTIC_WORDS = [
   {
     id: "pipeline",
     label: "PIPELINE",
-    links: ["model", "agent", "cost"],
+    links: ["model", "agent", "cost", "sql"],
     mode: "pipeline",
+  },
+  {
+    id: "sql",
+    label: "SQL",
+    links: ["model", "pipeline"],
+    mode: "sql",
   },
   {
     id: "architecture",

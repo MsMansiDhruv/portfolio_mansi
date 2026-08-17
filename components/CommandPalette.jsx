@@ -35,6 +35,20 @@ const commands = [
     icon: Tag,
   },
   {
+    id: "certification",
+    label: "Certifications",
+    description: "Awards, credentials, and learning record",
+    href: "/certification",
+    icon: Tag,
+  },
+  {
+    id: "testimonials",
+    label: "Testimonials",
+    description: "What collaborators say",
+    href: "/credentials#recommendations",
+    icon: Tag,
+  },
+  {
     id: "contact",
     label: "Contact",
     description: "Open the contact page",

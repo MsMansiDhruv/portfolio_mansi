@@ -36,6 +36,13 @@ function hash(i) {
   return Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
 }
 
+function seedAwareSignalColor(index, steel, dataBlue, accent) {
+  const seed = hash(index * 1.731 + 9.17);
+  const color = steel.clone().lerp(dataBlue, 0.2 + seed * 0.12);
+  if (seed > 0.78) color.lerp(accent, 0.3);
+  return color;
+}
+
 function onSphere(lat, lon, r) {
   const phi = ((90 - lat) * Math.PI) / 180;
   const th = ((lon + 180) * Math.PI) / 180;
@@ -59,17 +66,20 @@ export default function DataGlobe({
 }) {
   const group = useRef();
   const microRef = useRef();
-  const signalRef = useRef();
-  const riverRef = useRef();
-  const circuitRef = useRef();
   const energy = useRef(0.02);
   const reveal = useRef(0);
   const density = useRef(0.2);
   const secretWake = useRef(0);
   const decompose = useRef(0);
   const riverAwake = useRef(0);
-  const orient = useRef({ x: 0.015, y: 0.01 });
-  const target = useRef({ x: 0.015, y: 0.01 });
+  const scrollWake = useRef(0);
+  const signalCurrent = useRef(0);
+  const aiThought = useRef(0);
+  const shapeProgress = useRef(0);
+  const assemble = useRef(0);
+  const groupPos = useRef({ x: 0, y: 0, z: 0 });
+  const orient = useRef({ x: 0.08, y: 0.22 });
+  const target = useRef({ x: 0.08, y: 0.22 });
   const vel = useRef({ x: 0, y: 0 }); // spring inertia for field
   const worldTmp = useRef(new THREE.Vector3());
   const ndcTmp = useRef(new THREE.Vector3());
@@ -78,31 +88,46 @@ export default function DataGlobe({
   const t = THEME[themeId] || THEME.night;
   const day = themeId === "day";
   const map = useMemo(() => grainTex(), []);
+  const compactViewport = useMemo(
+    () => typeof window !== "undefined" && window.innerWidth < 768,
+    []
+  );
+  const quality = useMemo(() => {
+    if (typeof window === "undefined") return 1;
+    const mobile = window.innerWidth < 768;
+    const memory = navigator.deviceMemory || 8;
+    if (reducedMotion) return 0.5;
+    if (mobile) return 0.58;
+    if (memory <= 4) return 0.78;
+    return 1;
+  }, [reducedMotion]);
 
-  const MICRO = reducedMotion ? 1100 : 2800;
-  const SIGNAL = reducedMotion ? 50 : 110;
-  const RIVER = reducedMotion ? 80 : 220;
-  const CIRCUIT = 42;
+  const MICRO = Math.max(1200, Math.round((reducedMotion ? 1500 : 5800) * quality));
+  const SIGNAL = Math.max(42, Math.round((reducedMotion ? 56 : 116) * quality));
+  const RIVER = Math.max(96, Math.round((reducedMotion ? 96 : 300) * quality));
+  const CIRCUIT = Math.max(24, Math.round(42 * quality));
 
-  // Day needs larger, darker grains — light fog washes thin particles away
-  const SIZE_MICRO = day ? 3.6 : 2.9;
-  const SIZE_SIGNAL = day ? 4.8 : 3.9;
-  const SIZE_RIVER = day ? 4.5 : 3.7;
-  const SIZE_CIRCUIT = day ? 5.4 : 4.4;
+  // A larger, evenly distributed shell reads as a designed object at distance.
+  // A little larger than a conventional point cloud so the field reads as
+  // individual matter, not static grain. It stays screen-space crisp.
+  const SIZE_MICRO = day ? 6.2 : 5.2;
+  const SIZE_SIGNAL = day ? 6.1 : 5.45;
+  const SIZE_RIVER = day ? 6.1 : 5.45;
+  const SIZE_CIRCUIT = day ? 6.8 : 6.05;
 
-  const steel = useMemo(() => new THREE.Color(day ? "#111820" : "#d0dce8"), [day]);
-  const silver = useMemo(() => new THREE.Color(day ? "#1a2430" : "#eef3f8"), [day]);
-  const mute = useMemo(() => new THREE.Color(day ? "#2c3a48" : "#8a9eb2"), [day]);
+  const steel = useMemo(() => new THREE.Color(day ? "#5a6a7c" : "#f6f4f2"), [day]);
+  const silver = useMemo(() => new THREE.Color(day ? "#6d7f93" : "#ddd8eb"), [day]);
+  const mute = useMemo(() => new THREE.Color(day ? "#8a98a8" : "#77718b"), [day]);
   const dataBlue = useMemo(
-    () => new THREE.Color(day ? "#1a4f9c" : t.data),
+    () => new THREE.Color(day ? "#6d63a9" : t.data),
     [day, t.data]
   );
   const teal = useMemo(
-    () => new THREE.Color(day ? "#0f6563" : t.transform),
+    () => new THREE.Color(day ? "#4d9bda" : t.transform),
     [day, t.transform]
   );
   const accent = useMemo(
-    () => new THREE.Color(day ? "#8f6418" : t.accent),
+    () => new THREE.Color(day ? "#bd629d" : t.accent),
     [day, t.accent]
   );
   const tmpC = useRef(new THREE.Color());
@@ -121,6 +146,7 @@ export default function DataGlobe({
     roles,
     clusterIdx,
     opacBase,
+    shapeTargets,
     rivers,
     circuitCurve,
     velBuf,
@@ -209,7 +235,9 @@ export default function DataGlobe({
       let cIdx = -1;
       let opa = 0.55 + hash(i + 9) * 0.45;
 
-      if (h < 0.42) {
+      // A precise shell carries the silhouette. Denser "weather" clusters
+      // are accents within it, not the object itself.
+      if (h < 0.16) {
         const w = weather[i % weather.length];
         if (hash(i + 2) > w.dens) continue;
         const a = hash(i + 7) * Math.PI * 2;
@@ -221,7 +249,7 @@ export default function DataGlobe({
         role = 1;
         cIdx = i % 4;
         opa = 0.65 + hash(i + 15) * 0.35;
-      } else if (h < 0.52) {
+      } else if (h < 0.25) {
         const riv = rivers[i % rivers.length];
         const u = hash(i + 17);
         const p = riv.curve.getPoint(u);
@@ -234,7 +262,7 @@ export default function DataGlobe({
         role = 2;
         cIdx = i % 4;
         opa = 0.75;
-      } else if (h < 0.62) {
+      } else if (h < 0.3) {
         // Quiet voids — interior emptiness, not broken silhouette
         if (hash(i + 29) < 0.82) continue;
         const lat = (hash(i + 33) - 0.5) * 160;
@@ -247,7 +275,7 @@ export default function DataGlobe({
         opa = 0.25 + hash(i + 45) * 0.25;
       } else {
         // Complete spherical silhouette — denser than voids, quieter than islands
-        if (hash(i + 29) < 0.22) continue;
+        if (hash(i + 29) < 0.1) continue;
         const yy = 1 - (mi / Math.max(1, MICRO - 1)) * 2;
         const rr = Math.sqrt(Math.max(0, 1 - yy * yy));
         const theta = Math.PI * (3 - Math.sqrt(5)) * mi;
@@ -257,7 +285,7 @@ export default function DataGlobe({
         z = Math.sin(theta) * rr * r;
         role = 0;
         cIdx = Math.floor(((Math.atan2(z, x) + Math.PI) / (Math.PI * 2)) * 4) % 4;
-        opa = 0.45 + hash(i + 50) * 0.4;
+        opa = 0.52 + hash(i + 50) * 0.42;
       }
 
       // Enforce spherical silhouette
@@ -327,6 +355,42 @@ export default function DataGlobe({
     }
 
     const trim = (arr, n) => arr.subarray(0, n * 3).slice();
+    const basePoints = trim(microBase, mi);
+    // Shape targets are generated once. Keeping the transition as typed-array
+    // interpolation avoids per-frame allocations while thousands of particles
+    // are in flight.
+    const shapeTargets = {
+      world: basePoints,
+      work: new Float32Array(mi * 3),
+      ai: new Float32Array(mi * 3),
+      experience: new Float32Array(mi * 3),
+      about: new Float32Array(mi * 3),
+      contact: new Float32Array(mi * 3),
+    };
+    for (let i = 0; i < mi; i++) {
+      const i3 = i * 3;
+      const seed = microSeeds[i];
+      const p = seed * Math.PI * 2;
+      const lane = (Math.floor(hash(i + 71) * 5) - 2) * 0.56;
+      shapeTargets.work[i3] = lane + Math.sin(seed * 73) * 0.12;
+      shapeTargets.work[i3 + 1] = (hash(i + 19) - 0.5) * 3.45;
+      shapeTargets.work[i3 + 2] = (hash(i + 43) - 0.5) * 2.2;
+      const turn = seed * Math.PI * 9;
+      shapeTargets.ai[i3] = Math.cos(turn) * 1.08;
+      shapeTargets.ai[i3 + 1] = (seed - 0.5) * 3.8;
+      shapeTargets.ai[i3 + 2] = Math.sin(turn) * 1.08 + (i % 2 ? 0.13 : -0.13);
+      shapeTargets.experience[i3] = (seed - 0.5) * 4.4;
+      shapeTargets.experience[i3 + 1] = Math.sin(seed * Math.PI * 8) * 0.52 + lane * 0.16;
+      shapeTargets.experience[i3 + 2] = Math.cos(seed * Math.PI * 6) * 0.68;
+      const radius = 0.8 + hash(i + 31) * 1.05;
+      shapeTargets.about[i3] = Math.cos(p * 3) * radius;
+      shapeTargets.about[i3 + 1] = Math.sin(p * 2) * radius * 0.78;
+      shapeTargets.about[i3 + 2] = Math.sin(p * 5) * 0.72;
+      const ring = 1.05 + hash(i + 5) * 0.34;
+      shapeTargets.contact[i3] = Math.cos(p) * ring;
+      shapeTargets.contact[i3 + 1] = Math.sin(p) * ring;
+      shapeTargets.contact[i3 + 2] = (hash(i + 37) - 0.5) * 0.34;
+    }
     const mg = new THREE.BufferGeometry();
     mg.setAttribute("position", new THREE.BufferAttribute(trim(microPos, mi), 3));
     mg.setAttribute("color", new THREE.BufferAttribute(trim(microCol, mi), 3));
@@ -345,16 +409,19 @@ export default function DataGlobe({
       signalGeom: sg,
       riverGeom: rg,
       circuitGeom: cg,
-      baseMicro: trim(microBase, mi),
+      baseMicro: basePoints,
       seeds: microSeeds.subarray(0, mi).slice(),
       roles: microRoles.subarray(0, mi).slice(),
       clusterIdx: microCluster.subarray(0, mi).slice(),
       opacBase: microOpac.subarray(0, mi).slice(),
+      shapeTargets,
       rivers,
       circuitCurve,
       velBuf: velBuf.subarray(0, mi * 3),
     };
-  }, [MICRO, SIGNAL, RIVER, CIRCUIT, steel, silver, mute, accent]);
+  // Theme changes are material-only. Keeping this geometry stable preserves
+  // the living particle field, its velocity, and its current scroll state.
+  }, [MICRO, SIGNAL, RIVER, CIRCUIT]);
 
   useFrame((state, delta) => {
     if (!group.current) return;
@@ -365,55 +432,77 @@ export default function DataGlobe({
     const wake = stateRef?.current?.wake || 0;
     const inWork = layer === "work";
     const inAi = layer === "ai";
-    const inExp = layer === "experience";
-    const inAbout = layer === "about";
-    const inContact = layer === "contact";
     const inPipeline = !!stateRef?.current?.pipelineActive;
+    const aiConsoleOpen = !!stateRef?.current?.aiConsoleOpen;
+    const aiThinking = !!stateRef?.current?.aiThinking;
+    const scrollVelocity = stateRef?.current?.scrollVelocity || 0;
+    const scrollProgress = stateRef?.current?.scrollProgress || 0;
+    scrollWake.current = THREE.MathUtils.damp(scrollWake.current, Math.min(1, Math.abs(scrollVelocity) * 1.4), 4.5, dt);
+    aiThought.current = THREE.MathUtils.damp(aiThought.current, aiThinking ? 1 : 0, aiThinking ? 3.5 : 1.25, dt);
+    const thought = aiThought.current;
+    // Signal Current: a narrow, particle-only route that eases in under the
+    // pointer and becomes a quieter ambient circulation after selection.
+    const currentTarget = cursor?.active && !inPipeline ? 1 : inPipeline ? 0.24 : 0;
+    signalCurrent.current = THREE.MathUtils.damp(
+      signalCurrent.current,
+      currentTarget,
+      currentTarget > signalCurrent.current ? 4.1 : 1.25,
+      dt
+    );
+
+    const layerOrder = ["world", "work", "ai", "experience", "about", "contact"];
+    const targetProgress =
+      typeof stateRef?.current?.shapeProgress === "number"
+        ? stateRef.current.shapeProgress
+        : Math.max(0, layerOrder.indexOf(layer));
+    shapeProgress.current = THREE.MathUtils.damp(shapeProgress.current, targetProgress, 2.05, dt);
+    const span = Math.max(1, layerOrder.length - 1);
+    const p = THREE.MathUtils.clamp(shapeProgress.current, 0, span);
+    const fromIndex = Math.min(Math.floor(p), span);
+    const toIndex = Math.min(fromIndex + 1, span);
+    const fromId = layerOrder[fromIndex];
+    const toId = layerOrder[toIndex];
+    const alignment = THREE.MathUtils.smoothstep(p - fromIndex, 0, 1);
+
+    const assembleTarget =
+      typeof stateRef?.current?.assemble === "number"
+        ? stateRef.current.assemble
+        : 1;
+    assemble.current += (assembleTarget - assemble.current) * Math.min(1, 1 - Math.exp(-dt * 5.4));
+    if (assembleTarget > 0.995 && assemble.current > 0.985) assemble.current = 1;
+
+    const forming = assemble.current < 0.995;
+    const scatter = Math.pow(Math.max(0, 1 - assemble.current), 2.15);
 
     decompose.current = THREE.MathUtils.damp(
       decompose.current,
-      inWork && !inPipeline ? 1 : inPipeline ? 0.12 : inAi || inExp ? 0.35 : 0,
+      inPipeline ? 0.12 : inWork ? 0.18 : inAi ? 0.1 : 0,
       1.4,
       dt
     );
     const dec = decompose.current;
 
     // Same material — different world states
-    const densTarget = inPipeline
-      ? 0.04
-      : inAbout
-        ? 0.12
-        : inContact
-          ? 0.22
-          : inAi
-            ? 0.28
-            : inExp
-              ? 0.32
-              : inWork
-                ? 0.5
-                : story === "silence"
-                  ? 0.28
-                  : story === "emergence"
-                    ? 0.55
-                    : story === "connection"
-                      ? 0.78
-                      : 1;
-    density.current = THREE.MathUtils.damp(density.current, densTarget, 1.15, dt);
-    reveal.current = THREE.MathUtils.damp(
-      reveal.current,
-      story === "silence" && !inWork ? 0.45 : densTarget,
-      1.7,
-      dt
-    );
+    const densTarget = forming
+      ? 0.92
+      : inPipeline
+        ? 0.28
+      : aiConsoleOpen
+        ? aiThinking ? 0.84 : 0.58
+      : inWork
+        ? 0.82
+        : inAi
+          ? 0.9
+          : 1;
+    density.current = THREE.MathUtils.damp(density.current, densTarget, 1.35, dt);
+    reveal.current = THREE.MathUtils.damp(reveal.current, forming ? 0.92 : densTarget, 1.55, dt);
 
-    // Opening: first river awakens, then field
-    const riverTarget =
-      story === "silence" ? 0.15 : story === "emergence" ? 0.55 : 1;
+    const riverTarget = forming ? 0.72 : story === "silence" ? 0.15 : story === "emergence" ? 0.55 : 1;
     riverAwake.current = THREE.MathUtils.damp(riverAwake.current, riverTarget, 1.2, dt);
 
-    if (cursor?.active && (story === "explore" || story === "identity") && !inWork) {
-      target.current.y = cursor.nx * 0.05;
-      target.current.x = 0.015 + cursor.ny * 0.04;
+    if (!forming && cursor?.active && (story === "explore" || story === "identity") && !inWork) {
+      target.current.y = cursor.nx * Math.PI;
+      target.current.x = THREE.MathUtils.clamp(0.08 + cursor.ny * 0.72, -0.9, 0.9);
       energy.current = THREE.MathUtils.damp(
         energy.current,
         0.28 + Math.min(0.25, Math.hypot(cursor.vx, cursor.vy) * 0.01),
@@ -421,28 +510,32 @@ export default function DataGlobe({
         dt
       );
     } else {
-      target.current.y = THREE.MathUtils.damp(target.current.y, 0.01, 0.9, dt);
-      target.current.x = THREE.MathUtils.damp(target.current.x, 0.015, 0.9, dt);
+      target.current.y = THREE.MathUtils.damp(target.current.y, 0.22, 0.9, dt);
+      target.current.x = THREE.MathUtils.damp(target.current.x, 0.08, 0.9, dt);
       energy.current = THREE.MathUtils.damp(energy.current, 0.02 + wake * 0.2, 1.5, dt);
     }
 
-    // Spring orient — no continuous spin show
-    vel.current.x += (target.current.x - orient.current.x) * 4.5 * dt;
-    vel.current.y += (target.current.y - orient.current.y) * 4.5 * dt;
-    vel.current.x *= 0.86;
-    vel.current.y *= 0.86;
-    orient.current.x += vel.current.x * dt * 18;
-    orient.current.y += vel.current.y * dt * 18;
+    // Globe rotation follows cursor directly, with damping on the object itself
+    vel.current.x += (target.current.x - orient.current.x) * 3.8 * dt;
+    vel.current.y += (target.current.y - orient.current.y) * 3.2 * dt;
+    vel.current.x *= 0.82;
+    vel.current.y *= 0.82;
+    orient.current.x += vel.current.x * dt * 14;
+    orient.current.y += vel.current.y * dt * 14;
     group.current.rotation.x = orient.current.x;
-    group.current.rotation.y = orient.current.y + Math.sin(time * 0.012) * 0.004;
+    group.current.rotation.y = orient.current.y;
     const scaleBase = 0.78 + reveal.current * 0.22;
-    let scaleMul = THREE.MathUtils.lerp(scaleBase, 1.45, dec * 0.65);
-    if (inAi) scaleMul = THREE.MathUtils.lerp(scaleBase, 1.15, 0.7);
-    if (inExp) scaleMul = THREE.MathUtils.lerp(scaleBase, 0.85, 0.6);
-    if (inAbout) scaleMul = THREE.MathUtils.lerp(scaleBase, 0.55, 0.8);
-    if (inContact) scaleMul = THREE.MathUtils.lerp(scaleBase, 0.7, 0.5);
+    let scaleMul = THREE.MathUtils.lerp(scaleBase, 1.06, dec * 0.35);
+    if (aiConsoleOpen) scaleMul = THREE.MathUtils.lerp(scaleBase, 0.9, 0.7);
+    // Portrait screens need a deliberately composed, breathing object rather
+    // than a desktop globe cropped by the narrow viewport.
+    if (compactViewport) scaleMul *= 0.62;
     group.current.scale.setScalar(scaleMul);
-    group.current.position.set(0, inAbout ? 0.15 : 0, inAi ? -0.2 : 0);
+    const gx = aiConsoleOpen ? -1.55 : inAi ? 1.45 : 0;
+    const gy = compactViewport ? 0.36 : 0;
+    groupPos.current.x = THREE.MathUtils.damp(groupPos.current.x, gx, 1.85, dt);
+    groupPos.current.y = THREE.MathUtils.damp(groupPos.current.y, gy, 1.85, dt);
+    group.current.position.set(groupPos.current.x, groupPos.current.y, 0);
     group.current.updateMatrixWorld();
 
     let nearSecret = 0;
@@ -464,6 +557,38 @@ export default function DataGlobe({
         let x = baseMicro[i3];
         let y = baseMicro[i3 + 1];
         let z = baseMicro[i3 + 2];
+        let currentInfluence = 0;
+        let thinkingInfluence = 0;
+
+        // Scroll chapters blend as one continuous field — no burst, no void.
+        {
+          const from = shapeTargets[fromId] || baseMicro;
+          const next = shapeTargets[toId] || baseMicro;
+          x = THREE.MathUtils.lerp(from[i3], next[i3], alignment);
+          y = THREE.MathUtils.lerp(from[i3 + 1], next[i3 + 1], alignment);
+          z = THREE.MathUtils.lerp(from[i3 + 2], next[i3 + 2], alignment);
+          const scatterAmt = scatter;
+          if (scatterAmt > 0.002) {
+            const flare = 1 + scatterAmt * (3.6 + seed * 4.4);
+            x *= flare;
+            y *= flare * (0.82 + seed * 0.35);
+            z *= flare;
+          }
+        }
+
+        // A response is composed by the same intelligence seen at left: the
+        // spiral fills from its base, travels upward, then quietly settles.
+        // No separate loading ornament is rendered in the chat surface.
+        if (thought > 0.002 && aiConsoleOpen) {
+          const flowingSeed = (seed + time * 0.115) % 1;
+          const turn = flowingSeed * Math.PI * 9;
+          const radius = 1.08 + Math.sin(time * 4.2 + seed * 38) * 0.075 * thought;
+          x = THREE.MathUtils.lerp(x, Math.cos(turn) * radius, thought * 0.82);
+          y = THREE.MathUtils.lerp(y, (flowingSeed - 0.5) * 3.8, thought * 0.82);
+          z = THREE.MathUtils.lerp(z, Math.sin(turn) * radius + (i % 2 ? 0.13 : -0.13), thought * 0.82);
+          const band = Math.abs(flowingSeed - 0.5);
+          thinkingInfluence = Math.pow(Math.max(0, 1 - band / 0.16), 2) * thought;
+        }
 
         // Quiet weather drift
         if (!reducedMotion && !inWork) {
@@ -479,6 +604,36 @@ export default function DataGlobe({
           x = THREE.MathUtils.lerp(x, a.x + (seed - 0.5) * 0.6, pull);
           y = THREE.MathUtils.lerp(y, a.y + (hash(i + 2) - 0.5) * 0.45, pull);
           z = THREE.MathUtils.lerp(z, a.z + (hash(i + 5) - 0.5) * 0.4, pull);
+        }
+
+        if (signalCurrent.current > 0.008) {
+          // z is the route's depth parameter, so the current actually passes
+          // through the volume instead of drawing a line on top of the shell.
+          const routeT = THREE.MathUtils.clamp((z + 1.9) / 3.8, 0, 1);
+          const pointerX = cursor?.active ? cursor.nx * 0.76 : 0.14;
+          const pointerY = cursor?.active ? cursor.ny * 0.46 : -0.04;
+          const routeX = pointerX + Math.sin(routeT * Math.PI * 1.15 + time * 0.16) * 0.46;
+          const routeY = pointerY + Math.cos(routeT * Math.PI * 1.7 + time * 0.13) * 0.31;
+          const routeDistance = Math.hypot(x - routeX, y - routeY);
+          const routeWidth = reducedMotion ? 0.19 : 0.145;
+          currentInfluence = Math.pow(
+            Math.max(0, 1 - routeDistance / routeWidth),
+            2
+          ) * signalCurrent.current;
+
+          if (currentInfluence > 0.001) {
+            // Barely pull neighbouring matter into the route, then advect it
+            // forward. This creates a dense current without a rendered tube.
+            x = THREE.MathUtils.lerp(x, routeX, currentInfluence * 0.075);
+            y = THREE.MathUtils.lerp(y, routeY, currentInfluence * 0.075);
+            if (!reducedMotion) {
+              const tangentX = Math.cos(routeT * Math.PI * 1.15 + time * 0.16) * 0.16;
+              const tangentY = -Math.sin(routeT * Math.PI * 1.7 + time * 0.13) * 0.13;
+              velBuf[i3] += tangentX * currentInfluence * 0.62 * dt;
+              velBuf[i3 + 1] += tangentY * currentInfluence * 0.62 * dt;
+              velBuf[i3 + 2] += currentInfluence * 0.9 * dt;
+            }
+          }
         }
 
         worldTmp.current.set(x, y, z);
@@ -500,12 +655,46 @@ export default function DataGlobe({
               nearSecret = Math.max(nearSecret, fall);
             }
           }
+
+          // Scroll turns the pointer field into a short-lived data pattern:
+          // close particles circulate; the outer band resolves into a wave.
+          if (scrollWake.current > 0.015 && d2 < 0.2) {
+            const fall = Math.max(0, 1 - d2 / 0.2);
+            const spin = Math.sign(scrollVelocity || 1) * fall * scrollWake.current;
+            const pattern = Math.sin(seed * 32 + time * 5 + scrollProgress * 18);
+            velBuf[i3] += (-dy * 34 * spin + pattern * 4 * spin) * dt;
+            velBuf[i3 + 1] += (dx * 34 * spin + Math.cos(seed * 27 + time * 4) * 3 * spin) * dt;
+            velBuf[i3 + 2] += Math.sin(seed * 41 + time * 6) * spin * 0.004;
+          }
+        }
+
+        // Screen-space confirmation keeps Signal Current tied to an actual
+        // hover over the visible globe. It samples existing particles along a
+        // thin, gently curved route rather than painting a new line.
+        if (signalCurrent.current > 0.01) {
+          const currentX = cursor?.active ? cursor.nx : 0.12;
+          const currentY = cursor?.active ? cursor.ny : -0.04;
+          const along = ndcTmp.current.x - currentX;
+          const pathY = currentY + Math.sin(along * 8.5 + time * 0.55) * 0.055;
+          const pathDistance = Math.abs(ndcTmp.current.y - pathY);
+          const onVisibleRoute = Math.max(0, 1 - Math.abs(along) / 0.58);
+          const thinBand = Math.pow(Math.max(0, 1 - pathDistance / 0.042), 2);
+          const visibleCurrent = thinBand * onVisibleRoute * signalCurrent.current;
+          currentInfluence = Math.max(currentInfluence, visibleCurrent);
+
+          if (visibleCurrent > 0.001 && !reducedMotion) {
+            // Tiny forward drift gives the highlighted particles direction;
+            // the rest of the field remains entirely untouched.
+            velBuf[i3] += visibleCurrent * 0.018;
+            velBuf[i3 + 1] += Math.cos(along * 8.5 + time * 0.55) * visibleCurrent * 0.009;
+          }
         }
         velBuf[i3] *= 0.88;
         velBuf[i3 + 1] *= 0.88;
         velBuf[i3 + 2] *= 0.88;
         x += velBuf[i3];
         y += velBuf[i3 + 1];
+        z += velBuf[i3 + 2];
 
         if (wake > 0.3 && role === 1 && !inWork) {
           const pulse = 1 + Math.sin(time * 2.6 + seed * 5) * 0.012 * wake;
@@ -520,11 +709,35 @@ export default function DataGlobe({
 
         // Neutral matter — colour only as system response
         const hot = Math.min(
-          0.18,
-          wake * 0.1 + (role === 2 ? secretWake.current * 0.16 : 0) + e * 0.08
+          0.38,
+          wake * 0.14 + (role === 2 ? secretWake.current * 0.24 : 0) + e * 0.12
         );
-        tmpC.current.copy(role === 3 ? mute : steel).lerp(dataBlue, hot);
-        if (role === 2 && secretWake.current > 0.65) tmpC.current.lerp(teal, 0.2);
+        tmpC.current.copy(role === 3 ? mute : steel).lerp(dataBlue, hot * 0.62);
+        const signalBand = Math.abs(y) < 0.78 && x > 0.25;
+        const coolBand = z < -0.35 && Math.abs(y) < 0.95;
+        if (role === 1 && (seed > 0.72 || secretWake.current > 0.46 || signalBand)) {
+          tmpC.current.lerp(accent, (signalBand ? 0.24 : 0.34) + secretWake.current * 0.18);
+        }
+        if (role === 2 && secretWake.current > 0.45) {
+          tmpC.current.lerp(seed > 0.42 ? accent : teal, 0.34 + secretWake.current * 0.22);
+        }
+        // Rare cool highlights provide a controlled hierarchy across the shell.
+        if (role !== 3 && seed > 0.978) {
+          tmpC.current.lerp(accent, 0.68);
+        }
+        if (role === 0 && coolBand && seed > 0.68) {
+          tmpC.current.lerp(dataBlue, 0.34);
+        }
+        if (role === 0 && seed > 0.93) {
+          tmpC.current.lerp(accent, 0.44);
+        }
+        if (currentInfluence > 0.001) {
+          // A restrained pale highlight — never a neon trail or solid beam.
+          tmpC.current.lerp(silver, Math.min(0.82, currentInfluence * 1.1));
+        }
+        if (thinkingInfluence > 0.001) {
+          tmpC.current.lerp(accent, 0.2 + thinkingInfluence * 0.64);
+        }
         if (dec > 0.45) tmpC.current.lerp(mute, 0.15);
         col[i3] = tmpC.current.r;
         col[i3 + 1] = tmpC.current.g;
@@ -534,11 +747,11 @@ export default function DataGlobe({
       microRef.current.geometry.attributes.color.needsUpdate = true;
       microRef.current.material.opacity = Math.min(
         1,
-        (0.88 + reveal.current * 0.12) *
+        (0.98 + reveal.current * 0.18) *
           (day ? 1.08 : 1) *
-          (inPipeline ? 0.06 : 1 - dec * 0.3)
+          (inPipeline ? 0.06 : aiConsoleOpen ? 0.72 : 1 - dec * 0.3)
       );
-      microRef.current.material.size = SIZE_MICRO * (1 + e * 0.04);
+      microRef.current.material.size = SIZE_MICRO * (1 + e * 0.1 + thought * 0.16);
     }
 
     secretWake.current = THREE.MathUtils.damp(
@@ -547,92 +760,6 @@ export default function DataGlobe({
       2.6,
       dt
     );
-
-    // SIGNAL — sparse travelling grains on river paths
-    if (signalRef.current && !reducedMotion) {
-      const pos = signalRef.current.geometry.attributes.position.array;
-      const col = signalRef.current.geometry.attributes.color.array;
-      for (let i = 0; i < SIGNAL; i++) {
-        const riv = rivers[i % rivers.length];
-        const u = (time * riv.speed * 0.55 + i / SIGNAL) % 1;
-        const p = riv.curve.getPoint(u);
-        const i3 = i * 3;
-        pos[i3] = p.x;
-        pos[i3 + 1] = p.y;
-        pos[i3 + 2] = p.z;
-        tmpC.current.copy(steel).lerp(dataBlue, 0.12 + riverAwake.current * 0.15);
-        col[i3] = tmpC.current.r;
-        col[i3 + 1] = tmpC.current.g;
-        col[i3 + 2] = tmpC.current.b;
-      }
-      signalRef.current.geometry.attributes.position.needsUpdate = true;
-      signalRef.current.geometry.attributes.color.needsUpdate = true;
-      signalRef.current.material.opacity =
-        reveal.current *
-        riverAwake.current *
-        (day ? 0.92 : 0.55) *
-        (1 - dec * 0.6);
-      signalRef.current.material.size = SIZE_SIGNAL;
-      signalRef.current.visible = !inPipeline;
-    }
-
-    // DATA RIVERS — the extraordinary visual (hundreds of travelling units)
-    if (riverRef.current && !reducedMotion) {
-      const pos = riverRef.current.geometry.attributes.position.array;
-      const col = riverRef.current.geometry.attributes.color.array;
-      const per = Math.floor(RIVER / rivers.length);
-      let fi = 0;
-      rivers.forEach((riv, ri) => {
-        for (let k = 0; k < per && fi < RIVER; k++) {
-          const i3 = fi * 3;
-          if (riverAwake.current < 0.08) {
-            pos[i3 + 1] = -99;
-          } else {
-            const u = (time * riv.speed + k / per + ri * 0.17) % 1;
-            const p = riv.curve.getPoint(u);
-            pos[i3] = p.x;
-            pos[i3 + 1] = p.y;
-            pos[i3 + 2] = p.z;
-            // Stream / ETL / event personalities via hue restraint
-            if (riv.kind === "etl") tmpC.current.copy(steel).lerp(teal, 0.22);
-            else if (riv.kind === "event")
-              tmpC.current.copy(steel).lerp(accent, 0.12 + secretWake.current * 0.15);
-            else tmpC.current.copy(silver).lerp(dataBlue, 0.15);
-            col[i3] = tmpC.current.r;
-            col[i3 + 1] = tmpC.current.g;
-            col[i3 + 2] = tmpC.current.b;
-          }
-          fi++;
-        }
-      });
-      riverRef.current.geometry.attributes.position.needsUpdate = true;
-      riverRef.current.geometry.attributes.color.needsUpdate = true;
-      riverRef.current.material.opacity =
-        reveal.current *
-        riverAwake.current *
-        (day ? 0.72 : 0.35 + secretWake.current * 0.35) *
-        (1 - dec * 0.5);
-      riverRef.current.material.size = SIZE_RIVER * (1 + secretWake.current * 0.1);
-      riverRef.current.visible = !inPipeline;
-    }
-
-    // Hidden circuitry — revealed under the field
-    if (circuitRef.current) {
-      const pos = circuitRef.current.geometry.attributes.position.array;
-      for (let i = 0; i < CIRCUIT; i++) {
-        const i3 = i * 3;
-        const u = (i / (CIRCUIT - 1) + time * 0.08 * secretWake.current) % 1;
-        const p = circuitCurve.getPoint(u);
-        pos[i3] = p.x;
-        pos[i3 + 1] = p.y;
-        pos[i3 + 2] = p.z;
-      }
-      circuitRef.current.geometry.attributes.position.needsUpdate = true;
-      circuitRef.current.material.opacity =
-        reveal.current * secretWake.current * 0.85 * (1 - dec * 0.75);
-      circuitRef.current.material.size = SIZE_CIRCUIT;
-      circuitRef.current.visible = !inPipeline && secretWake.current > 0.05;
-    }
 
     if (stateRef?.current) {
       stateRef.current.globeEnergy = e;
@@ -659,51 +786,13 @@ export default function DataGlobe({
           sizeAttenuation={false}
           vertexColors
           transparent
-          opacity={0.88}
+          opacity={0.96}
           depthWrite={false}
-          alphaTest={day ? 0.2 : 0.35}
-          toneMapped={false}
-        />
-      </points>
-      <points ref={signalRef} geometry={signalGeom} frustumCulled={false}>
-        <pointsMaterial
-          map={map}
-          size={SIZE_SIGNAL}
-          sizeAttenuation={false}
-          vertexColors
-          transparent
-          opacity={0.2}
-          depthWrite={false}
-          alphaTest={0.3}
-          toneMapped={false}
-        />
-      </points>
-      <points ref={riverRef} geometry={riverGeom} frustumCulled={false}>
-        <pointsMaterial
-          map={map}
-          size={SIZE_RIVER}
-          sizeAttenuation={false}
-          vertexColors
-          transparent
-          opacity={0.25}
-          depthWrite={false}
-          alphaTest={0.3}
-          toneMapped={false}
-        />
-      </points>
-      <points ref={circuitRef} geometry={circuitGeom} frustumCulled={false}>
-        <pointsMaterial
-          map={map}
-          size={SIZE_CIRCUIT}
-          sizeAttenuation={false}
-          vertexColors
-          transparent
-          opacity={0}
-          depthWrite={false}
-          alphaTest={0.3}
+          alphaTest={day ? 0.18 : 0.28}
           toneMapped={false}
         />
       </points>
     </group>
   );
 }
+

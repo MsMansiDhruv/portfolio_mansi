@@ -9,7 +9,8 @@ import { STORY_FINAL } from "@/lib/data/anime-story";
 export default function QuickViewPanel({ open, onClose }) {
   if (!open) return null;
 
-  const projects = HOME_CASE_STUDIES.filter((p) => p.kind !== "experiment").slice(0, 5);
+  const projects = HOME_CASE_STUDIES.filter((p) => p.kind !== "experiment").slice(0, 4);
+  const experiments = HOME_CASE_STUDIES.filter((p) => p.kind === "experiment").slice(0, 5);
   const skills = Object.entries(TECHNICAL_PROFILE).slice(0, 5);
 
   return (
@@ -39,6 +40,20 @@ export default function QuickViewPanel({ open, onClose }) {
               </li>
             ))}
           </ul>
+          {experiments.length ? (
+            <>
+              <p className="mx-mono mb-3 mt-5 opacity-60">Experiments &amp; side builds</p>
+              <ul className="space-y-2 text-sm">
+                {experiments.map((p) => (
+                  <li key={p.slug}>
+                    <Link href={`/projects/${p.slug}`} className="hover:text-[var(--mx-vermilion)]" onClick={onClose}>
+                      {p.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
           <Link href="/projects" className="mx-mono mt-3 inline-block opacity-60 hover:opacity-100" onClick={onClose}>
             All work →
           </Link>

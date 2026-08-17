@@ -636,14 +636,14 @@ export default function AiLabPage() {
       <ExperienceNav onQuickView={() => setQuickOpen(true)} />
       <QuickViewPanel open={quickOpen} onClose={() => setQuickOpen(false)} />
 
-      <div className="mx-auto flex min-h-screen w-full max-w-[90rem] min-w-0 flex-col px-5 pb-8 pt-24 sm:px-6 lg:px-8">
+      <div className="mx-auto flex min-h-screen w-full max-w-[90rem] min-w-0 flex-col px-5 pb-8 pt-28 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
           <div className="min-w-0">
             <p className="mx-coord">REASONING LAYER</p>
             <h1 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight sm:text-4xl">
               AI Lab
             </h1>
-            <p className="mx-whisper mt-3 max-w-xl">
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-[var(--mx-stone)] sm:text-base">
               Six chambers · Each with its own role · Knowledge-grounded
             </p>
           </div>

@@ -2,13 +2,16 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import { Text } from "@react-three/drei";
 import * as THREE from "three";
 import { getPointMap } from "./pointMap";
 import { THEME, semanticColor } from "@/lib/data/data-world";
 import { getProjectMeta } from "@/lib/data/project-meta";
 
 const FLOW_PER_PATH = 18;
-const SCALE = 4.2;
+// The project state is a supporting atmospheric object; the documented flow panel
+// carries the literal system explanation.
+const SCALE = 1.65;
 
 function rnd(seed, i) {
   const x = Math.sin(seed * 12.9 + i * 78.1) * 43758.5453;
@@ -167,6 +170,7 @@ export default function ProjectPipeline({
   active,
   onReady,
   cursorRef,
+  layout = "home",
 }) {
   const root = useRef();
   const pointsRef = useRef();
@@ -182,7 +186,7 @@ export default function ProjectPipeline({
     [cluster?.slug]
   );
 
-  const { chaoticPts, chaoticLinks, cleanPts, cleanLinks, paths } = useMemo(() => {
+  const { chaoticPts, chaoticLinks, cleanPts, cleanLinks, paths, stages } = useMemo(() => {
     if (!cluster) {
       return {
         chaoticPts: [],
@@ -190,13 +194,14 @@ export default function ProjectPipeline({
         cleanPts: [],
         cleanLinks: [],
         paths: [],
+        stages: [],
       };
     }
-    return buildPipeline(
-      cluster.topology || "hub",
-      (cluster.index ?? 0) + 7,
-      meta?.architectureLayers || []
-    );
+    const labels = cluster.flow?.length
+      ? cluster.flow
+      : meta?.architectureLayers || [];
+    const topology = cluster.topology || "tangle";
+    return buildPipeline(topology, (cluster.index ?? 0) + 7, labels);
   }, [cluster, meta]);
 
   const pointCount = Math.max(chaoticPts.length, cleanPts.length);
@@ -232,8 +237,18 @@ export default function ProjectPipeline({
 
   useEffect(() => {
     readySent.current = false;
-    if (!active) fade.current = 0;
-  }, [active, cluster?.slug]);
+    if (!active) {
+      fade.current = 0;
+      resolve.current = 0;
+      return;
+    }
+    if (layout === "page") {
+      fade.current = 1;
+      resolve.current = 1;
+      return;
+    }
+    fade.current = 0;
+  }, [active, cluster?.slug, layout]);
 
   useFrame((state, dt) => {
     if (!root.current) return;
@@ -248,9 +263,17 @@ export default function ProjectPipeline({
     );
 
     root.current.visible = fade.current > 0.015;
-    // ENTER THE SYSTEM — data surrounds the visitor
-    root.current.scale.setScalar(SCALE * (0.4 + fade.current * 0.75));
-    root.current.position.z = THREE.MathUtils.lerp(1.4, -0.55, fade.current);
+    if (layout === "page") {
+      root.current.scale.setScalar(2.35 * (0.7 + fade.current * 0.3));
+      root.current.position.x = 0.35;
+      root.current.position.y = 0.02;
+      root.current.position.z = 0;
+    } else {
+      root.current.scale.setScalar(SCALE * (0.4 + fade.current * 0.75));
+      root.current.position.x = THREE.MathUtils.lerp(0, 1.38, fade.current);
+      root.current.position.y = THREE.MathUtils.lerp(-0.18, -1.3, fade.current);
+      root.current.position.z = THREE.MathUtils.lerp(1.4, -0.72, fade.current);
+    }
     root.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.08) * 0.04 * fade.current;
 
     if (fade.current > 0.82 && active && !readySent.current) {
@@ -269,7 +292,7 @@ export default function ProjectPipeline({
       let py = THREE.MathUtils.lerp(c[1], r[1], u);
       let pz = THREE.MathUtils.lerp(c[2], r[2], u);
       // Foreground grain near camera for immersion
-      if (i % 5 === 0) pz += 0.35 * fade.current;
+      if (layout !== "page" && i % 5 === 0) pz += 0.35 * fade.current;
       posArr[i3] = px;
       posArr[i3 + 1] = py;
       posArr[i3 + 2] = pz;
@@ -344,13 +367,15 @@ export default function ProjectPipeline({
     const color = semanticColor(kind, themeId, 0.45);
 
     if (pointsRef.current?.material) {
-      pointsRef.current.material.opacity = fade.current * (0.4 + u * 0.55);
+      const page = layout === "page";
+      pointsRef.current.material.opacity = fade.current * (page ? 0.82 : 0.4 + u * 0.55);
       pointsRef.current.material.color.set(color);
-      pointsRef.current.material.size = 1.8 + u * 0.6;
+      pointsRef.current.material.size = page ? 2.6 + u * 0.7 : 1.8 + u * 0.6;
     }
     if (linesRef.current?.material) {
-      linesRef.current.material.opacity = fade.current * (0.1 + u * 0.4);
-      linesRef.current.material.color.set(t.steel);
+      const page = layout === "page";
+      linesRef.current.material.opacity = fade.current * (page ? 0.22 + u * 0.18 : 0.035 + u * 0.075);
+      linesRef.current.material.color.set(page ? t.accent : t.steel);
     }
   });
 
@@ -387,6 +412,23 @@ export default function ProjectPipeline({
           toneMapped={false}
         />
       </points>
+      {layout !== "page"
+        ? stages.map((stage, index) => (
+            <Text
+              key={`${stage.label}-${index}`}
+              position={stage.pos}
+              fontSize={0.045}
+              maxWidth={1.35}
+              color={index === 0 ? t.accent : t.steel}
+              anchorX="center"
+              anchorY="bottom"
+              outlineWidth={0.002}
+              outlineColor={t.bg}
+            >
+              {stage.label}
+            </Text>
+          ))
+        : null}
     </group>
   );
 }

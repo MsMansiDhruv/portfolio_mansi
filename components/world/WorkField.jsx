@@ -183,7 +183,7 @@ function Cluster({
       THREE.MathUtils.lerp(home[2], target[2], u)
     );
     // Dormant machine → wakes on approach
-    const s = THREE.MathUtils.lerp(0.18, selected ? 1.4 : 0.55 + w * 0.55, u);
+    const s = THREE.MathUtils.lerp(0.18, selected ? 0.92 : 0.55 + w * 0.55, u);
     root.current.scale.setScalar(s);
     root.current.visible = u > 0.02;
 
@@ -195,7 +195,7 @@ function Cluster({
     }
     if (linesRef.current?.material) {
       linesRef.current.material.opacity =
-        u * (selected ? 0.5 : 0.05 + w * 0.28);
+        u * (selected ? 0 : 0.05 + w * 0.28);
       linesRef.current.material.color.set(color);
     }
 

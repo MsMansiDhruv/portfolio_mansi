@@ -124,12 +124,26 @@
   filter: drop-shadow(0 0 6px rgba(196, 92, 92, 0.45));
 }
 
-.mansi-page-wipe {
+.mansi-page-gather {
   position: fixed;
-  inset: 0;
+  top: 50%;
+  left: 50%;
   z-index: 100;
-  background: var(--mw-ink);
+  width: 150vmax;
+  height: 150vmax;
+  margin: -75vmax 0 0 -75vmax;
+  border-radius: 50%;
+  background: var(--page-gather-bg, var(--mw-ink, #111113));
   pointer-events: none;
+  transform-origin: center center;
+}
+
+html[data-world-theme="day"] {
+  --page-gather-bg: #fbfaf8;
+}
+
+.mansi-page-wipe {
+  display: none;
 }
 
 .anime-cinema-root {
@@ -144,4 +158,28 @@
   .anime-cinema-track {
     height: auto;
   }
+}
+/* Shared chrome also appears on the story chapters. Keep the navigation
+   explicit here rather than relying on the optional cinematic stylesheet. */
+.story-site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 1.15rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.story-site-nav a {
+  color: var(--story-grey, rgba(199, 208, 220, 0.72));
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.story-site-nav a:hover,
+.story-site-nav a.is-active {
+  color: var(--story-ivory, #f4f0e8);
+  transform: translateY(-1px);
 }

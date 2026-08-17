@@ -11,7 +11,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body style={{ WebkitFontSmoothing: "antialiased" }}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("mansi-world-theme");if(t==="day"||t==="night"){document.documentElement.setAttribute("data-world-theme",t);}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body style={{ WebkitFontSmoothing: "antialiased" }} suppressHydrationWarning>
         <AppShell>{children}</AppShell>
       </body>
     </html>
