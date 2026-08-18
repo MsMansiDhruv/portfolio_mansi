@@ -77,6 +77,16 @@
   border-color: var(--mx-panel-border) !important;
 }
 
+.lab-root,
+.lab-root a,
+.lab-root button,
+.lab-root input,
+.lab-root textarea {
+  cursor: auto;
+}
+
+.lab-root[data-theme="light"] input,
+.lab-root[data-theme="light"] textarea,
 [data-theme="light"] .lab-root input,
 [data-theme="light"] .lab-root textarea {
   background: #fff !important;

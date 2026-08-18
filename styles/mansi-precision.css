@@ -1,7 +1,5 @@
 /* Mansi Precision â€” vertical slice art direction */
 
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Sora:wght@300;400;500;600;700&display=swap");
-
 .mp-root {
   --mp-font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
   --mp-font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;

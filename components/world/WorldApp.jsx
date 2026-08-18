@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import "@/styles/mansi-world-of-data.css";
 import {
   WORLD_HERO,
   WORLD_NAV,
   NAV_PORTAL_MAP,
   LAYER_CAM,
+  HOME_CAM,
   TECH_META,
   getWorkClusters,
+  approachNode,
 } from "@/lib/data/data-world";
 import {
   ABOUT_ME,
@@ -19,17 +22,24 @@ import {
   getAboutHeroLine,
 } from "@/lib/data/career";
 import { SOCIAL_LINKS } from "@/lib/data/social-links";
-import { WORK_EXPERIMENTS } from "@/lib/data/work-exhibition";
+import { WORK_EXPERIMENTS } from "@/lib/data/work-catalog";
 import {
   RECOMMENDATIONS,
   getRecommendationText,
 } from "@/lib/data/recommendations";
-import WorldCanvas from "./WorldCanvas";
-import AiModeSurface from "./AiModeSurface";
-import { HOME_CAM, approachNode } from "./CameraRig";
+import NavToggle from "./NavToggle";
 import { getProjectMeta } from "@/lib/data/project-meta";
 import { writeWorldTheme } from "@/lib/world-theme";
 import { useWorldTheme } from "@/lib/use-world-theme";
+import { useWorldViewport } from "@/lib/use-world-viewport";
+import { useCursorField } from "@/lib/use-cursor-field";
+import ResumeDock from "./ResumeDock";
+
+const WorldCanvas = dynamic(() => import("./WorldCanvas"), {
+  ssr: false,
+  loading: () => <div className="wd-stage" aria-hidden />,
+});
+const AiModeSurface = dynamic(() => import("./AiModeSurface"), { ssr: false });
 const RESUME_HREF = "/resume.pdf";
 const PRIMARY_CERTS = CERTIFICATIONS.filter((c) => c.tier === "primary");
 const FEATURED_VOICES = RECOMMENDATIONS.filter((r) => r.featured).concat(
@@ -41,11 +51,12 @@ const FEATURED_VOICES = RECOMMENDATIONS.filter((r) => r.featured).concat(
  */
 export default function WorldApp() {
   const [theme, setTheme] = useWorldTheme();
+  useWorldViewport();
   const [themePulse, setThemePulse] = useState(false);
-  const [ready, setReady] = useState(false);
   const [story, setStory] = useState("silence");
   const [layer, setLayer] = useState("world");
   const [navOpen, setNavOpen] = useState(false);
+  const [aiMode, setAiMode] = useState(null);
   const [techHover, setTechHover] = useState(null);
   const [workHover, setWorkHover] = useState(null);
   const [workSelected, setWorkSelected] = useState(null);
@@ -53,8 +64,6 @@ export default function WorldApp() {
   const [heroSettled, setHeroSettled] = useState(false);
   const [routeFound, setRouteFound] = useState(false);
   const storyRef = useRef(null);
-  const [aiMode, setAiMode] = useState(null);
-  const [aiThinking, setAiThinking] = useState(false);
   const [portalHover, setPortalHover] = useState(null);
   const workProjects = useMemo(() => getWorkClusters(), []);
   const selectedProject = workSelected?.slug
@@ -89,6 +98,7 @@ export default function WorldApp() {
     z: 0,
     active: false,
   });
+  useCursorField(cursorRef);
   const stateRef = useRef({
     globeEnergy: 0.02,
     globeRotY: 0,
@@ -116,36 +126,15 @@ export default function WorldApp() {
   const startedAt = useRef(null);
 
   useEffect(() => {
-    const reduced =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
-      stateRef.current.assemble = 1;
-      setReady(true);
-      return undefined;
-    }
-    const origin = performance.now();
-    let raf = 0;
-    let settleTimer = 0;
-    let settled = false;
-    const tick = () => {
-      const t = Math.min(1, (performance.now() - origin) / 2600);
-      const eased = t * t * (3 - 2 * t);
-      stateRef.current.assemble = eased;
-      if (t >= 1 && !settled) {
-        settled = true;
-        stateRef.current.assemble = 1;
-        settleTimer = window.setTimeout(() => setReady(true), 220);
-        return;
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.clearTimeout(settleTimer);
-    };
+    stateRef.current.assemble = 1;
   }, []);
+
+  useEffect(() => {
+    stateRef.current.aiConsoleOpen = Boolean(aiMode);
+    if (!aiMode) stateRef.current.aiThinking = false;
+    document.documentElement.classList.toggle("wd-ai-lock", Boolean(aiMode));
+    return () => document.documentElement.classList.remove("wd-ai-lock");
+  }, [aiMode]);
 
   useEffect(() => {
     document.documentElement.classList.add("wd-active");
@@ -154,6 +143,8 @@ export default function WorldApp() {
 
   useEffect(() => {
     const hash = window.location.hash.replace("#", "");
+    const mode = new URLSearchParams(window.location.search).get("mode");
+    if (mode) setAiMode(mode);
     if (!hash) return undefined;
     const target = document.getElementById(hash);
     if (!target) return undefined;
@@ -209,16 +200,10 @@ export default function WorldApp() {
   }, []);
 
   useEffect(() => {
-    if (!ready) {
-      setStory("silence");
-      stateRef.current.story = "silence";
-      return undefined;
-    }
     setStory("explore");
     stateRef.current.story = "explore";
     startedAt.current = performance.now();
-    return undefined;
-  }, [ready]);
+  }, []);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -250,15 +235,6 @@ export default function WorldApp() {
     stateRef.current.pipelineActive = !!workSelected;
   }, [workSelected]);
 
-  useEffect(() => {
-    stateRef.current.aiConsoleOpen = !!aiMode;
-    if (!aiMode) setAiThinking(false);
-  }, [aiMode]);
-
-  useEffect(() => {
-    stateRef.current.aiThinking = aiThinking;
-  }, [aiThinking]);
-
   const setCam = useCallback((cam, mode = "stream") => {
     const from = cameraTargetRef.current || {};
     const fromPos = from.position || HOME_CAM.position;
@@ -268,7 +244,7 @@ export default function WorldApp() {
       lookAt: [...cam.lookAt],
       fov: cam.fov,
       mode,
-      token: Date.now(),
+      token: (from.token || 0) + 1,
       zoomDelta: 0,
       mid: {
         position: [
@@ -323,12 +299,19 @@ export default function WorldApp() {
     setWorkSelected(null);
     setWorkHover(null);
     setPipelineReady(false);
-    setAiMode(null);
     setLayer("world");
     setNavOpen(false);
     setCam(LAYER_CAM.world, "stream");
     document.getElementById("world-world")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [setCam]);
+
+  const closeAi = useCallback(() => setAiMode(null), []);
+
+  const openAi = useCallback((mode) => {
+    setNavOpen(false);
+    setAiMode(mode || "ask");
+    document.getElementById("world-ai")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   const goLayer = useCallback(
     (id) => {
@@ -340,6 +323,11 @@ export default function WorldApp() {
     },
     []
   );
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("wd-nav-lock", navOpen);
+    return () => document.documentElement.classList.remove("wd-nav-lock");
+  }, [navOpen]);
 
   useEffect(() => {
     const root = storyRef.current;
@@ -355,7 +343,6 @@ export default function WorldApp() {
         setWorkSelected(null);
         setWorkHover(null);
         setPipelineReady(false);
-        setAiMode(null);
         setCam(LAYER_CAM[id] || LAYER_CAM.world, "stream");
         return id;
       });
@@ -396,33 +383,30 @@ export default function WorldApp() {
   const explored = story === "explore" || story === "identity";
   return (
     <div
-      className={`wd-root${ready ? " is-ready" : ""}${themePulse ? " is-theme-shift" : ""}${workSelected ? " wd-project-open" : ""}${aiMode ? " wd-ai-open" : ""}`}
+      className={`wd-root is-ready${themePulse ? " is-theme-shift" : ""}${workSelected ? " wd-project-open" : ""}${aiMode ? " wd-ai-open" : ""}`}
       data-theme={theme}
       data-story={story}
       data-layer={layer}
       data-hero={heroSettled && layer === "world" ? "settled" : "impact"}
       suppressHydrationWarning
     >
-      <div className={`wd-loader${ready ? " is-done" : ""}`} aria-hidden>
-        <span className="wd-loader__mark">Assembling the data field</span>
-        <span className="wd-loader__sub">Scattered signal resolving into system</span>
-      </div>
-
-      <header className="wd-bar">
+      <header className={`wd-bar${navOpen ? " is-nav-open" : ""}`}>
         <button type="button" className="wd-brand" onClick={onHome}>
           Mansi
         </button>
-        <nav className={`wd-nav${navOpen ? " is-open" : ""}`} aria-label="System">
+        <nav className="wd-nav" aria-label="System">
           {WORLD_NAV.map((item) => (
             <button
               key={item.id}
               type="button"
               className={`wd-nav__item${layer === item.id ? " is-active" : ""}`}
               onClick={() => goLayer(item.id)}
-              onMouseEnter={() => {
+              onPointerEnter={(event) => {
+                if (event.pointerType === "touch") return;
                 if (layer === "world") setPortalHover(NAV_PORTAL_MAP[item.id] || null);
               }}
-              onMouseLeave={() => {
+              onPointerLeave={(event) => {
+                if (event.pointerType === "touch") return;
                 if (layer === "world") setPortalHover(null);
               }}
               aria-current={layer === item.id ? "page" : undefined}
@@ -432,15 +416,7 @@ export default function WorldApp() {
           ))}
         </nav>
         <div className="wd-bar__end">
-          <button
-            type="button"
-            className="wd-nav-toggle"
-            aria-expanded={navOpen}
-            aria-label="Open navigation"
-            onClick={() => setNavOpen((v) => !v)}
-          >
-            Menu
-          </button>
+          <NavToggle open={navOpen} onClick={() => setNavOpen((v) => !v)} />
           <button
             type="button"
             className="wd-theme"
@@ -448,12 +424,28 @@ export default function WorldApp() {
             aria-label={`Switch to ${theme === "night" ? "day" : "night"} mode`}
           >
             <span className="wd-theme__pip" />
-            <span suppressHydrationWarning>
+            <span className="wd-theme__label" suppressHydrationWarning>
               {theme === "night" ? "Night" : "Day"}
             </span>
           </button>
         </div>
       </header>
+      <nav
+        className={`wd-nav-sheet${navOpen ? " is-open" : ""}`}
+        aria-label="Pages"
+      >
+        {WORLD_NAV.map((item) => (
+          <button
+            key={`sheet-${item.id}`}
+            type="button"
+            className={`wd-nav__item${layer === item.id ? " is-active" : ""}`}
+            onClick={() => goLayer(item.id)}
+            aria-current={layer === item.id ? "page" : undefined}
+          >
+            <span className="wd-nav__label">{item.label}</span>
+          </button>
+        ))}
+      </nav>
 
       <WorldCanvas
         themeId={theme}
@@ -465,6 +457,7 @@ export default function WorldApp() {
         workSelected={workSelected}
         onWorkHover={(c) => {
           if (layer !== "work" || workSelected) return;
+          if (typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches) return;
           setWorkHover(c);
         }}
         onWorkSelect={onWorkSelect}
@@ -487,7 +480,7 @@ export default function WorldApp() {
           <div className="wd-scroll-copy">
             <p className="wd-scroll-kicker">SELECTED WORK</p>
             <h2>Architecture that earns its complexity.</h2>
-            <p>Hover a project to preview it. Open one to see the architecture, constraints, and production choices.</p>
+            <p>Select a project to preview it. Open one to see the architecture, constraints, and production choices.</p>
             <div className="wd-work-keys" aria-label="Work themes">
               <span>01 / SIGNAL</span><span>02 / SYSTEM</span><span>03 / OUTCOME</span>
             </div>
@@ -501,8 +494,18 @@ export default function WorldApp() {
                 key={project.slug}
                 href={`/projects/${project.slug}`}
                 className={`wd-project-atlas__card${workSelected?.slug === project.slug ? " is-selected" : ""}`}
-                onMouseEnter={() => setWorkHover(project)}
-                onMouseLeave={() => setWorkHover(null)}
+                onPointerEnter={(event) => {
+                  if (event.pointerType === "touch") return;
+                  setWorkHover(project);
+                }}
+                onPointerLeave={(event) => {
+                  if (event.pointerType === "touch") return;
+                  setWorkHover(null);
+                }}
+                onPointerDown={(event) => {
+                  if (event.pointerType === "touch") return;
+                  setWorkHover(project);
+                }}
                 onFocus={() => setWorkHover(project)}
                 onBlur={() => setWorkHover(null)}
               >
@@ -533,14 +536,14 @@ export default function WorldApp() {
             <p className="wd-scroll-kicker">AI LAB</p>
             <h2>Ask Mansi</h2>
             <p>Ask about the work — architecture, pipelines, SQL, and trade-offs.</p>
-            <button type="button" className="wd-scroll-action" onClick={() => setAiMode("ask")}>
+            <button type="button" className="wd-scroll-action" onClick={() => openAi("ask")}>
               Ask Mansi <span>↗</span>
             </button>
             <p className="wd-scroll-detail">Or go straight to a mode</p>
             <div className="wd-ai-launchers" aria-label="Other modes">
-              <button type="button" onClick={() => setAiMode("architecture")}>Architecture</button>
-              <button type="button" onClick={() => setAiMode("pipeline")}>Pipeline</button>
-              <button type="button" onClick={() => setAiMode("sql")}>SQL</button>
+              <button type="button" onClick={() => openAi("architecture")}>Architecture</button>
+              <button type="button" onClick={() => openAi("pipeline")}>Pipeline</button>
+              <button type="button" onClick={() => openAi("sql")}>SQL</button>
             </div>
           </div>
           <p className="wd-scroll-index" aria-hidden>03 — AI LAB</p>
@@ -608,14 +611,16 @@ export default function WorldApp() {
       </main>
 
       <div className="wd-hud">
-        {workHover && !workSelected && (
-          <div className="wd-float wd-float--quiet" role="status">
-            <p className="wd-float__kicker">Project {workHover.code}</p>
-            <p className="wd-float__title">{workHover.cardTitle}</p>
-            {workHover.story && <p className="wd-float__stack">{workHover.story}</p>}
-          </div>
-        )}
-
+        {aiMode ? (
+          <AiModeSurface
+            modeId={aiMode}
+            onClose={closeAi}
+            onModeChange={setAiMode}
+            onBusyChange={(busy) => {
+              stateRef.current.aiThinking = Boolean(busy);
+            }}
+          />
+        ) : null}
         {workSelected && pipelineReady && (
           <div className="wd-float wd-float--project" role="status">
             <p className="wd-float__kicker">Project {workSelected.code}</p>
@@ -674,19 +679,7 @@ export default function WorldApp() {
             ) : null}
           </div>
         )}
-
-        {layer === "ai" && aiMode && (
-          <AiModeSurface
-            modeId={aiMode}
-            onClose={() => {
-              setAiThinking(false);
-              setAiMode(null);
-            }}
-            onModeChange={setAiMode}
-            onBusyChange={setAiThinking}
-          />
-        )}
-
+        <ResumeDock />
       </div>
     </div>
   );

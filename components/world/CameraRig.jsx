@@ -3,12 +3,9 @@
 import { useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { HOME_CAM } from "@/lib/data/data-world";
 
-export const HOME_CAM = {
-  position: [0, 0.06, 8.95],
-  lookAt: [0, 0.04, 0],
-  fov: 31,
-};
+export { HOME_CAM };
 
 const ZOOM_MIN = 4.2;
 const ZOOM_MAX = 16;
@@ -147,19 +144,5 @@ export default function CameraRig({ cameraTargetRef, cursorRef }) {
   });
 
   return null;
-}
-
-export function approachNode(nodePos, distance = 2.8) {
-  const p = new THREE.Vector3(...nodePos);
-  const dir = p.clone().normalize();
-  return {
-    position: [
-      p.x * 0.45 + dir.x * 0.2,
-      p.y * 0.45 + 0.35,
-      p.z * 0.45 + distance,
-    ],
-    lookAt: [p.x * 0.92, p.y * 0.92, p.z * 0.92],
-    fov: 34,
-  };
 }
 

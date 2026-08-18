@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import WorldFieldBackdrop from "@/components/world/WorldFieldBackdrop";
+import FieldBackdropLazy from "@/components/world/FieldBackdropLazy";
 import WorldPageNav from "@/components/world/WorldPageNav";
 import { IDENTITY_HERO } from "@/lib/data/identity";
 import { SOCIAL_LINKS } from "@/lib/data/social-links";
@@ -49,7 +49,7 @@ export default function Contact() {
 
   return (
     <div className="wd-root wd-page wd-page--field wd-page--contact wd-page--copy is-ready" data-theme={theme} suppressHydrationWarning>
-      <WorldFieldBackdrop themeId={theme} layer="contact" className="wd-field-backdrop--copy" />
+      <FieldBackdropLazy themeId={theme} layer="contact" className="wd-field-backdrop--copy" />
       <WorldPageNav active="contact" />
       <main className="wd-page-main">
         <header className="wd-page-hero">

@@ -3,9 +3,10 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import * as THREE from "three";
-import { THEME } from "@/lib/data/data-world";
+import { THEME, HOME_CAM } from "@/lib/data/data-world";
 import DataGlobe from "./DataGlobe";
-import { HOME_CAM } from "./CameraRig";
+import { isWorldCompact } from "@/lib/world-device";
+import { useCursorField } from "@/lib/use-cursor-field";
 
 const LAYER_PROGRESS = {
   world: 0,
@@ -39,6 +40,7 @@ export default function WorldFieldBackdrop({
     vy: 0,
     active: false,
   });
+  useCursorField(cursorRef);
   const stateRef = useRef({
     globeEnergy: 0.02,
     story: "explore",
@@ -55,7 +57,21 @@ export default function WorldFieldBackdrop({
     scrollProgress: 0,
   });
 
-  useEffect(() => setMounted(true), []);
+  const [phone, setPhone] = useState(false);
+  const [allowGL, setAllowGL] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    const apply = () => setPhone(isWorldCompact());
+    apply();
+    const raf = window.requestAnimationFrame(() => setAllowGL(true));
+    window.addEventListener("resize", apply);
+    window.addEventListener("orientationchange", apply);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.removeEventListener("resize", apply);
+      window.removeEventListener("orientationchange", apply);
+    };
+  }, []);
   useEffect(() => {
     stateRef.current.layer = layer;
     stateRef.current.shapeFrom = layer;
@@ -64,7 +80,7 @@ export default function WorldFieldBackdrop({
   }, [layer]);
 
   useEffect(() => {
-    if (reduced) {
+    if (reduced || phone) {
       stateRef.current.assemble = 1;
       return undefined;
     }
@@ -79,65 +95,36 @@ export default function WorldFieldBackdrop({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [layer, reduced]);
-  useEffect(() => {
-    if (typeof window === "undefined") return undefined;
-
-    const handlePointerMove = (event) => {
-      const w = window.innerWidth || 1;
-      const h = window.innerHeight || 1;
-      const nx = (event.clientX / w) * 2 - 1;
-      const ny = (event.clientY / h) * 2 - 1;
-      const c = cursorRef.current;
-      c.vx = nx - c.nx;
-      c.vy = ny - c.ny;
-      c.nx = nx;
-      c.ny = ny;
-      c.active = true;
-    };
-
-    const handlePointerLeave = () => {
-      cursorRef.current.active = false;
-    };
-
-    window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    window.addEventListener("pointerleave", handlePointerLeave);
-    window.addEventListener("blur", handlePointerLeave);
-
-    return () => {
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerleave", handlePointerLeave);
-      window.removeEventListener("blur", handlePointerLeave);
-    };
-  }, []);
+  }, [layer, reduced, phone]);
 
   const compact = size === "compact";
   const classes = ["wd-field-backdrop", compact ? "wd-field-backdrop--compact" : "", className]
     .filter(Boolean)
     .join(" ");
 
-  if (!mounted) {
+  if (!mounted || !allowGL) {
     return <div className={classes} aria-hidden />;
   }
 
   return (
     <div className={classes} aria-hidden>
       <Canvas
-        dpr={[1, 1.2]}
+        dpr={phone || compact ? 1 : [1, 1.2]}
         camera={{
           fov: compact ? 38 : HOME_CAM.fov,
           near: 0.08,
-          far: 70,
+          far: compact ? 28 : 70,
           position: compact ? [0, 0.08, 11.4] : HOME_CAM.position,
         }}
         gl={{
-          antialias: true,
+          antialias: false,
           alpha: true,
-          powerPreference: "high-performance",
+          powerPreference: compact || phone ? "low-power" : "default",
           toneMapping: THREE.NoToneMapping,
         }}
         onCreated={({ gl }) => {
           gl.setClearColor(0x000000, 0);
+          if (compact || phone) gl.setPixelRatio(1);
         }}
       >
         <ambientLight intensity={t.ambient} color={themeId === "day" ? "#fbfaf8" : "#ece8f4"} />

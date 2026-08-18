@@ -1,20 +1,16 @@
-"use client";
-
 import Link from "next/link";
 import WorldPageNav from "@/components/world/WorldPageNav";
-import WorldFieldBackdrop from "@/components/world/WorldFieldBackdrop";
 import {
   WORK_OPENING,
   WORK_INSTALLATIONS,
   WORK_SECONDARY,
   WORK_EXPERIMENTS,
-} from "@/lib/data/work-exhibition";
-import { useWorldTheme } from "@/lib/use-world-theme";
+} from "@/lib/data/work-catalog";
 import "@/styles/mansi-world-of-data.css";
 
 function CatalogItem({ project, kicker }) {
   return (
-    <Link href={`/projects/${project.slug}`}>
+    <Link href={`/projects/${project.slug}`} prefetch={false}>
       <span className="wd-catalog__meta">
         {kicker || `${project.number} · ${project.category}`}
       </span>
@@ -27,12 +23,10 @@ function CatalogItem({ project, kicker }) {
   );
 }
 
+/** Work catalog — HTML first, no WebGL, no case-study chunks. */
 export default function WorkExhibition() {
-  const [theme] = useWorldTheme();
-
   return (
-    <div className="wd-root wd-page wd-page--field wd-page--work is-ready" data-theme={theme} suppressHydrationWarning>
-      <WorldFieldBackdrop themeId={theme} layer="work" size="compact" className="wd-field-backdrop--work" />
+    <div className="wd-root wd-page wd-page--work is-ready">
       <WorldPageNav active="work" />
       <main className="wd-page-main">
         <section className="wd-work-hero">

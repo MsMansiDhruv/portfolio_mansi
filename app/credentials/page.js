@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import WorldPageNav from "@/components/world/WorldPageNav";
-import WorldFieldBackdrop from "@/components/world/WorldFieldBackdrop";
+import FieldBackdropLazy from "@/components/world/FieldBackdropLazy";
 import {
   ABOUT_ME,
   AWARDS,
@@ -43,7 +43,7 @@ export default function CredentialsPage() {
 
   return (
     <div className="wd-root wd-page wd-page--field wd-page--copy is-ready" data-theme={theme} suppressHydrationWarning>
-      <WorldFieldBackdrop themeId={theme} layer="experience" className="wd-field-backdrop--copy" />
+      <FieldBackdropLazy themeId={theme} layer="experience" className="wd-field-backdrop--copy" />
       <WorldPageNav active="about" />
       <main id="about" className="wd-page-main">
         <header className="wd-page-hero">

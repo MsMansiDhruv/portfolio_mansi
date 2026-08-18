@@ -1,8 +1,6 @@
-"use client";
-
 import WorkExhibition from "@/components/work/WorkExhibition";
 
-/** Work — cinematic engineering exhibition (Living System language). */
+/** Work — selected systems, without the homepage globe. */
 export default function ProjectsPage() {
   return <WorkExhibition />;
 }

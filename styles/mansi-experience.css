@@ -1,7 +1,5 @@
 /* THE LIVING SYSTEM — Quiet Instrument design language */
 
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600&family=Syne:wght@600;700;800&display=swap");
-
 :root {
   /* Night = FOCUS */
   --mx-ink: #0a0c10;

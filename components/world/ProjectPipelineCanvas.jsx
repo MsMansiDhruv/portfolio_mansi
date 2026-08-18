@@ -32,9 +32,9 @@ export default function ProjectPipelineCanvas({ slug, themeId = "night", stages 
   return (
     <div className="wd-pipeline-stage">
       <Canvas
-        dpr={[1, 1.35]}
+        dpr={typeof window !== "undefined" && (window.innerWidth < 860 || window.matchMedia("(pointer: coarse)").matches) ? 1 : [1, 1.25]}
         camera={{ fov: 32, near: 0.08, far: 40, position: [0, 0.12, 5.4] }}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        gl={{ antialias: false, alpha: true, powerPreference: "low-power" }}
         onCreated={({ gl }) => {
           gl.setClearColor(0x000000, 0);
         }}

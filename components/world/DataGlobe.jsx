@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { THEME, getWorkClusters } from "@/lib/data/data-world";
+import { isWorldCompact } from "@/lib/world-device";
 
 /** Crisp circular grain — hard edge, minimal halo */
 function grainTex() {
@@ -88,32 +89,45 @@ export default function DataGlobe({
   const t = THEME[themeId] || THEME.night;
   const day = themeId === "day";
   const map = useMemo(() => grainTex(), []);
-  const compactViewport = useMemo(
-    () => typeof window !== "undefined" && window.innerWidth < 768,
-    []
-  );
+  const [compactViewport, setCompactViewport] = useState(() => isWorldCompact());
+  useEffect(() => {
+    const apply = () => setCompactViewport(isWorldCompact());
+    apply();
+    const mq = window.matchMedia("(max-width: 767px)");
+    const coarse = window.matchMedia("(pointer: coarse)");
+    const listen = (media, fn) => {
+      if (media.addEventListener) media.addEventListener("change", fn);
+      else media.addListener?.(fn);
+    };
+    const unlisten = (media, fn) => {
+      if (media.removeEventListener) media.removeEventListener("change", fn);
+      else media.removeListener?.(fn);
+    };
+    listen(mq, apply);
+    listen(coarse, apply);
+    window.addEventListener("orientationchange", apply);
+    return () => {
+      unlisten(mq, apply);
+      unlisten(coarse, apply);
+      window.removeEventListener("orientationchange", apply);
+    };
+  }, []);
   const quality = useMemo(() => {
-    if (typeof window === "undefined") return 1;
-    const mobile = window.innerWidth < 768;
     const memory = navigator.deviceMemory || 8;
-    if (reducedMotion) return 0.5;
-    if (mobile) return 0.58;
-    if (memory <= 4) return 0.78;
+    if (reducedMotion) return 0.28;
+    if (compactViewport) return 0.12;
+    if (memory <= 4) return 0.55;
     return 1;
-  }, [reducedMotion]);
+  }, [reducedMotion, compactViewport]);
 
-  const MICRO = Math.max(1200, Math.round((reducedMotion ? 1500 : 5800) * quality));
-  const SIGNAL = Math.max(42, Math.round((reducedMotion ? 56 : 116) * quality));
-  const RIVER = Math.max(96, Math.round((reducedMotion ? 96 : 300) * quality));
-  const CIRCUIT = Math.max(24, Math.round(42 * quality));
+  const MICRO = compactViewport
+    ? reducedMotion
+      ? 520
+      : 840
+    : Math.max(720, Math.round((reducedMotion ? 1000 : 2400) * quality));
 
-  // A larger, evenly distributed shell reads as a designed object at distance.
-  // A little larger than a conventional point cloud so the field reads as
-  // individual matter, not static grain. It stays screen-space crisp.
-  const SIZE_MICRO = day ? 6.2 : 5.2;
-  const SIZE_SIGNAL = day ? 6.1 : 5.45;
-  const SIZE_RIVER = day ? 6.1 : 5.45;
-  const SIZE_CIRCUIT = day ? 6.8 : 6.05;
+  const sizeMul = compactViewport ? 0.78 : 1;
+  const SIZE_MICRO = (day ? 6.2 : 5.2) * sizeMul;
 
   const steel = useMemo(() => new THREE.Color(day ? "#5a6a7c" : "#f6f4f2"), [day]);
   const silver = useMemo(() => new THREE.Color(day ? "#6d7f93" : "#ddd8eb"), [day]);
@@ -138,17 +152,12 @@ export default function DataGlobe({
 
   const {
     microGeom,
-    signalGeom,
-    riverGeom,
-    circuitGeom,
     baseMicro,
     seeds,
     roles,
     clusterIdx,
     opacBase,
     shapeTargets,
-    rivers,
-    circuitCurve,
     velBuf,
   } = useMemo(() => {
     // Hidden circuitry spine — revealed by antigravity touch
@@ -224,6 +233,31 @@ export default function DataGlobe({
     const velBuf = new Float32Array(MICRO * 3);
 
     let mi = 0;
+    if (compactViewport) {
+      for (let i = 0; i < MICRO; i++) {
+        const yy = 1 - (i / Math.max(1, MICRO - 1)) * 2;
+        const rr = Math.sqrt(Math.max(0, 1 - yy * yy));
+        const theta = Math.PI * (3 - Math.sqrt(5)) * i;
+        const r = 1.8 + hash(i + 31) * 0.08;
+        const x = Math.cos(theta) * rr * r;
+        const y = yy * r;
+        const z = Math.sin(theta) * rr * r;
+        microPos[i * 3] = x;
+        microPos[i * 3 + 1] = y;
+        microPos[i * 3 + 2] = z;
+        microBase[i * 3] = x;
+        microBase[i * 3 + 1] = y;
+        microBase[i * 3 + 2] = z;
+        microSeeds[i] = hash(i + 61);
+        microRoles[i] = 0;
+        microCluster[i] = Math.floor(((Math.atan2(z, x) + Math.PI) / (Math.PI * 2)) * 4) % 4;
+        microOpac[i] = 0.62 + hash(i + 50) * 0.32;
+        microCol[i * 3] = steel.r;
+        microCol[i * 3 + 1] = steel.g;
+        microCol[i * 3 + 2] = steel.b;
+        mi++;
+      }
+    } else {
     let attempt = 0;
     while (mi < MICRO && attempt < MICRO * 6) {
       const i = attempt++;
@@ -319,39 +353,6 @@ export default function DataGlobe({
       microCol[mi * 3 + 2] = base.b;
       mi++;
     }
-
-    const signalPos = new Float32Array(SIGNAL * 3);
-    const signalCol = new Float32Array(SIGNAL * 3);
-    for (let i = 0; i < SIGNAL; i++) {
-      const riv = rivers[i % rivers.length];
-      const p = riv.curve.getPoint(i / SIGNAL);
-      signalPos[i * 3] = p.x;
-      signalPos[i * 3 + 1] = p.y;
-      signalPos[i * 3 + 2] = p.z;
-      signalCol[i * 3] = steel.r;
-      signalCol[i * 3 + 1] = steel.g;
-      signalCol[i * 3 + 2] = steel.b;
-    }
-
-    const riverPos = new Float32Array(RIVER * 3);
-    const riverCol = new Float32Array(RIVER * 3);
-    for (let i = 0; i < RIVER; i++) {
-      riverPos[i * 3 + 1] = -99;
-      riverCol[i * 3] = silver.r;
-      riverCol[i * 3 + 1] = silver.g;
-      riverCol[i * 3 + 2] = silver.b;
-    }
-
-    const circuitPos = new Float32Array(CIRCUIT * 3);
-    const circuitCol = new Float32Array(CIRCUIT * 3);
-    for (let i = 0; i < CIRCUIT; i++) {
-      const p = circuitCurve.getPoint(i / (CIRCUIT - 1));
-      circuitPos[i * 3] = p.x;
-      circuitPos[i * 3 + 1] = p.y;
-      circuitPos[i * 3 + 2] = p.z;
-      circuitCol[i * 3] = accent.r;
-      circuitCol[i * 3 + 1] = accent.g;
-      circuitCol[i * 3 + 2] = accent.b;
     }
 
     const trim = (arr, n) => arr.subarray(0, n * 3).slice();
@@ -394,34 +395,18 @@ export default function DataGlobe({
     const mg = new THREE.BufferGeometry();
     mg.setAttribute("position", new THREE.BufferAttribute(trim(microPos, mi), 3));
     mg.setAttribute("color", new THREE.BufferAttribute(trim(microCol, mi), 3));
-    const sg = new THREE.BufferGeometry();
-    sg.setAttribute("position", new THREE.BufferAttribute(signalPos, 3));
-    sg.setAttribute("color", new THREE.BufferAttribute(signalCol, 3));
-    const rg = new THREE.BufferGeometry();
-    rg.setAttribute("position", new THREE.BufferAttribute(riverPos, 3));
-    rg.setAttribute("color", new THREE.BufferAttribute(riverCol, 3));
-    const cg = new THREE.BufferGeometry();
-    cg.setAttribute("position", new THREE.BufferAttribute(circuitPos, 3));
-    cg.setAttribute("color", new THREE.BufferAttribute(circuitCol, 3));
 
     return {
       microGeom: mg,
-      signalGeom: sg,
-      riverGeom: rg,
-      circuitGeom: cg,
       baseMicro: basePoints,
       seeds: microSeeds.subarray(0, mi).slice(),
       roles: microRoles.subarray(0, mi).slice(),
       clusterIdx: microCluster.subarray(0, mi).slice(),
       opacBase: microOpac.subarray(0, mi).slice(),
       shapeTargets,
-      rivers,
-      circuitCurve,
       velBuf: velBuf.subarray(0, mi * 3),
     };
-  // Theme changes are material-only. Keeping this geometry stable preserves
-  // the living particle field, its velocity, and its current scroll state.
-  }, [MICRO, SIGNAL, RIVER, CIRCUIT]);
+  }, [MICRO, compactViewport]);
 
   useFrame((state, delta) => {
     if (!group.current) return;
@@ -500,7 +485,11 @@ export default function DataGlobe({
     const riverTarget = forming ? 0.72 : story === "silence" ? 0.15 : story === "emergence" ? 0.55 : 1;
     riverAwake.current = THREE.MathUtils.damp(riverAwake.current, riverTarget, 1.2, dt);
 
-    if (!forming && cursor?.active && (story === "explore" || story === "identity") && !inWork) {
+    if (
+      !compactViewport &&
+      cursor?.active &&
+      !inWork
+    ) {
       target.current.y = cursor.nx * Math.PI;
       target.current.x = THREE.MathUtils.clamp(0.08 + cursor.ny * 0.72, -0.9, 0.9);
       energy.current = THREE.MathUtils.damp(
@@ -516,23 +505,37 @@ export default function DataGlobe({
     }
 
     // Globe rotation follows cursor directly, with damping on the object itself
-    vel.current.x += (target.current.x - orient.current.x) * 3.8 * dt;
-    vel.current.y += (target.current.y - orient.current.y) * 3.2 * dt;
-    vel.current.x *= 0.82;
-    vel.current.y *= 0.82;
-    orient.current.x += vel.current.x * dt * 14;
-    orient.current.y += vel.current.y * dt * 14;
+    if (compactViewport) {
+      if (!reducedMotion) orient.current.y += dt * 0.24;
+      orient.current.x = THREE.MathUtils.damp(
+        orient.current.x,
+        0.1 + Math.sin(time * 0.18) * 0.05,
+        1.1,
+        dt
+      );
+    } else {
+      vel.current.x += (target.current.x - orient.current.x) * 3.8 * dt;
+      vel.current.y += (target.current.y - orient.current.y) * 3.2 * dt;
+      vel.current.x *= 0.82;
+      vel.current.y *= 0.82;
+      orient.current.x += vel.current.x * dt * 14;
+      orient.current.y += vel.current.y * dt * 14;
+    }
     group.current.rotation.x = orient.current.x;
     group.current.rotation.y = orient.current.y;
     const scaleBase = 0.78 + reveal.current * 0.22;
     let scaleMul = THREE.MathUtils.lerp(scaleBase, 1.06, dec * 0.35);
     if (aiConsoleOpen) scaleMul = THREE.MathUtils.lerp(scaleBase, 0.9, 0.7);
-    // Portrait screens need a deliberately composed, breathing object rather
-    // than a desktop globe cropped by the narrow viewport.
-    if (compactViewport) scaleMul *= 0.62;
+    if (compactViewport) scaleMul *= 0.86;
     group.current.scale.setScalar(scaleMul);
-    const gx = aiConsoleOpen ? -1.55 : inAi ? 1.45 : 0;
-    const gy = compactViewport ? 0.36 : 0;
+    const gx = compactViewport
+      ? 0.22
+      : aiConsoleOpen
+        ? -1.55
+        : inAi
+          ? 1.45
+          : 0;
+    const gy = compactViewport ? 0.06 : 0;
     groupPos.current.x = THREE.MathUtils.damp(groupPos.current.x, gx, 1.85, dt);
     groupPos.current.y = THREE.MathUtils.damp(groupPos.current.y, gy, 1.85, dt);
     group.current.position.set(groupPos.current.x, groupPos.current.y, 0);
@@ -540,6 +543,61 @@ export default function DataGlobe({
 
     let nearSecret = 0;
     const e = energy.current;
+
+    if (compactViewport && microRef.current && baseMicro) {
+      const pos = microRef.current.geometry.attributes.position.array;
+      const n = Math.floor(baseMicro.length / 3);
+      const visible = Math.floor(n * density.current);
+      microRef.current.geometry.setDrawRange(0, visible);
+      for (let i = 0; i < visible; i++) {
+        const i3 = i * 3;
+        const seed = seeds[i] || 0;
+        const from = shapeTargets[fromId] || baseMicro;
+        const next = shapeTargets[toId] || baseMicro;
+        let x = THREE.MathUtils.lerp(from[i3], next[i3], alignment);
+        let y = THREE.MathUtils.lerp(from[i3 + 1], next[i3 + 1], alignment);
+        let z = THREE.MathUtils.lerp(from[i3 + 2], next[i3 + 2], alignment);
+        if (!reducedMotion) {
+          const amp = 0.01;
+          x += Math.cos(time * 0.22 + seed * 9) * amp;
+          y += Math.sin(time * 0.18 + seed * 7) * amp;
+          z += Math.sin(time * 0.16 + seed * 5) * amp;
+        }
+        if (cursor?.active) {
+          const cx = cursor.nx * 1.6;
+          const cy = cursor.ny * 1.15;
+          const dx = x - cx;
+          const dy = y - cy;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < 2.4) {
+            const fall = 1 - d2 / 2.4;
+            const f = fall * fall * 0.55;
+            x += dx * f * 0.35 - dy * f * 0.85;
+            y += dy * f * 0.35 + dx * f * 0.85;
+          }
+        }
+        pos[i3] = x;
+        pos[i3 + 1] = y;
+        pos[i3 + 2] = z;
+      }
+      microRef.current.geometry.attributes.position.needsUpdate = true;
+      microRef.current.material.opacity = Math.min(
+        1,
+        (0.92 + reveal.current * 0.08) * (day ? 1.12 : 1) * (aiConsoleOpen ? 0.62 : 1)
+      );
+      microRef.current.material.size = SIZE_MICRO;
+      if (stateRef?.current) {
+        stateRef.current.globeEnergy = e;
+        stateRef.current.globeRotY = orient.current.y;
+        stateRef.current.globeRotX = orient.current.x;
+        stateRef.current.breath = 0;
+        stateRef.current.reveal = reveal.current;
+        stateRef.current.colourWake = 0;
+        stateRef.current.secretWake = 0;
+        stateRef.current.decompose = dec;
+      }
+      return;
+    }
 
     if (microRef.current && baseMicro) {
       const pos = microRef.current.geometry.attributes.position.array;
@@ -645,13 +703,13 @@ export default function DataGlobe({
           const dx = ndcTmp.current.x - cursor.nx;
           const dy = ndcTmp.current.y - cursor.ny;
           const d2 = dx * dx + dy * dy;
-          if (d2 < 0.12) {
-            const fall = Math.max(0, 1 - d2 / 0.12);
-            const f = fall * fall * 0.55;
+          if (d2 < 0.42) {
+            const fall = Math.max(0, 1 - d2 / 0.42);
+            const f = fall * fall;
             const attract = role === 2 && secretWake.current > 0.35 ? -0.4 : 1;
-            velBuf[i3] += dx * f * 28 * attract * dt;
-            velBuf[i3 + 1] += dy * f * 28 * attract * dt;
-            if (role === 2 || d2 < 0.04) {
+            velBuf[i3] += (dx * 18 * attract - dy * 36) * f * dt;
+            velBuf[i3 + 1] += (dy * 18 * attract + dx * 36) * f * dt;
+            if (role === 2 || d2 < 0.08) {
               nearSecret = Math.max(nearSecret, fall);
             }
           }

@@ -3,13 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import WorldPageNav from "@/components/world/WorldPageNav";
-import ProjectPipelineCanvas from "@/components/world/ProjectPipelineCanvas";
 import InstallationGlyph from "./InstallationGlyph";
 import { getInstallation, getInstallationNav } from "@/lib/data/work-exhibition";
 import { useWorldTheme } from "@/lib/use-world-theme";
 import "@/styles/mansi-world-of-data.css";
 import "@/styles/mansi-work.css";
+
+const ProjectPipelineCanvas = dynamic(
+  () => import("@/components/world/ProjectPipelineCanvas"),
+  { ssr: false, loading: () => <div className="wd-pipeline-stage" aria-hidden /> }
+);
 
 function ProjectSchematic({ schematic }) {
   if (!schematic) return null;
@@ -110,7 +115,7 @@ function DecisionCard({ d }) {
  */
 export default function InstallationRoom({ slug }) {
   const [theme] = useWorldTheme();
-  const [activeLayer, setActiveLayer] = useState(null);
+  const [activeLayer, setActiveLayer] = useState(0);
   const install = getInstallation(slug);
   const nav = getInstallationNav(slug);
 
@@ -172,7 +177,7 @@ export default function InstallationRoom({ slug }) {
         {layers.length ? (
           <section className="wk-section">
             <p className="mx-coord">02 — THE SYSTEM</p>
-            <p className="mx-whisper mb-8">Select a layer to see its role.</p>
+            <p className="mx-whisper mb-8 wk-arch-hint">Select a layer to see its role.</p>
             <div className="wk-arch">
               {layers.map((layer, i) => {
                 const label = typeof layer === "string" ? layer : layer;
@@ -183,17 +188,18 @@ export default function InstallationRoom({ slug }) {
                     key={label}
                     type="button"
                     className={`wk-arch-node ${activeLayer === i ? "is-active" : ""}`}
-                    onMouseEnter={() => setActiveLayer(i)}
+                    onPointerEnter={(event) => {
+                      if (event.pointerType === "touch") return;
+                      setActiveLayer(i);
+                    }}
                     onFocus={() => setActiveLayer(i)}
                     onClick={() => setActiveLayer(i)}
                   >
                     <span className="mx-mono">{String(i + 1).padStart(2, "0")}</span>
                     <span className="wk-arch-label">{label}</span>
-                    {activeLayer === i ? (
-                      <span className="wk-arch-detail">
-                        {flow?.body || note || "Part of the documented architecture."}
-                      </span>
-                    ) : null}
+                    <span className="wk-arch-detail">
+                      {flow?.body || note || "Part of the documented architecture."}
+                    </span>
                   </button>
                 );
               })}

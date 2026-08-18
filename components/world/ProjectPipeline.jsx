@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
 import * as THREE from "three";
 import { getPointMap } from "./pointMap";
 import { THEME, semanticColor } from "@/lib/data/data-world";
 import { getProjectMeta } from "@/lib/data/project-meta";
+
+const PipelineStageLabels = lazy(() => import("./PipelineStageLabels"));
 
 const FLOW_PER_PATH = 18;
 // The project state is a supporting atmospheric object; the documented flow panel
@@ -412,23 +413,11 @@ export default function ProjectPipeline({
           toneMapped={false}
         />
       </points>
-      {layout !== "page"
-        ? stages.map((stage, index) => (
-            <Text
-              key={`${stage.label}-${index}`}
-              position={stage.pos}
-              fontSize={0.045}
-              maxWidth={1.35}
-              color={index === 0 ? t.accent : t.steel}
-              anchorX="center"
-              anchorY="bottom"
-              outlineWidth={0.002}
-              outlineColor={t.bg}
-            >
-              {stage.label}
-            </Text>
-          ))
-        : null}
+      {layout !== "page" ? (
+        <Suspense fallback={null}>
+          <PipelineStageLabels stages={stages} themeId={themeId} />
+        </Suspense>
+      ) : null}
     </group>
   );
 }
