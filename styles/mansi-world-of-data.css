@@ -11816,14 +11816,56 @@ html[data-world-theme="day"] .wd-scroll-story--stack .wd-tile {
 }
 
 .wd-scroll-story--stack .wd-tile__blurb {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 3.9em;
+  display: block;
+  overflow: visible;
+  min-height: 0;
+  color: var(--wd-ink);
+  font-size: 0.98rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+}
+
+.wd-tile__stack {
+  color: var(--wd-accent);
+  font-family: var(--wd-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wd-tile__lenses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+}
+
+.wd-tile__lenses i {
+  padding: 0.22rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--wd-accent) 28%, transparent);
+  border-radius: 999px;
   color: var(--wd-muted);
-  font-size: 0.9rem;
-  line-height: 1.45;
+  font-family: var(--wd-font-mono);
+  font-size: 0.68rem;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wd-tile--taste .wd-tile__foot {
+  justify-content: flex-end;
+}
+
+.wd-tile--taste .wd-tile__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--wd-accent);
+  font-family: var(--wd-font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .wd-scroll-story--stack .wd-tile__tags {
