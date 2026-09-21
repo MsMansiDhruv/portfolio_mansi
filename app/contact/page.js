@@ -120,59 +120,5 @@ export default function Contact() {
       </main>
       <SiteFooter />
     </div>
-
-        <div className="wd-contact-split">
-          <div data-rise>
-            <p className="wd-studio-kicker">Direct</p>
-            <a className="wd-route__mail" href={`mailto:${SOCIAL_LINKS.email}`}>
-              {SOCIAL_LINKS.email}
-            </a>
-            <nav className="wd-studio-links" aria-label="Elsewhere">
-              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer">
-                <Linkedin size={16} /> LinkedIn
-              </a>
-              <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer">
-                <Github size={16} /> GitHub
-              </a>
-              <a href="/resume.pdf" target="_blank" rel="noreferrer">
-                Resume <ArrowUpRight size={14} />
-              </a>
-              <Link href="/credentials">About</Link>
-            </nav>
-          </div>
-
-          {done ? (
-            <p className="wd-page-body" data-rise>
-              Thanks — your message was sent. I will reply when I can.
-            </p>
-          ) : (
-            <form onSubmit={submit} className="wd-contact-form" data-rise>
-              <label>
-                <span>Name</span>
-                <input value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
-              </label>
-              <label>
-                <span>Email</span>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
-              </label>
-              <label>
-                <span>Message</span>
-                <textarea value={msg} onChange={(e) => setMsg(e.target.value)} required rows={6} />
-              </label>
-              {error ? (
-                <div className="wd-contact-error" role="alert">
-                  <p>{error}</p>
-                  {mailtoFallback ? <a href={mailtoFallback}>Open email with your message →</a> : null}
-                </div>
-              ) : null}
-              <button type="submit" disabled={submitting} className="wd-contact-submit">
-                <Send size={16} /> {submitting ? "Sending…" : "Send message"}
-              </button>
-            </form>
-          )}
-        </div>
-      </main>
-      <SiteFooter />
-    </div>
   );
 }

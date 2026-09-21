@@ -40,45 +40,14 @@ export function useStudioMotion(ref) {
         if (reduce) return;
 
         const rises = gsap.utils.toArray("[data-rise]");
-        rises.forEach((node, index) => {
-          gsap.fromTo(
-            node,
-            { y: 22, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.7,
-              delay: index * 0.08,
-              ease: "power3.out",
-              overwrite: "auto",
-            }
-          );
+        gsap.from(rises, {
+          y: 18,
+          opacity: 0,
+          duration: 0.65,
+          stagger: 0.1,
+          ease: "power3.out",
+          clearProps: "transform,opacity",
         });
-
-        const fields = gsap.utils.toArray(".wd-contact-form label");
-        if (fields.length) {
-          gsap.fromTo(
-            fields,
-            { y: 14, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.5,
-              stagger: 0.08,
-              delay: 0.22,
-              ease: "power2.out",
-            }
-          );
-        }
-
-        const submit = root.querySelector(".wd-contact-submit");
-        if (submit) {
-          gsap.fromTo(
-            submit,
-            { y: 10, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.45, delay: 0.48, ease: "power2.out" }
-          );
-        }
       }, root);
       ScrollTrigger.refresh();
     });
