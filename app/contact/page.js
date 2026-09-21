@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight, Github, Linkedin, Mail, Send } from "lucide-react";
 import WorldPageNav from "@/components/world/WorldPageNav";
 import SiteFooter from "@/components/world/SiteFooter";
+import FieldSpirals from "@/components/world/FieldSpirals";
 import { useStudioMotion } from "@/components/world/useStudioMotion";
 import { SOCIAL_LINKS } from "@/lib/data/social-links";
 import { useWorldTheme } from "@/lib/use-world-theme";
@@ -52,8 +53,9 @@ export default function Contact() {
   }
 
   return (
-    <div ref={rootRef} className="wd-root wd-studio-shell" data-theme={theme} suppressHydrationWarning>
+    <div ref={rootRef} className="wd-root wd-page wd-studio-shell" data-theme={theme} suppressHydrationWarning>
       <WorldPageNav active="contact" />
+      <FieldSpirals />
       <main className="wd-studio-main">
         <header className="wd-studio-hero">
           <div data-rise>

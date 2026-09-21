@@ -18,6 +18,8 @@
 }
 
 .wd-studio-main {
+  position: relative;
+  z-index: 3;
   width: min(88rem, calc(100% - 2.4rem));
   margin: 0 auto;
   padding: calc(var(--wd-bar-h, 4.5rem) + 2.2rem) 0 5rem;
