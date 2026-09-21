@@ -3,6 +3,8 @@
 import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import WorldPageNav from "@/components/world/WorldPageNav";
+import SiteFooter from "@/components/world/SiteFooter";
+import ProjectPager from "./ProjectPager";
 import InstallationGlyph from "./InstallationGlyph";
 import FlowingArchitectureGraph from "@/components/projects/FlowingArchitectureGraph";
 import { useGsapLenis } from "@/components/world/useGsapLenis";
@@ -22,10 +24,7 @@ import {
   Database,
   Filter,
   GitBranch,
-  Compass,
-  LayoutGrid,
   Layers,
-  ArrowRight,
   Lightbulb,
   ListTodo,
   Scale,
@@ -417,49 +416,9 @@ export default function InstallationRoom({ slug }) {
             </div>
           ) : null}
         </section>
-
-        <nav className="wd-case__nav" aria-label="Project navigation">
-          <Link href="/" className="wd-case__nav-link">
-            <span className="wd-case__nav-ico" aria-hidden>
-              <Compass strokeWidth={1.7} />
-            </span>
-            <span>
-              <em>Home</em>
-              <strong>Back to the map</strong>
-            </span>
-          </Link>
-          <Link href="/projects" className="wd-case__nav-link">
-            <span className="wd-case__nav-ico" aria-hidden>
-              <LayoutGrid strokeWidth={1.7} />
-            </span>
-            <span>
-              <em>Work</em>
-              <strong>All systems</strong>
-            </span>
-          </Link>
-          {nav.next ? (
-            <Link href={`/projects/${nav.next.slug}`} className="wd-case__nav-link is-next">
-              <span className="wd-case__nav-ico" aria-hidden>
-                <ArrowRight strokeWidth={1.7} />
-              </span>
-              <span>
-                <em>Next system</em>
-                <strong>{nav.next.cardTitle || nav.next.title}</strong>
-              </span>
-            </Link>
-          ) : nav.prev ? (
-            <Link href={`/projects/${nav.prev.slug}`} className="wd-case__nav-link is-next">
-              <span className="wd-case__nav-ico" aria-hidden>
-                <ArrowRight strokeWidth={1.7} />
-              </span>
-              <span>
-                <em>Previous system</em>
-                <strong>{nav.prev.cardTitle || nav.prev.title}</strong>
-              </span>
-            </Link>
-          ) : null}
-        </nav>
       </div>
+      <ProjectPager prev={nav.prev} next={nav.next} />
+      <SiteFooter />
     </div>
   );
 }

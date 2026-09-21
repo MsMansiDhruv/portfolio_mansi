@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useWorldTheme } from "@/lib/use-world-theme";
 import WorldPageNav from "@/components/world/WorldPageNav";
+import SiteFooter from "@/components/world/SiteFooter";
 import { formatResponseSections, generateResponse } from "./engine";
 import "@/styles/mansi-world-of-data.css";
 
@@ -453,6 +454,7 @@ export default function AiLabClient() {
           </div>
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }

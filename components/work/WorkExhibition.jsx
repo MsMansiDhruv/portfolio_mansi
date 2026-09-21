@@ -3,6 +3,7 @@
 import { useCallback, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import WorldPageNav from "@/components/world/WorldPageNav";
+import SiteFooter from "@/components/world/SiteFooter";
 import FieldSpirals from "@/components/world/FieldSpirals";
 import { useGsapLenis } from "@/components/world/useGsapLenis";
 import { WORK_OPENING, WORK_INSTALLATIONS, WORK_SECONDARY, WORK_EXPERIMENTS } from "@/lib/data/work-catalog";
@@ -262,6 +263,7 @@ export default function WorkExhibition() {
           />
         ) : null}
       </main>
+      <SiteFooter />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Github, Linkedin, Mail, Send } from "lucide-react";
 import WorldPageNav from "@/components/world/WorldPageNav";
+import SiteFooter from "@/components/world/SiteFooter";
 import { useStudioMotion } from "@/components/world/useStudioMotion";
 import { SOCIAL_LINKS } from "@/lib/data/social-links";
 import { useWorldTheme } from "@/lib/use-world-theme";
@@ -122,6 +123,7 @@ export default function Contact() {
           )}
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }

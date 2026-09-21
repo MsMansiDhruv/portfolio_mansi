@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Award, FileText, Mail } from "lucide-react";
 import WorldPageNav from "@/components/world/WorldPageNav";
+import SiteFooter from "@/components/world/SiteFooter";
 import { useStudioMotion } from "@/components/world/useStudioMotion";
 import {
   AWARDS,
@@ -179,6 +180,7 @@ export default function CredentialsPage() {
           </Link>
         </nav>
       </main>
+      <SiteFooter />
     </div>
   );
 }

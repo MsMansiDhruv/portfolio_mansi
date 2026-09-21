@@ -22,6 +22,7 @@ import { useWorldTheme } from "@/lib/use-world-theme";
 import { useWorldViewport } from "@/lib/use-world-viewport";
 import { useCursorField } from "@/lib/use-cursor-field";
 import WelcomeGate from "./WelcomeGate";
+import SiteFooter from "./SiteFooter";
 import { bindStackMotion } from "./bindStackMotion";
 import PanelCard from "./PanelCard";
 
@@ -541,6 +542,7 @@ export default function WorldApp({ skipWelcome = false }) {
           </PanelCard>
         </section>
       </main>
+      <SiteFooter />
 
       <div className="wd-hud">
         {aiMode ? (
