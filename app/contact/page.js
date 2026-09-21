@@ -2,15 +2,43 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Github, Linkedin, Send } from "lucide-react";
+import { ArrowUpRight, Send } from "lucide-react";
 import WorldPageNav from "@/components/world/WorldPageNav";
 import SiteFooter from "@/components/world/SiteFooter";
 import FieldSpirals from "@/components/world/FieldSpirals";
 import { useStudioMotion } from "@/components/world/useStudioMotion";
+import { IDENTITY } from "@/lib/data/identity";
 import { SOCIAL_LINKS } from "@/lib/data/social-links";
 import { useWorldTheme } from "@/lib/use-world-theme";
 import "@/styles/mansi-world-of-data.css";
 import "@/styles/mansi-studio.css";
+
+const CHANNELS = [
+  {
+    label: "Email",
+    value: SOCIAL_LINKS.email,
+    href: `mailto:${SOCIAL_LINKS.email}`,
+    external: false,
+  },
+  {
+    label: "LinkedIn",
+    value: "Profile",
+    href: SOCIAL_LINKS.linkedin,
+    external: true,
+  },
+  {
+    label: "Resume",
+    value: "PDF",
+    href: "/resume.pdf",
+    external: true,
+  },
+  {
+    label: "About",
+    value: "Career and signals",
+    href: "/credentials",
+    external: false,
+  },
+];
 
 export default function Contact() {
   const [theme] = useWorldTheme();
@@ -37,13 +65,13 @@ export default function Contact() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.error || "Something went wrong while sending your message.");
+        setError(data.error || "The message did not send. Try again, or use email.");
         if (data.mailto) setMailtoFallback(data.mailto);
         return;
       }
       setDone(true);
     } catch {
-      setError("Something went wrong while sending your message.");
+      setError("The message did not send. Try again, or use email.");
       setMailtoFallback(
         `mailto:${SOCIAL_LINKS.email}?subject=${encodeURIComponent(`Website contact from ${name}`)}&body=${encodeURIComponent(`${msg}\n\n— ${name}\n${email}`)}`
       );
@@ -53,67 +81,124 @@ export default function Contact() {
   }
 
   return (
-    <div ref={rootRef} className="wd-root wd-page wd-page--contact wd-studio-shell" data-theme={theme} suppressHydrationWarning>
+    <div
+      ref={rootRef}
+      className="wd-root wd-page wd-page--contact wd-studio-shell"
+      data-theme={theme}
+      suppressHydrationWarning
+    >
       <WorldPageNav active="contact" />
       <FieldSpirals />
-      <main className="wd-studio-main">
-        <header className="wd-studio-hero wd-studio-hero--plain">
-          <div data-rise>
-            <p className="wd-studio-kicker">Contact</p>
-            <h1>If the work holds, write.</h1>
-            <p>
-              Hiring, a collaboration, or a design review. Send the constraint. I will answer like an engineer.
-            </p>
-          </div>
+      <main className="wd-contact">
+        <header className="wd-contact__intro" data-rise>
+          <p className="wd-studio-kicker">Contact</p>
+          <h1>Start with the constraint.</h1>
+          <p className="wd-contact__role">{IDENTITY.headline}</p>
+          <p className="wd-contact__lead">
+            Hiring, a collaboration, or a design review. Tell me the system, the pressure, and what has to hold. I will
+            answer like an engineer.
+          </p>
         </header>
 
-        <div className="wd-contact-split">
-          <div data-rise>
+        <div className="wd-contact__board">
+          <aside className="wd-contact__aside" data-rise>
             <p className="wd-studio-kicker">Direct</p>
-            <a className="wd-route__mail" href={`mailto:${SOCIAL_LINKS.email}`}>
-              {SOCIAL_LINKS.email}
-            </a>
-            <nav className="wd-studio-links" aria-label="Elsewhere">
-              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer">
-                <Linkedin size={16} /> LinkedIn
-              </a>
-              <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer">
-                <Github size={16} /> GitHub
-              </a>
-              <a href="/resume.pdf" target="_blank" rel="noreferrer">
-                Resume <ArrowUpRight size={14} />
-              </a>
-              <Link href="/credentials">About</Link>
-            </nav>
-          </div>
+            <ul className="wd-contact__channels">
+              {CHANNELS.map((item) => {
+                const inner = (
+                  <>
+                    <span>{item.label}</span>
+                    <strong>{item.value}</strong>
+                    <ArrowUpRight size={16} aria-hidden />
+                  </>
+                );
+                return (
+                  <li key={item.label}>
+                    {item.href.startsWith("/") && !item.external ? (
+                      <Link href={item.href}>{inner}</Link>
+                    ) : (
+                      <a
+                        href={item.href}
+                        {...(item.external
+                          ? { target: "_blank", rel: "noopener noreferrer" }
+                          : {})}
+                      >
+                        {inner}
+                      </a>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </aside>
 
           {done ? (
-            <p className="wd-page-body" data-rise>
-              Thanks — your message was sent. I will reply when I can.
-            </p>
+            <div className="wd-contact__done" data-rise role="status">
+              <p className="wd-studio-kicker">Sent</p>
+              <h2>The note is in.</h2>
+              <p>I will reply when I can. If it is time-sensitive, email is faster.</p>
+              <a className="wd-contact__mail-link" href={`mailto:${SOCIAL_LINKS.email}`}>
+                {SOCIAL_LINKS.email}
+              </a>
+            </div>
           ) : (
             <form onSubmit={submit} className="wd-contact-form" data-rise>
-              <label>
-                <span>Name</span>
-                <input value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
-              </label>
-              <label>
-                <span>Email</span>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
-              </label>
-              <label>
-                <span>Message</span>
-                <textarea value={msg} onChange={(e) => setMsg(e.target.value)} required rows={6} />
+              <header className="wd-contact-form__head">
+                <p className="wd-studio-kicker">Message</p>
+                <h2>Send a note</h2>
+                <p>Name, email, and the actual problem. No need to dress it up.</p>
+              </header>
+              <div className="wd-contact-form__row">
+                <label htmlFor="contact-name">
+                  <span>Name</span>
+                  <input
+                    id="contact-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    autoComplete="name"
+                    placeholder="Your name"
+                  />
+                </label>
+                <label htmlFor="contact-email">
+                  <span>Email</span>
+                  <input
+                    id="contact-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                    placeholder="you@company.com"
+                  />
+                </label>
+              </div>
+              <label htmlFor="contact-msg">
+                <span>The constraint</span>
+                <textarea
+                  id="contact-msg"
+                  value={msg}
+                  onChange={(e) => setMsg(e.target.value)}
+                  required
+                  rows={7}
+                  placeholder="What is breaking, what you need, and by when."
+                />
               </label>
               {error ? (
                 <div className="wd-contact-error" role="alert">
                   <p>{error}</p>
-                  {mailtoFallback ? <a href={mailtoFallback}>Open email with your message →</a> : null}
+                  {mailtoFallback ? (
+                    <a href={mailtoFallback}>Open email with your message</a>
+                  ) : null}
                 </div>
               ) : null}
-              <button type="submit" disabled={submitting} className="wd-contact-submit">
-                <Send size={16} /> {submitting ? "Sending…" : "Send message"}
-              </button>
+              <div className="wd-contact-form__foot">
+                <p>I read every note. Reply is not instant.</p>
+                <button type="submit" disabled={submitting} className="wd-contact-submit">
+                  <Send size={16} aria-hidden />
+                  {submitting ? "Sending…" : "Send"}
+                </button>
+              </div>
             </form>
           )}
         </div>
