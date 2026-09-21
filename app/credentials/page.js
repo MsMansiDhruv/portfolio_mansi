@@ -42,7 +42,7 @@ export default function CredentialsPage() {
 
   return (
     <div ref={rootRef} className="wd-studio-shell" data-theme={theme} suppressHydrationWarning>
-      <WorldPageNav />
+      <WorldPageNav active="about" />
       <main id="about" className="wd-studio-main">
         <header className="wd-studio-hero">
           <div data-rise>

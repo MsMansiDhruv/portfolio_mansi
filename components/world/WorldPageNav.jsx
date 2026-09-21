@@ -14,25 +14,36 @@ import ResumeDock from "./ResumeDock";
 function navIdFromPath(pathname) {
   if (pathname === "/") return "world";
   if (pathname?.startsWith("/projects")) return "work";
-  if (pathname?.startsWith("/credentials") || pathname?.startsWith("/certification")) return "";
+  if (pathname?.startsWith("/tools/ai-lab")) return "ai";
+  if (
+    pathname?.startsWith("/credentials") ||
+    pathname?.startsWith("/certification") ||
+    pathname?.startsWith("/#world-about")
+  ) {
+    return "about";
+  }
   if (pathname?.startsWith("/contact")) return "contact";
   return "";
 }
 
-function NavLinks({ current, idPrefix, onNavigate }) {
-  return WORLD_NAV.map((item) => (
-    <Link
-      key={`${idPrefix}-${item.id}`}
-      href={WORLD_HREF[item.id] || "/"}
-      prefetch={false}
-      scroll={item.id === "ai" || item.id === "about" ? false : undefined}
-      className={`wd-nav__item${current === item.id ? " is-active" : ""}`}
-      aria-current={current === item.id ? "page" : undefined}
-      onClick={onNavigate}
-    >
-      <span className="wd-nav__label">{item.label}</span>
-    </Link>
-  ));
+function NavLinks({ current, idPrefix, onNavigate, pathname }) {
+  return WORLD_NAV.map((item) => {
+    const href = WORLD_HREF[item.id] || "/";
+    const stayOnHomeHash = pathname === "/" && (item.id === "ai" || item.id === "about");
+    return (
+      <Link
+        key={`${idPrefix}-${item.id}`}
+        href={href}
+        prefetch={false}
+        scroll={stayOnHomeHash ? false : undefined}
+        className={`wd-nav__item${current === item.id ? " is-active" : ""}`}
+        aria-current={current === item.id ? "page" : undefined}
+        onClick={onNavigate}
+      >
+        <span className="wd-nav__label">{item.label}</span>
+      </Link>
+    );
+  });
 }
 
 export default function WorldPageNav({ active }) {
@@ -71,7 +82,7 @@ export default function WorldPageNav({ active }) {
           Mansi
         </Link>
         <nav className="wd-nav" aria-label="System">
-          <NavLinks current={current} idPrefix="bar" onNavigate={closeNavSoon} />
+          <NavLinks current={current} idPrefix="bar" onNavigate={closeNavSoon} pathname={pathname} />
         </nav>
         <div className="wd-bar__end">
           <ThemeToggle theme={theme} onClick={toggleTheme} />
@@ -83,7 +94,7 @@ export default function WorldPageNav({ active }) {
         aria-label="Pages"
         aria-hidden={!navOpen}
       >
-        <NavLinks current={current} idPrefix="sheet" onNavigate={closeNavSoon} />
+        <NavLinks current={current} idPrefix="sheet" onNavigate={closeNavSoon} pathname={pathname} />
       </nav>
       <ResumeDock />
     </>

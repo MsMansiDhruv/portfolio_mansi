@@ -42,7 +42,7 @@ export default function AnimeNav({ progress = 0 }) {
             Work
           </Link>
           <Link href="/contact" className="text-[var(--story-grey)]">
-            Next
+            Contact
           </Link>
         </nav>
       </header>

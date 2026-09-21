@@ -9,11 +9,11 @@ import { cn } from "@/lib/cn";
 import StorySiteNav, { StorySiteBrand } from "@/components/story/StorySiteNav";
 
 const navItems = [
-  { label: "Home", href: "/" },
-  { label: "Work", href: "/projects" },
-  { label: "Journey", href: "/credentials" },
-  { label: "Notes", href: "/blog" },
-  { label: "Lab", href: "/tools/ai-lab", highlight: true },
+  { label: "HOME", href: "/" },
+  { label: "WORK", href: "/projects" },
+  { label: "ASK", href: "/#ask" },
+  { label: "ABOUT", href: "/#world-about" },
+  { label: "CONTACT", href: "/contact" },
 ];
 
 const toolItems = [
@@ -136,7 +136,7 @@ export default function Header({ onCommandOpen, cinematic = false }) {
                   )}
                 >
                   Toolkit
-                  <ChevronDown size={16} />
+              <ChevronDown size={16} />
                 </button>
 
                 <div

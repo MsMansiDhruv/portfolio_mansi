@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import StoryMotif from "./StoryMotif";
 import SilhouetteCharacter from "@/components/anime-cinema/SilhouetteCharacter";
 import "@/styles/mansi-world.css";
@@ -19,9 +18,6 @@ export default function StoryChapterShell({
       <StoryMotif variant="ambient" />
 
       <header className="mansi-chapter-hero mx-auto max-w-[1200px]">
-        <Link href="/" className="story-mono mb-6 inline-block text-[10px] text-[var(--u-vermilion)]">
-          ← Return to universe
-        </Link>
         {showSilhouette ? (
           <div className="absolute right-6 top-24 hidden h-32 w-20 opacity-30 md:block lg:right-12 lg:top-28 lg:h-40 lg:w-24">
             <SilhouetteCharacter pose="back" facing="right" rim="warm" />
