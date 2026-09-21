@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
+import { IDENTITY } from "@/lib/data/identity";
 import WorldPageNav from "@/components/world/WorldPageNav";
 import SiteFooter from "@/components/world/SiteFooter";
 import ProjectPager from "./ProjectPager";
@@ -224,7 +225,7 @@ export default function InstallationRoom({ slug }) {
           <div className="wd-case__intro-side">
             <p className="wd-page-lead">{install.tagline || install.subtitle || install.purpose}</p>
             <p className="wd-case__meta">
-              <span className="wd-orange">{install.role}</span>
+              <span className="wd-orange">{IDENTITY.headline}</span>
               {install.timeline ? <span>{install.timeline}</span> : null}
               <span>{install.category}</span>
             </p>

@@ -22,7 +22,7 @@ export default function Footer({ cinematic = false }) {
               Mansi Dhruv
             </p>
             <p className={dark ? "mt-1 text-sm text-[var(--kairo-muted)]" : "mt-1 text-sm text-slate-600 dark:text-slate-400"}>
-              Lead Data Engineer · Solution Architect
+              Lead Data Engineer · Data Platforms · Cloud Architecture
             </p>
           </div>
           <nav

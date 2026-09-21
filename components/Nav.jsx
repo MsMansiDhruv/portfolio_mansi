@@ -43,7 +43,7 @@ export default function Nav() {
             <div className="leading-snug">
               <div className="font-semibold text-logo-main">Mansi Dhruv</div>
               <div className="text-xs text-logo-sub">
-                Lead Data Engineer · Solution Architect
+                Lead Data Engineer · Data Platforms · Cloud Architecture
               </div>
             </div>
           </Link>

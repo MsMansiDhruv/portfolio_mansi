@@ -10,9 +10,8 @@ import {
   AWARDS,
   CAREER_TIMELINE,
   CERTIFICATIONS,
-  getAboutHeroLine,
 } from "@/lib/data/career";
-import { HOW_I_THINK } from "@/lib/data/identity";
+import { HOW_I_THINK, IDENTITY } from "@/lib/data/identity";
 import { RECOMMENDATIONS, getRecommendationText } from "@/lib/data/recommendations";
 import { useWorldTheme } from "@/lib/use-world-theme";
 import "@/styles/mansi-world-of-data.css";
@@ -46,9 +45,9 @@ export default function CredentialsPage() {
       <main id="about" className="wd-studio-main">
         <header className="wd-studio-hero">
           <div data-rise>
-            <p className="wd-studio-kicker">Credentials</p>
+            <p className="wd-studio-kicker">{IDENTITY.headline}</p>
             <h1>How the work got harder — and clearer.</h1>
-            <p>{getAboutHeroLine()}</p>
+            <p>{IDENTITY.statement}</p>
           </div>
           <div className="wd-studio-draw" aria-hidden data-rise>
             <svg viewBox="0 0 420 180">

@@ -25,9 +25,9 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata = {
-  title: "Mansi — Data Engineer",
+  title: "Mansi Dhruv — Lead Data Engineer",
   description:
-    "Interactive world of data — Lead Data Engineer building reliable platforms, pipelines, and cloud systems.",
+    "Lead Data Engineer · Data Platforms · Cloud Architecture. I build reliable data platforms—from raw inputs to decisions teams can trust.",
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     shortcut: "/icon.svg",

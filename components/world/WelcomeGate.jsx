@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { IDENTITY } from "@/lib/data/identity";
 import LatticeLoader from "./LatticeLoader";
 
 const PHASES = [
@@ -35,11 +36,12 @@ export default function WelcomeGate({ open, loading, onEnter }) {
           <circle cx="210" cy="378" r="5" />
         </g>
       </svg>
-      <p className="wd-welcome__kicker">Mansi Dhruv</p>
-      <h1>Data systems.</h1>
-      <p className="wd-welcome__line">
-        A portfolio that opens on the physical map of AI — halls, grids, and the power they draw.
-      </p>
+      <p className="wd-welcome__kicker">{IDENTITY.name}</p>
+      <h1>
+        {IDENTITY.role}
+        <span>{IDENTITY.domains}</span>
+      </h1>
+      <p className="wd-welcome__line">{IDENTITY.statement}</p>
       <button
         type="button"
         className={`wd-welcome__btn${loading ? " is-boot" : ""}`}

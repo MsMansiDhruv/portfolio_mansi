@@ -4,11 +4,10 @@ import { useRef } from "react";
 import { Cloud, Code2, Layers, Timer } from "lucide-react";
 import {
   ABOUT_ME,
-  CURRENT_ROLE,
   getAtAGlance,
 } from "@/lib/data/career";
 import { getExperienceYearsLabel } from "@/lib/career/experience";
-import { HOW_I_THINK, IDENTITY_HERO, PORTRAIT } from "@/lib/data/identity";
+import { HOW_I_THINK, IDENTITY, PORTRAIT } from "@/lib/data/identity";
 import { useGsapRise } from "./useGsapRise";
 
 export default function AboutMe() {
@@ -24,13 +23,13 @@ export default function AboutMe() {
       </figure>
       <div className="wd-about-card__copy">
         <p className="wd-voices__kicker" data-rise-text>
-          {CURRENT_ROLE} · Solution Architect
+          {IDENTITY.headline}
         </p>
         <h2 data-rise-text>
-          {IDENTITY_HERO.name.split(" ")[0]}{" "}
-          <span className="wd-mark">{IDENTITY_HERO.name.split(" ").slice(1).join(" ")}</span>
+          {IDENTITY.givenName}{" "}
+          <span className="wd-mark">{IDENTITY.name.split(" ").slice(1).join(" ")}</span>
         </h2>
-        <p className="wd-about-card__lede" data-rise-text>{ABOUT_ME[0]}</p>
+        <p className="wd-about-card__lede" data-rise-text>{IDENTITY.statement}</p>
         <p className="wd-about-card__body" data-rise-text>{ABOUT_ME[1]}</p>
       </div>
       <ul className="wd-about-card__chips">
