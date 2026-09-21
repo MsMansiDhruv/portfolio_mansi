@@ -238,8 +238,7 @@ export default function AskMansi() {
                 <Icon strokeWidth={1.6} />
               </span>
               <span>
-                <strong className="wd-im__lane-full">{item.label}</strong>
-                <strong className="wd-im__lane-short">{item.short}</strong>
+                <strong className="wd-im__lane" data-short={item.short}>{item.label}</strong>
                 <em>{item.line}</em>
               </span>
             </button>

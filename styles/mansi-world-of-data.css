@@ -1,6 +1,6 @@
 /* Theme tokens live on html so Day/Night cannot fight .wd-root data-theme. */
 html {
-  font-size: 112.5%;
+  font-size: 16.2px;
   scroll-padding-top: calc(var(--wd-bar-h, 4.5rem) + 1.25rem);
   --wd-bg: #070908;
   --wd-ink: #eef1f5;
@@ -7579,8 +7579,24 @@ html.wd-welcome-lock body {
   font-size: 0.95rem;
 }
 
-.wd-im__lane-short {
-  display: none;
+.wd-im__people .wd-im__lane-short {
+  display: none !important;
+}
+
+@media (min-width: 861px) {
+  .wd-scroll-story--stack #ask .wd-im__people .wd-im__lane::after {
+    content: none !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .wd-im__people .wd-im__lane-full {
+    display: none !important;
+  }
+
+  .wd-im__people .wd-im__lane-short {
+    display: block !important;
+  }
 }
 
 .wd-im__people em {
@@ -13034,20 +13050,17 @@ html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-ask__chips butto
     display: none;
   }
 
-  .wd-scroll-story--stack #ask .wd-im__people .wd-im__lane-full {
-    display: none;
+  .wd-scroll-story--stack #ask .wd-im__people .wd-im__lane {
+    font-size: 0;
+    line-height: 0;
   }
 
-  .wd-scroll-story--stack #ask .wd-im__people .wd-im__lane-short {
-    display: block;
-  }
-
-  .wd-scroll-story--stack #ask .wd-im__people strong {
+  .wd-scroll-story--stack #ask .wd-im__people .wd-im__lane::after {
+    content: attr(data-short);
     font-size: 0.68rem;
     font-weight: 650;
-    white-space: nowrap;
-    overflow: visible;
-    text-overflow: clip;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
   }
 
   .wd-scroll-story--stack #ask .wd-im__people em {

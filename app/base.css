@@ -7,6 +7,10 @@ body {
   font-family: var(--font-manrope), var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
 }
 
+html {
+  font-size: 16.2px;
+}
+
 html.lenis,
 html.lenis body {
   scroll-behavior: auto !important;
