@@ -48,36 +48,22 @@ export default function WelcomeGate({ open, loading, onEnter }) {
         onClick={onEnter}
         disabled={loading}
       >
-        {loading ? (
-          <LatticeLoader
-            className="wd-welcome__lattice"
-            status="working"
-            label={PHASES[phase]}
-            pattern="orbit"
-            grid={3}
-            shape="round"
-            color="var(--wd-accent)"
-            doneColor="#1cd6ac"
-            cellSize={6}
-            gap={3}
-            fontSize={11}
-            glow
-            glowColor="var(--wd-accent)"
-            showTimer={false}
-          />
-        ) : (
-          <span className="wd-welcome__ready" aria-hidden>
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-          </span>
-        )}
+        <LatticeLoader
+          className="wd-welcome__lattice"
+          status="working"
+          label={loading ? PHASES[phase] : "Ready"}
+          pattern="orbit"
+          grid={3}
+          shape="round"
+          color="var(--wd-accent)"
+          doneColor="#1cd6ac"
+          cellSize={6}
+          gap={3}
+          fontSize={11}
+          glow
+          glowColor="var(--wd-accent)"
+          showTimer={false}
+        />
         <span className="wd-welcome__cta">
           {loading ? PHASES[phase] : "See the work"}
         </span>

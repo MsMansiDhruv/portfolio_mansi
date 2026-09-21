@@ -18,11 +18,7 @@ function prefetchWorld() {
 function alreadyInside() {
   if (typeof window === "undefined") return false;
   if (window.location.hash) return true;
-  try {
-    return sessionStorage.getItem(ENTERED_KEY) === "1";
-  } catch {
-    return false;
-  }
+  return false;
 }
 
 function markEntered() {

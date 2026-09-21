@@ -45,7 +45,7 @@ export default function SelectedWork() {
       kicker: home.kicker,
       art: home.art,
       artAlt: home.artAlt,
-      metrics: (home.metrics || []).filter((metric) => String(metric.value).includes("%")),
+      metrics: home.metrics || [],
       ...home.taste,
     };
   }).filter(Boolean);
