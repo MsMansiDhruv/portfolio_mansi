@@ -301,11 +301,11 @@ html[data-world-theme="night"] body {
   right: 0;
   z-index: 40;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 1.25rem;
   padding: 1rem clamp(1.2rem, 3vw, 2.6rem);
-  pointer-events: none;
+  pointer-events: auto;
   min-height: var(--wd-bar-h);
   isolation: isolate;
   background: color-mix(in srgb, var(--wd-bg) 88%, transparent);
@@ -348,8 +348,10 @@ html[data-world-theme="night"] body {
 .wd-bar__end {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.45rem;
   justify-self: end;
+  position: relative;
+  z-index: 2;
 }
 
 .wd-brand {
@@ -357,13 +359,19 @@ html[data-world-theme="night"] body {
   border: 0;
   background: transparent;
   color: var(--wd-ink);
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.15rem 0.1rem;
+  text-decoration: none;
   font-family: var(--wd-font-display);
   font-weight: 700;
   font-size: 1.05rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   cursor: pointer;
-  padding: 0.35rem 0;
   justify-self: start;
   transition: color 0.35s var(--wd-ease), opacity 0.9s var(--wd-ease),
     letter-spacing 0.9s var(--wd-ease);
@@ -680,35 +688,40 @@ html[data-world-theme="day"] .wd-resume-dock:focus-visible {
   appearance: none;
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  justify-content: center;
+  gap: 0;
+  width: 2.5rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  min-height: 2.5rem;
+  padding: 0;
   border: 1px solid color-mix(in srgb, var(--wd-line) 70%, transparent);
+  border-radius: 0.7rem;
   background: color-mix(in srgb, var(--wd-surface) 82%, transparent);
-  color: var(--wd-muted);
+  color: var(--wd-ink);
   font-family: var(--wd-font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  padding: 0 0.7rem;
-  min-height: 44px;
   cursor: pointer;
-  transition: background 1.2s var(--wd-ease), color 1.2s var(--wd-ease),
-    border-color 1.2s var(--wd-ease);
+  transition: background 0.35s var(--wd-ease), color 0.35s var(--wd-ease),
+    border-color 0.35s var(--wd-ease);
 }
 
 .wd-theme:hover {
-  color: var(--wd-ink);
+  color: var(--wd-accent);
+  border-color: color-mix(in srgb, var(--wd-accent) 45%, transparent);
 }
 
 .wd-theme__icon {
-  display: none;
+  display: grid;
+  place-items: center;
   line-height: 0;
 }
 
+.wd-theme__label,
 .wd-theme__pip {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--wd-accent);
+  display: none;
 }
 
 .wd-hud {
@@ -1818,7 +1831,7 @@ html[data-world-theme="day"] .wd-resume-dock:focus-visible {
 .wd-root.wd-page .wd-bar,
 .wd-root.wd-page.is-ready .wd-bar {
   opacity: 1;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .wd-root.wd-page .wd-bar > * {
