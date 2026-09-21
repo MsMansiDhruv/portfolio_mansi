@@ -2,12 +2,33 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import {
+  ArrowUpRight,
+  Bot,
+  CheckCircle2,
+  Cpu,
+  GitBranch,
+  Layers,
+  Timer,
+  Wallet,
+  Workflow,
+} from "lucide-react";
 import { HOME_FEATURED_SLUGS } from "@/lib/data/exhibition-order";
 import { getProjectMeta } from "@/lib/data/project-meta";
 import { getWorkArt } from "@/lib/data/work-art";
 import { useGsapPress } from "./useGsapPress";
 import { useGsapRise } from "./useGsapRise";
+
+const METRIC_ICONS = {
+  layers: Layers,
+  workflow: Workflow,
+  check: CheckCircle2,
+  timer: Timer,
+  coins: Wallet,
+  bot: Bot,
+  cpu: Cpu,
+  git: GitBranch,
+};
 
 export default function SelectedWork() {
   const rootRef = useRef(null);
@@ -24,6 +45,7 @@ export default function SelectedWork() {
       kicker: home.kicker,
       art: home.art,
       artAlt: home.artAlt,
+      metrics: home.metrics || [],
       ...home.taste,
     };
   }).filter(Boolean);
@@ -47,7 +69,7 @@ export default function SelectedWork() {
       <div className="wd-pops__viewport">
         <div className="wd-pops__track">
           {frames.map((item) => (
-            <Link key={item.slug} href={`/projects/${item.slug}`} className="wd-tile wd-tile--system wd-tile--taste">
+            <Link key={item.slug} href={`/projects/${item.slug}`} className="wd-tile wd-tile--system">
               <span className="wd-tile__main">
                 <span className="wd-tile__body">
                   <em data-rise-text>
@@ -71,9 +93,22 @@ export default function SelectedWork() {
                 </span>
               </span>
               <span className="wd-tile__foot">
-                <span className="wd-tile__go" data-gsap-btn>
-                  Open case study
-                  <ArrowUpRight size={16} strokeWidth={2.2} aria-hidden />
+                {item.metrics.length ? (
+                  <span className="wd-tile__metrics">
+                    {item.metrics.map((metric) => {
+                      const Icon = METRIC_ICONS[metric.icon] || CheckCircle2;
+                      return (
+                        <span key={metric.label}>
+                          <Icon size={14} strokeWidth={2} aria-hidden />
+                          <b>{metric.value}</b>
+                          <small>{metric.label}</small>
+                        </span>
+                      );
+                    })}
+                  </span>
+                ) : null}
+                <span className="wd-tile__go" aria-hidden>
+                  <ArrowUpRight size={18} strokeWidth={2.2} />
                 </span>
               </span>
             </Link>

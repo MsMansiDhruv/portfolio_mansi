@@ -11853,21 +11853,6 @@ html[data-world-theme="day"] .wd-scroll-story--stack .wd-tile {
   text-transform: uppercase;
 }
 
-.wd-tile--taste .wd-tile__foot {
-  justify-content: flex-end;
-}
-
-.wd-tile--taste .wd-tile__go {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: var(--wd-accent);
-  font-family: var(--wd-font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
 .wd-scroll-story--stack .wd-tile__tags {
   display: flex;
   flex-wrap: wrap;
@@ -11897,6 +11882,7 @@ html[data-world-theme="day"] .wd-scroll-story--stack .wd-tile {
 .wd-tile__foot {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.75rem;
   padding-top: 0.15rem;
 }
