@@ -12665,3 +12665,86 @@ html[data-world-theme="night"] .wd-route-close__foot {
     white-space: normal;
   }
 }
+
+html[data-world-theme="night"] .wd-proof dd,
+html[data-world-theme="night"] .wd-proof--impact dd,
+html[data-world-theme="night"] .wd-proof dd[data-count] {
+  color: #f4f6f5 !important;
+}
+
+.wd-scroll-story--stack #ask .wd-ask__thread,
+.wd-scroll-story--stack #ask .wd-im__thread {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-im__frame {
+  background: #121614;
+  border-color: color-mix(in srgb, var(--wd-line) 80%, transparent);
+  box-shadow: 0 16px 36px color-mix(in srgb, #000 45%, transparent);
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-im__people {
+  background: color-mix(in srgb, #0c0f0d 88%, var(--wd-accent) 6%);
+  border-right-color: color-mix(in srgb, var(--wd-line) 90%, transparent);
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-im__people button {
+  color: var(--wd-ink);
+  border-bottom-color: color-mix(in srgb, var(--wd-line) 80%, transparent);
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-im__people button.is-on {
+  background: color-mix(in srgb, var(--wd-accent) 16%, #121614);
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-ask__shell,
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-im__stage {
+  background: #121614;
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-im__status {
+  color: var(--wd-ink);
+  border-bottom-color: color-mix(in srgb, var(--wd-line) 85%, transparent);
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-ask__thread,
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-im__thread {
+  background: #121614;
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-im__thread .wd-ask__bubble--ai p {
+  background: color-mix(in srgb, #1a1f1c 88%, var(--wd-accent) 6%);
+  border-color: color-mix(in srgb, var(--wd-line) 90%, transparent);
+  color: #dce3df;
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-im__thread .wd-ask__bubble--you p {
+  background: color-mix(in srgb, var(--wd-accent) 22%, #1a1f1c);
+  color: #f2f6f3;
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-im__thread .wd-ask__bubble span {
+  color: color-mix(in srgb, var(--wd-accent) 75%, #fff);
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-ask__bar {
+  background: #0e1210;
+  border-top-color: color-mix(in srgb, var(--wd-line) 85%, transparent);
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-ask__bar textarea {
+  background: #0e1210;
+  color: var(--wd-ink);
+  border-color: color-mix(in srgb, var(--wd-line) 80%, transparent);
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-ask__bar textarea::placeholder {
+  color: color-mix(in srgb, var(--wd-muted) 80%, transparent);
+}
+
+html[data-world-theme="night"] .wd-scroll-story--stack #ask .wd-ask__chips button {
+  border-color: color-mix(in srgb, var(--wd-line) 85%, transparent);
+  color: var(--wd-muted);
+  background: transparent;
+}

@@ -107,8 +107,20 @@ export default function AskMansi() {
   const active = LANES.find((item) => item.id === mode);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    const el = listRef.current;
+    if (!el) return undefined;
+
+    const sync = () => {
+      const nested = el.scrollHeight > el.clientHeight + 4;
+      if (nested) el.setAttribute("data-lenis-prevent", "");
+      else el.removeAttribute("data-lenis-prevent");
+    };
+
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [lines, busy]);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -247,7 +259,7 @@ export default function AskMansi() {
             </button>
           ) : null}
         </header>
-        <div className="wd-ask__thread wd-im__thread" ref={listRef} data-lenis-prevent>
+        <div className="wd-ask__thread wd-im__thread" ref={listRef}>
           {lines.map((line, n) => (
             <div key={`${line.who}-${n}`} className={`wd-ask__bubble wd-ask__bubble--${line.who}`}>
               {line.who === "ai" ? <img src="/lab/mansi-face.png" alt="" /> : <span className="wd-im__you">You</span>}
