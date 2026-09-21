@@ -32,38 +32,38 @@ export default function AboutMe() {
         </h2>
         <p className="wd-about-card__lede" data-rise-text>{ABOUT_ME[0]}</p>
         <p className="wd-about-card__body" data-rise-text>{ABOUT_ME[1]}</p>
-        <ul className="wd-about-card__chips">
-          <li>
-            <span className="wd-about-card__icon" aria-hidden>
-              <Timer size={18} strokeWidth={1.7} />
-            </span>
-            <strong>{years}</strong>
-            <em>Experience</em>
-          </li>
-          <li>
-            <span className="wd-about-card__icon" aria-hidden>
-              <Layers size={18} strokeWidth={1.7} />
-            </span>
-            <strong>Data Platforms</strong>
-            <em>{glance.domains.replace("Data Platforms · ", "")}</em>
-          </li>
-          <li>
-            <span className="wd-about-card__icon" aria-hidden>
-              <Cloud size={18} strokeWidth={1.7} />
-            </span>
-            <strong>{glance.cloud}</strong>
-            <em>Cloud</em>
-          </li>
-          <li>
-            <span className="wd-about-card__icon" aria-hidden>
-              <Code2 size={18} strokeWidth={1.7} />
-            </span>
-            <strong>Python · Scala</strong>
-            <em>SQL · Spark</em>
-          </li>
-        </ul>
-        <p className="wd-about-card__quote" data-rise-text>“{HOW_I_THINK[0]}”</p>
       </div>
+      <ul className="wd-about-card__chips">
+        <li>
+          <span className="wd-about-card__icon" aria-hidden>
+            <Timer size={18} strokeWidth={1.7} />
+          </span>
+          <strong>{years}</strong>
+          <em>Experience</em>
+        </li>
+        <li>
+          <span className="wd-about-card__icon" aria-hidden>
+            <Layers size={18} strokeWidth={1.7} />
+          </span>
+          <strong>Data Platforms</strong>
+          <em>{glance.domains.replace("Data Platforms · ", "")}</em>
+        </li>
+        <li>
+          <span className="wd-about-card__icon" aria-hidden>
+            <Cloud size={18} strokeWidth={1.7} />
+          </span>
+          <strong>{glance.cloud}</strong>
+          <em>Cloud</em>
+        </li>
+        <li>
+          <span className="wd-about-card__icon" aria-hidden>
+            <Code2 size={18} strokeWidth={1.7} />
+          </span>
+          <strong>Python · Scala</strong>
+          <em>SQL · Spark</em>
+        </li>
+      </ul>
+      <p className="wd-about-card__quote" data-rise-text>“{HOW_I_THINK[0]}”</p>
     </div>
   );
 }

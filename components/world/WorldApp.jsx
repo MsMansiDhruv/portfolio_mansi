@@ -15,33 +15,39 @@ import {
   approachNode,
 } from "@/lib/data/data-world";
 import NavToggle from "./NavToggle";
+import ThemeToggle from "./ThemeToggle";
 import { getProjectMeta } from "@/lib/data/project-meta";
 import { toggleWorldTheme } from "@/lib/world-theme";
 import { useWorldTheme } from "@/lib/use-world-theme";
 import { useWorldViewport } from "@/lib/use-world-viewport";
 import { useCursorField } from "@/lib/use-cursor-field";
-import { ContactRouteBoard } from "./IconBoards";
-import SystemCursor from "./SystemCursor";
 import WelcomeGate from "./WelcomeGate";
-import SelectedWork from "./SelectedWork";
-import AskMansi from "./AskMansi";
-import AboutMe from "./AboutMe";
 import { bindStackMotion } from "./bindStackMotion";
 import PanelCard from "./PanelCard";
-import FieldSpirals from "./FieldSpirals";
-import { ImpactBand } from "./HomeBands";
 
 const ComputeWeatherMap = dynamic(() => import("./ComputeWeatherMap"), {
   ssr: false,
   loading: () => <div className="wd-compute wd-compute--loading" aria-hidden />,
 });
 
+const SelectedWork = dynamic(() => import("./SelectedWork"), { ssr: false });
+const AskMansi = dynamic(() => import("./AskMansi"), { ssr: false });
+const AboutMe = dynamic(() => import("./AboutMe"), { ssr: false });
+const FieldSpirals = dynamic(() => import("./FieldSpirals"), { ssr: false });
+const SystemCursor = dynamic(() => import("./SystemCursor"), { ssr: false });
 const AiModeSurface = dynamic(() => import("./AiModeSurface"), { ssr: false });
+const ImpactBand = dynamic(() => import("./HomeBands").then((m) => ({ default: m.ImpactBand })), {
+  ssr: false,
+});
+const ContactRouteBoard = dynamic(
+  () => import("./IconBoards").then((m) => ({ default: m.ContactRouteBoard })),
+  { ssr: false }
+);
 
 /**
  * One world. Contextual information only - never permanent side boxes.
  */
-export default function WorldApp() {
+export default function WorldApp({ skipWelcome = false }) {
   const [theme, setTheme] = useWorldTheme();
   useWorldViewport();
   const [themePulse, setThemePulse] = useState(false);
@@ -55,9 +61,9 @@ export default function WorldApp() {
   const [pipelineReady, setPipelineReady] = useState(false);
   const [heroSettled, setHeroSettled] = useState(false);
   const [routeFound, setRouteFound] = useState(false);
-  const [welcomeOpen, setWelcomeOpen] = useState(true);
+  const [welcomeOpen, setWelcomeOpen] = useState(!skipWelcome);
   const [welcomeLoading, setWelcomeLoading] = useState(false);
-  const [welcomeMounted, setWelcomeMounted] = useState(true);
+  const [welcomeMounted, setWelcomeMounted] = useState(!skipWelcome);
   const storyRef = useRef(null);
   const lenis = useLenis();
   const [portalHover, setPortalHover] = useState(null);
@@ -484,18 +490,8 @@ export default function WorldApp() {
           ))}
         </nav>
         <div className="wd-bar__end">
+          <ThemeToggle theme={theme} onClick={toggleTheme} />
           <NavToggle open={navOpen} onClick={() => setNavOpen((v) => !v)} />
-          <button
-            type="button"
-            className="wd-theme"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "night" ? "day" : "night"} mode`}
-          >
-            <span className="wd-theme__pip" />
-            <span className="wd-theme__label" suppressHydrationWarning>
-              {theme === "night" ? "Night" : "Day"}
-            </span>
-          </button>
         </div>
       </header>
       <nav

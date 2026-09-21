@@ -37,6 +37,7 @@ const LANES = [
     id: "ask",
     Icon: MessageSquare,
     label: "Ask",
+    short: "Ask",
     line: "General questions",
     station: "console",
   },
@@ -44,6 +45,7 @@ const LANES = [
     id: "architecture",
     Icon: GitBranch,
     label: "Architecture",
+    short: "Arch",
     line: "System design & trade-offs",
     station: "contract",
   },
@@ -51,6 +53,7 @@ const LANES = [
     id: "pipeline",
     Icon: Workflow,
     label: "Pipeline",
+    short: "Pipe",
     line: "ETL, orchestration, data flow",
     station: "spark",
   },
@@ -58,6 +61,7 @@ const LANES = [
     id: "sql",
     Icon: Database,
     label: "SQL",
+    short: "SQL",
     line: "Data modeling & optimization",
     station: "serve",
   },
@@ -226,6 +230,7 @@ export default function AskMansi() {
               type="button"
               role="tab"
               aria-selected={mode === item.id}
+              aria-label={item.label}
               className={mode === item.id ? "is-on" : ""}
               onClick={() => setLane(item.id)}
             >
@@ -233,7 +238,8 @@ export default function AskMansi() {
                 <Icon strokeWidth={1.6} />
               </span>
               <span>
-                <strong>{item.label}</strong>
+                <strong className="wd-im__lane-full">{item.label}</strong>
+                <strong className="wd-im__lane-short">{item.short}</strong>
                 <em>{item.line}</em>
               </span>
             </button>

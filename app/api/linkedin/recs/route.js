@@ -159,7 +159,13 @@ export async function GET(request) {
       const entry = CACHE.get(cacheKey);
       if (now() - entry.t < CACHE_TTL_MS && entry.data) {
         // ensure we return with a valid numeric status
-        return new Response(JSON.stringify(entry.data), { status: 200, headers: { "Content-Type": "application/json" } });
+        return new Response(JSON.stringify(entry.data), {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "public, s-maxage=600, stale-while-revalidate=86400",
+          },
+        });
       }
     }
 
@@ -168,7 +174,7 @@ export async function GET(request) {
     try {
       fetched = await fetch(profileUrl, {
         headers: { "User-Agent": "Mozilla/5.0 (compatible; +https://your-site.example/; )", Accept: "text/html,application/xhtml+xml" },
-        // keep redirect handling default (follow)
+        next: { revalidate: 600 },
       });
     } catch (errFetch) {
       const msg = `LinkedIn fetch network error: ${String(errFetch?.message || errFetch)}`;
@@ -197,7 +203,13 @@ export async function GET(request) {
 
     const out = { recs };
     CACHE.set(cacheKey, { t: now(), data: out });
-    return new Response(JSON.stringify(out), { status: 200, headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify(out), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, s-maxage=600, stale-while-revalidate=86400",
+      },
+    });
   } catch (err) {
     console.error("LinkedIn recs unexpected error:", err);
     return new Response(JSON.stringify({ error: "Server error", message: String(err?.message || err) }), { status: 500 });

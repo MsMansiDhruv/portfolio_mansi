@@ -8,6 +8,7 @@ import { toggleWorldTheme } from "@/lib/world-theme";
 import { useWorldTheme } from "@/lib/use-world-theme";
 import { useWorldViewport } from "@/lib/use-world-viewport";
 import NavToggle from "./NavToggle";
+import ThemeToggle from "./ThemeToggle";
 import ResumeDock from "./ResumeDock";
 
 function navIdFromPath(pathname) {
@@ -73,19 +74,8 @@ export default function WorldPageNav({ active }) {
           <NavLinks current={current} idPrefix="bar" onNavigate={closeNavSoon} />
         </nav>
         <div className="wd-bar__end">
+          <ThemeToggle theme={theme} onClick={toggleTheme} />
           <NavToggle open={navOpen} onClick={() => setNavOpen((v) => !v)} />
-          <button
-            type="button"
-            className="wd-theme"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "night" ? "day" : "night"} mode`}
-            suppressHydrationWarning
-          >
-            <span className="wd-theme__pip" />
-            <span className="wd-theme__label" suppressHydrationWarning>
-              {theme === "night" ? "Night" : "Day"}
-            </span>
-          </button>
         </div>
       </header>
       <nav

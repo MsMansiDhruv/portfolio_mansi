@@ -123,7 +123,13 @@ export async function GET(request, context) {
     if (CACHE.has(cacheKey)) {
       const entry = CACHE.get(cacheKey);
       if (now() - entry.t < CACHE_TTL_MS && entry.data) {
-        return new Response(JSON.stringify(entry.data), { status: 200, headers: { "Content-Type": "application/json" } });
+        return new Response(JSON.stringify(entry.data), {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "public, s-maxage=600, stale-while-revalidate=86400",
+          },
+        });
       }
     }
 
@@ -131,7 +137,10 @@ export async function GET(request, context) {
     let posts = [];
     try {
       const mediumJsonUrl = `https://medium.com/@${username}?format=json`;
-      const res = await fetch(mediumJsonUrl, { headers: { Accept: "application/json" } });
+      const res = await fetch(mediumJsonUrl, {
+        headers: { Accept: "application/json" },
+        next: { revalidate: 600 },
+      });
       if (res.ok) {
         let text = await res.text();
         const prefix = "])}while(1);</x>";
@@ -169,7 +178,10 @@ export async function GET(request, context) {
     if (!posts || posts.length === 0) {
       try {
         const rssUrl = `https://medium.com/feed/@${username}`;
-        const rssRes = await fetch(rssUrl, { headers: { Accept: "application/xml, text/xml" } });
+        const rssRes = await fetch(rssUrl, {
+          headers: { Accept: "application/xml, text/xml" },
+          next: { revalidate: 600 },
+        });
         if (rssRes.ok) {
           const xmlText = await rssRes.text();
           const rssPosts = parseRssItems(xmlText, username);
@@ -186,7 +198,13 @@ export async function GET(request, context) {
     const out = { posts };
     CACHE.set(cacheKey, { t: now(), data: out });
 
-    return new Response(JSON.stringify(out), { status: 200, headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify(out), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, s-maxage=600, stale-while-revalidate=86400",
+      },
+    });
   } catch (err) {
     console.error("Medium route unexpected error:", err);
     return new Response(JSON.stringify({ error: "Server error", message: String(err?.message || err) }), { status: 500 });

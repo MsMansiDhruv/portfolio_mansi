@@ -1571,22 +1571,22 @@ html[data-world-theme="day"] .wk-flow-graph,
 }
 
 .wd-serpent__card strong {
-  max-width: 14ch;
-  font-size: var(--wd-fs-34, 2.125rem);
+  max-width: 28ch;
+  font-size: clamp(1.05rem, 1.6vw, 1.28rem);
   font-weight: 650;
-  letter-spacing: -0.045em;
-  line-height: 1.08;
+  letter-spacing: -0.04em;
+  line-height: 1.2;
   overflow: hidden;
 }
 
 .wd-serpent__item.is-featured .wd-serpent__card strong {
-  font-size: var(--wd-fs-55, 3.4375rem);
+  font-size: clamp(1.18rem, 2vw, 1.45rem);
 }
 
 .wd-serpent__blurb {
   max-width: 34rem;
   color: var(--wd-muted);
-  font-size: var(--wd-fs-21, 1.3125rem);
+  font-size: 0.9rem;
   line-height: 1.5;
 }
 
@@ -2350,9 +2350,9 @@ html.wd-smoother-page body {
 
 .wd-archive__face strong {
   max-width: none;
-  font-size: clamp(1.45rem, 2.2vw, 1.85rem);
-  letter-spacing: -0.04em;
-  line-height: 1.15;
+  font-size: clamp(1.05rem, 1.6vw, 1.28rem);
+  letter-spacing: -0.035em;
+  line-height: 1.2;
 }
 
 .wd-archive__face > span:not(.wd-archive__chips) {
@@ -3015,4 +3015,54 @@ html[data-world-theme="day"] .wd-case__nav-link {
 
 .wd-draw__node.is-orange {
   fill: var(--wd-orange, #f97316);
+}
+
+@media (max-width: 860px) {
+  .wd-archive__title {
+    white-space: normal;
+    font-size: clamp(1.7rem, 8vw, 2.35rem);
+  }
+
+  .wd-serpent__head h2 {
+    font-size: clamp(1.35rem, 5.5vw, 1.75rem);
+  }
+
+  .wd-serpent__item,
+  .wd-serpent__item.is-featured {
+    width: 100%;
+  }
+
+  .wd-serpent__item[data-side="west"],
+  .wd-serpent__item[data-side="east"] {
+    align-self: stretch;
+  }
+
+  .wd-serpent__card,
+  .wd-serpent--more .wd-serpent__card {
+    min-height: 0;
+    padding: 1rem 1.05rem 1.05rem;
+  }
+
+  .wd-serpent__card strong,
+  .wd-serpent__item.is-featured .wd-serpent__card strong {
+    max-width: none;
+    font-size: 1.12rem;
+  }
+
+  .wd-serpent__blurb {
+    font-size: 0.88rem;
+  }
+
+  .wd-archive__split {
+    grid-template-columns: 1fr;
+  }
+
+  .wd-archive__row {
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+    gap: 0.65rem;
+  }
+
+  .wd-archive__row strong {
+    font-size: 0.98rem;
+  }
 }
