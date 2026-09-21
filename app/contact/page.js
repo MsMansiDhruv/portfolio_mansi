@@ -1,8 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
-import { ArrowUpRight, Send } from "lucide-react";
+import { FileText, Github, Linkedin, Mail, Send } from "lucide-react";
 import WorldPageNav from "@/components/world/WorldPageNav";
 import SiteFooter from "@/components/world/SiteFooter";
 import FieldSpirals from "@/components/world/FieldSpirals";
@@ -13,31 +12,11 @@ import { useWorldTheme } from "@/lib/use-world-theme";
 import "@/styles/mansi-world-of-data.css";
 import "@/styles/mansi-studio.css";
 
-const CHANNELS = [
-  {
-    label: "Email",
-    value: SOCIAL_LINKS.email,
-    href: `mailto:${SOCIAL_LINKS.email}`,
-    external: false,
-  },
-  {
-    label: "LinkedIn",
-    value: "Profile",
-    href: SOCIAL_LINKS.linkedin,
-    external: true,
-  },
-  {
-    label: "Resume",
-    value: "PDF",
-    href: "/resume.pdf",
-    external: true,
-  },
-  {
-    label: "About",
-    value: "Career and signals",
-    href: "/credentials",
-    external: false,
-  },
+const ICONS = [
+  { label: "Email", href: `mailto:${SOCIAL_LINKS.email}`, icon: Mail, external: false },
+  { label: "LinkedIn", href: SOCIAL_LINKS.linkedin, icon: Linkedin, external: true },
+  { label: "GitHub", href: SOCIAL_LINKS.github, icon: Github, external: true },
+  { label: "Resume", href: "/resume.pdf", icon: FileText, external: true },
 ];
 
 export default function Contact() {
@@ -90,47 +69,31 @@ export default function Contact() {
       <WorldPageNav active="contact" />
       <FieldSpirals />
       <main className="wd-contact">
-        <header className="wd-contact__intro" data-rise>
-          <p className="wd-studio-kicker">Contact</p>
-          <h1>Start with the constraint.</h1>
-          <p className="wd-contact__role">{IDENTITY.headline}</p>
-          <p className="wd-contact__lead">
-            Hiring, a collaboration, or a design review. Tell me the system, the pressure, and what has to hold. I will
-            answer like an engineer.
-          </p>
-        </header>
-
         <div className="wd-contact__board">
-          <aside className="wd-contact__aside" data-rise>
-            <p className="wd-studio-kicker">Direct</p>
-            <ul className="wd-contact__channels">
-              {CHANNELS.map((item) => {
-                const inner = (
-                  <>
-                    <span>{item.label}</span>
-                    <strong>{item.value}</strong>
-                    <ArrowUpRight size={16} aria-hidden />
-                  </>
-                );
+          <header className="wd-contact__intro" data-rise>
+            <p className="wd-studio-kicker">Contact</p>
+            <h1>Start with the constraint.</h1>
+            <p className="wd-contact__role">{IDENTITY.headline}</p>
+            <p className="wd-contact__lead">
+              Hiring, a collaboration, or a design review. Tell me the system, the pressure, and what has to hold. I
+              will answer like an engineer.
+            </p>
+            <nav className="wd-contact__icons" aria-label="Direct">
+              {ICONS.map((item) => {
+                const Icon = item.icon;
                 return (
-                  <li key={item.label}>
-                    {item.href.startsWith("/") && !item.external ? (
-                      <Link href={item.href}>{inner}</Link>
-                    ) : (
-                      <a
-                        href={item.href}
-                        {...(item.external
-                          ? { target: "_blank", rel: "noopener noreferrer" }
-                          : {})}
-                      >
-                        {inner}
-                      </a>
-                    )}
-                  </li>
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    aria-label={item.label}
+                    {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  >
+                    <Icon size={18} strokeWidth={1.8} />
+                  </a>
                 );
               })}
-            </ul>
-          </aside>
+            </nav>
+          </header>
 
           {done ? (
             <div className="wd-contact__done" data-rise role="status">
