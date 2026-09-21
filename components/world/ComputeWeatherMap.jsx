@@ -9,6 +9,7 @@ import {
 } from "@/lib/data/compute-weather";
 import LAND_PATHS from "@/lib/data/world-land-paths.json";
 import DC_ATLAS from "@/lib/data/dc-atlas.json";
+import { IDENTITY } from "@/lib/data/identity";
 import Marked from "./Marked";
 import { TechRail } from "./HomeBands";
 
@@ -342,11 +343,11 @@ export default function ComputeWeatherMap({ playStats = true, chrome = "full" })
       {chrome === "cover" ? null : (
       <div className="wd-compute__copy">
         <h1>
-          {COMPUTE_WEATHER.title}
-          <span>
-            <Marked text={COMPUTE_WEATHER.question} />
-          </span>
+          {IDENTITY.name}
+          <span>{IDENTITY.headline}</span>
         </h1>
+        <p className="wd-compute__lead">{IDENTITY.statement}</p>
+        <p className="wd-compute__map-note">{IDENTITY.mapSupport}</p>
         <div key={simulating ? caption?.title : layer} className="wd-compute__story">
           <p className="wd-compute__story-kicker">
             {simulating ? "Live grid" : layerMeta?.label}

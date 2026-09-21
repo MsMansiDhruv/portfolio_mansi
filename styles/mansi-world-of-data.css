@@ -5514,7 +5514,7 @@ html.wd-narrow .wd-nav__item::before {
 
 .wd-compute__copy h1 {
   margin: 0;
-  max-width: 12ch;
+  max-width: 14ch;
   font-family: var(--wd-font-display);
   font-size: clamp(2.55rem, 5.4vw, 4.15rem);
   font-weight: 800;
@@ -5526,13 +5526,24 @@ html.wd-narrow .wd-nav__item::before {
 .wd-compute__copy h1 span {
   display: block;
   margin-top: 0.55rem;
-  max-width: 22ch;
+  max-width: 28ch;
   color: var(--wd-ink);
-  font-size: clamp(1.28rem, 2vw, 1.72rem);
+  font-size: clamp(1.02rem, 1.7vw, 1.28rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.22;
+}
+
+.wd-compute__map-note {
+  margin: 0;
+  max-width: 28rem;
+  color: var(--wd-faint);
+  font-family: var(--wd-font-mono);
+  font-size: 0.72rem;
   font-weight: 500;
-  letter-spacing: -0.03em;
-  line-height: 1.18;
-  white-space: pre-line;
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+  text-transform: uppercase;
 }
 
 .wd-compute__copy h1::after {
@@ -5545,7 +5556,7 @@ html.wd-narrow .wd-nav__item::before {
 }
 
 .wd-compute__lead {
-  margin: 0 0 0.9rem;
+  margin: 0;
   max-width: 26rem;
   color: var(--wd-muted);
   font-family: var(--wd-font-body);

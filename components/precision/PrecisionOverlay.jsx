@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { IDENTITY } from "@/lib/data/identity";
 import { getConvergenceState } from "@/lib/data/precision";
 
 /**
@@ -51,9 +52,9 @@ export default function PrecisionOverlay({
 
       {viewId === "home" && (
         <div className="mp-copy mp-copy--acti">
-          <h1 className="mp-title">MANSI</h1>
-          <p className="mp-role">DATA ENGINEER</p>
-          <p className="mp-statement">TURNING COMPLEXITY INTO LIVING SYSTEMS.</p>
+          <h1 className="mp-title">{IDENTITY.name}</h1>
+          <p className="mp-role">{IDENTITY.headline}</p>
+          <p className="mp-statement">{IDENTITY.statement}</p>
         </div>
       )}
     </div>

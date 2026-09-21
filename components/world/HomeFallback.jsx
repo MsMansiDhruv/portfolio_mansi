@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IDENTITY } from "@/lib/data/identity";
 
 const NAV = [
   { href: "/", label: "HOME" },
@@ -31,15 +32,12 @@ export default function HomeFallback() {
         <section className="wd-scroll-section wd-scroll-section--hero">
           <div className="wd-compute">
             <div className="wd-compute__copy">
-              <p className="wd-scroll-kicker">Compute weather</p>
               <h1>
-                The AI power map
-                <span>
-                  Where intelligence is physically
-                  <br />
-                  consuming power.
-                </span>
+                {IDENTITY.name}
+                <span>{IDENTITY.headline}</span>
               </h1>
+              <p className="wd-compute__lead">{IDENTITY.statement}</p>
+              <p className="wd-compute__map-note">{IDENTITY.mapSupport}</p>
             </div>
             <div className="wd-compute__stage wd-compute--loading" aria-hidden />
           </div>

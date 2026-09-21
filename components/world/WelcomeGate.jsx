@@ -79,7 +79,7 @@ export default function WelcomeGate({ open, loading, onEnter }) {
           </span>
         )}
         <span className="wd-welcome__cta">
-          {loading ? PHASES[phase] : "Open the power map"}
+          {loading ? PHASES[phase] : "See the work"}
         </span>
       </button>
     </div>
