@@ -7,6 +7,7 @@ import SiteFooter from "@/components/world/SiteFooter";
 import FieldSpirals from "@/components/world/FieldSpirals";
 import { useGsapLenis } from "@/components/world/useGsapLenis";
 import { WORK_OPENING, WORK_INSTALLATIONS, WORK_SECONDARY, WORK_EXPERIMENTS } from "@/lib/data/work-catalog";
+import { showDraftWork } from "@/lib/data/work-visibility";
 import { useWorldTheme } from "@/lib/use-world-theme";
 import "@/app/globals.css";
 import "@/styles/mansi-world-of-data.css";
@@ -109,10 +110,10 @@ function snakePath(section) {
   return d;
 }
 
-export default function WorkExhibition() {
+export default function WorkExhibition({ draftOnly = false }) {
   const [theme] = useWorldTheme();
   const rootRef = useRef(null);
-  const more = [...WORK_EXPERIMENTS, ...WORK_SECONDARY];
+  const draftItems = draftOnly && showDraftWork() ? [...WORK_EXPERIMENTS, ...WORK_SECONDARY] : [];
 
   const setup = useCallback((gsap, ScrollTrigger, root) => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -238,26 +239,34 @@ export default function WorkExhibition() {
       <FieldSpirals />
       <main className="wd-page-main wd-archive__stage">
         <section className="wd-archive__hero">
-          <p className="wd-scroll-kicker wd-fade">Work</p>
-          <h1 className="wd-page-title wd-archive__title wd-fade">Selected systems.</h1>
-          <p className="wd-page-lead wd-fade">{WORK_OPENING.lines[0]}</p>
+          <p className="wd-scroll-kicker wd-fade">{draftOnly ? "Draft" : "Work"}</p>
+          <h1 className="wd-page-title wd-archive__title wd-fade">
+            {draftOnly ? "Unpublished work." : "Selected systems."}
+          </h1>
+          <p className="wd-page-lead wd-fade">
+            {draftOnly
+              ? "Local only. These pieces are not on the live site."
+              : WORK_OPENING.lines[0]}
+          </p>
         </section>
 
-        <SerpentSection
-          kicker="01"
-          title="Featured"
-          hint="Follow the green path. Left, then right."
-          items={WORK_INSTALLATIONS}
-          featured
-          boardClass="wd-serpent--featured"
-        />
-
-        {more.length ? (
+        {draftOnly ? null : (
           <SerpentSection
-            kicker="02"
-            title="More"
-            hint="Same snake. Smaller pieces."
-            items={more}
+            kicker="01"
+            title="Featured"
+            hint="Follow the green path. Left, then right."
+            items={WORK_INSTALLATIONS}
+            featured
+            boardClass="wd-serpent--featured"
+          />
+        )}
+
+        {draftItems.length ? (
+          <SerpentSection
+            kicker="Draft"
+            title="Unpublished"
+            hint="Local only. This section is not on the live site."
+            items={draftItems}
             featured={false}
             boardClass="wd-serpent--more"
           />
