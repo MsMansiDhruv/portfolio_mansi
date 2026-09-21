@@ -29,7 +29,7 @@ import { CAREER_TIMELINE, getAboutBadges } from "@/lib/data/career";
 import { SOCIAL_LINKS } from "@/lib/data/social-links";
 import { tiltHandlers } from "./DataField";
 import { useGsapPress } from "./useGsapPress";
-import { useGsapRise } from "./useGsapRise";
+import { useGsapRise } from "./riseText";
 
 const TECH_ICONS = {
   Spark: Cpu,
@@ -180,11 +180,7 @@ export function ContactRouteBoard() {
           If the work holds, <span className="wd-mark">write.</span>
         </h2>
         <p className="wd-route-close__lede" data-rise-text>
-          Looking for a data engineer who can design, build or modernize your data
-          platform? Or just want to discuss data, architecture or opportunities?
-        </p>
-        <p className="wd-route-close__from" data-rise-text>
-          I&apos;d love to hear from you.
+          Open to interesting data engineering, architecture, and collaboration opportunities.
         </p>
         <a className="wd-route-panel__mail" href={`mailto:${SOCIAL_LINKS.email}`} data-gsap-btn>
           <Mail size={16} strokeWidth={1.9} aria-hidden />

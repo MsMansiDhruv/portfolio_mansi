@@ -72,11 +72,10 @@ export default function Contact() {
         <div className="wd-contact__board">
           <header className="wd-contact__intro" data-rise>
             <p className="wd-studio-kicker">Contact</p>
-            <h1>Start with the constraint.</h1>
+            <h1>If the work holds, write.</h1>
             <p className="wd-contact__role">{IDENTITY.headline}</p>
             <p className="wd-contact__lead">
-              Hiring, a collaboration, or a design review. Tell me the system, the pressure, and what has to hold. I
-              will answer like an engineer.
+              Open to interesting data engineering, architecture, and collaboration opportunities.
             </p>
             <nav className="wd-contact__icons" aria-label="Direct">
               {ICONS.map((item) => {
@@ -88,7 +87,8 @@ export default function Contact() {
                     aria-label={item.label}
                     {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   >
-                    <Icon size={18} strokeWidth={1.8} />
+                    <Icon size={16} strokeWidth={1.8} aria-hidden />
+                    {item.label}
                   </a>
                 );
               })}

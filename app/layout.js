@@ -1,5 +1,5 @@
 import { Outfit, Manrope, JetBrains_Mono } from "next/font/google";
-import LenisProvider from "@/components/LenisProvider";
+import LenisProvider from "@/components/LenisRoot";
 import "./base.css";
 
 const outfit = Outfit({

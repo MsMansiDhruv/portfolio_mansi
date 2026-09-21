@@ -241,7 +241,7 @@ export default function WorkExhibition({ draftOnly = false }) {
         <section className="wd-archive__hero">
           <p className="wd-scroll-kicker wd-fade">{draftOnly ? "Draft" : "Work"}</p>
           <h1 className="wd-page-title wd-archive__title wd-fade">
-            {draftOnly ? "Unpublished work." : "Selected systems."}
+            {draftOnly ? "Unpublished work." : "Four systems."}
           </h1>
           <p className="wd-page-lead wd-fade">
             {draftOnly

@@ -10,6 +10,7 @@ import {
 import LAND_PATHS from "@/lib/data/world-land-paths.json";
 import DC_ATLAS from "@/lib/data/dc-atlas.json";
 import { IDENTITY } from "@/lib/data/identity";
+import { getExperienceYearsText } from "@/lib/career/experience";
 import Marked from "./Marked";
 import { TechRail } from "./HomeBands";
 
@@ -64,35 +65,11 @@ function parseStat(value) {
   };
 }
 
-function AnimatedStat({ value, label, play, progress = 1 }) {
+function AnimatedStat({ value, label }) {
   const parsed = useMemo(() => parseStat(value), [value]);
-  const [shown, setShown] = useState(0);
-
-  useEffect(() => {
-    if (!play) {
-      setShown(0);
-      return undefined;
-    }
-    const target = parsed.num * progress;
-    let frame = 0;
-    const start = performance.now();
-    const from = shown;
-    const duration = 900;
-    const tick = (now) => {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - (1 - t) ** 3;
-      setShown(from + (target - from) * eased);
-      if (t < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-    // shown is only the tween origin; restart when play/progress/target change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [play, parsed.num, progress]);
-
   const display = parsed.decimals
-    ? shown.toFixed(parsed.decimals)
-    : Math.round(shown).toLocaleString("en-US");
+    ? parsed.num.toFixed(parsed.decimals)
+    : Math.round(parsed.num).toLocaleString("en-US");
 
   return (
     <div>
@@ -344,9 +321,17 @@ export default function ComputeWeatherMap({ playStats = true, chrome = "full" })
       <div className="wd-compute__copy">
         <h1>
           {IDENTITY.name}
-          <span>{IDENTITY.headline}</span>
+          <span className="wd-compute__role">{IDENTITY.role}</span>
+          <span className="wd-compute__domains">{IDENTITY.domains}</span>
         </h1>
         <p className="wd-compute__lead">{IDENTITY.statement}</p>
+        <p className="wd-compute__proof">
+          <span>{getExperienceYearsText()}</span>
+          <span className="wd-compute__proof-sep" aria-hidden="true">
+            ·
+          </span>
+          <span>AWS</span>
+        </p>
         <p className="wd-compute__map-note">{IDENTITY.mapSupport}</p>
         <div key={simulating ? caption?.title : layer} className="wd-compute__story">
           <p className="wd-compute__story-kicker">
@@ -362,8 +347,6 @@ export default function ComputeWeatherMap({ playStats = true, chrome = "full" })
               key={s.label}
               value={s.value}
               label={s.label}
-              play={playStats}
-              progress={progress}
             />
           ))}
         </dl>
@@ -377,7 +360,7 @@ export default function ComputeWeatherMap({ playStats = true, chrome = "full" })
           data-layer={layer}
           data-sim={sim}
           role="img"
-          aria-label={layerMeta?.headline || "World map of data-centre facilities and IEA clusters"}
+          aria-label="Industry map of global data-centre facilities. Electricity figures are IEA/ATLAS context, not personal impact."
         >
           {LAND_PATHS.map((d, i) => (
             <path key={i} d={d} className="wd-compute__land" />

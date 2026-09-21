@@ -16,20 +16,20 @@ import {
 import Marked from "./Marked";
 import LatticeLoader from "./LatticeLoader";
 import { useGsapPress } from "./useGsapPress";
-import { useGsapRise } from "./useGsapRise";
+import { useGsapRise } from "./riseText";
 
 const STARTERS = {
-  ask: ["What makes a data system good?", "When is complexity justified?"],
+  ask: ["Why this architecture?", "What did the OLAP split change?"],
   architecture: ["How do you split OLTP from OLAP?", "Where do you put the contract?"],
   pipeline: ["What happens when ingest lies?", "How do you replay a day?"],
   sql: ["What do you optimize first?", "When is a join the wrong fix?"],
 };
 
 const LOCAL = {
-  ask: "It should make the next decision easier. Architecture earns every extra moving part.",
-  architecture: "Start from the path the data actually takes. Separate workloads when one engine is lying about cost.",
-  pipeline: "Ingest, trust, transform, serve. If the contract is wrong at ingest, every dashboard is theatre.",
-  sql: "Correctness first. Then the join path. Speed without trust is noise.",
+  ask: "The portfolio notes I have don't cover that in enough detail, so I won't infer it.",
+  architecture: "The portfolio notes I have don't cover that architecture in enough detail, so I won't infer it.",
+  pipeline: "The portfolio notes I have don't cover that pipeline in enough detail, so I won't infer it.",
+  sql: "The portfolio notes I have don't cover that SQL decision in enough detail, so I won't infer it.",
 };
 
 const LANES = [
@@ -104,7 +104,7 @@ export default function AskMansi() {
   const [locked, setLocked] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [lines, setLines] = useState([
-    { who: "ai", text: "The pipe ends here. Pick a lane, then ask like a design review." },
+    { who: "ai", text: "Ask about a project, an architecture choice, or a trade-off. I'll stay inside the portfolio." },
   ]);
 
   const station = MODE_TO_STATION[mode] || "console";
@@ -348,11 +348,13 @@ export default function AskMansi() {
     <div className={`wd-ask wd-im${locked ? " is-locked" : ""}`} ref={rootRef} data-busy={busy ? "on" : "off"} data-mode={mode} data-station={station}>
       <header className="wd-im__head">
         <div>
-          <p className="wd-ask__kicker" data-rise-text>Ask</p>
-          <h2 data-rise-text>Explore my experience through a conversation.</h2>
-          <p className="wd-ask__lead" data-rise-text>Talk with a model trained on this portfolio.</p>
+          <p className="wd-ask__kicker" data-rise-text>Ask Mansi</p>
+          <h2 data-rise-text>Explore my work through a conversation.</h2>
+          <p className="wd-ask__lead" data-rise-text>
+            Architecture, AWS choices, trade-offs, and outcomes from this portfolio.
+          </p>
         </div>
-        <p className="wd-ask__powered" data-rise-text>Powered by AI · Trained on my portfolio</p>
+        <p className="wd-ask__powered" data-rise-text>Grounded in this portfolio · not a generic assistant</p>
       </header>
 
       <ol className="wd-pipe wd-pipe--slim" aria-label="Data pipeline">

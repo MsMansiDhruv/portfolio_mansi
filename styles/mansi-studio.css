@@ -292,14 +292,25 @@ a.wd-studio-card {
 }
 
 .wd-contact__icons a {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: auto;
+  height: 2.55rem;
+  padding: 0 0.9rem;
   border: 1px solid var(--wd-line);
   border-radius: 999px;
   color: var(--wd-ink);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
   transition: transform 0.22s ease, border-color 0.22s ease, color 0.22s ease;
+}
+
+.wd-contact__icons a:focus-visible {
+  outline: 2px solid var(--wd-accent);
+  outline-offset: 3px;
 }
 
 .wd-contact__icons a:hover {

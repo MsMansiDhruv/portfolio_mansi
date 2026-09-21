@@ -1,7 +1,7 @@
 export const projectKnowledge = [
   {
     id: "project/amc-datalake",
-    title: "Legacy Data Modernization & ETL",
+    title: "Legacy Data Modernization",
     category: "project",
     kind: "project",
     tags: ["datalake", "data engineering", "aws", "etl", "modernization", "asset management"],

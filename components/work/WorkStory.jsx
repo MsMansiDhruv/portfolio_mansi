@@ -129,7 +129,7 @@ export default function WorkStory({ opening }) {
       <div className="wd-story__stage">
         <header className="wd-story__head">
           <p className="wd-scroll-kicker">Work</p>
-          <h1 className="wd-page-title">Selected systems.</h1>
+            <h1 className="wd-page-title">Four systems.</h1>
           <p className="wd-page-lead">{opening?.lines?.[0]}</p>
           <div className="wd-story__phases">
             <p className="wd-story__phase">Scattered sources. Scripts, feeds, warehouses doing two jobs.</p>

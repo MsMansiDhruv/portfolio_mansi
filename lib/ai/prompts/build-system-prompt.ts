@@ -60,17 +60,16 @@ Question grounding: OUT OF MODE SCOPE (personal / career)
     if (grounding === "personal") {
       return `
 Question grounding: PERSONAL EXPERIENCE (Ask Mansi)
-- Retrieved portfolio context is the source of truth for Mansi's experience, projects, role, and outcomes.
-- Answer in first person. Never invent Mansi-specific claims.
-- If context is thin, say so honestly before offering general engineering perspective.
-- Be precise about role boundaries where documented (e.g. model authorship vs pipeline engineering).
+- Retrieved portfolio, resume, and project notes are the only source of truth.
+- Answer in first person. Never invent or infer Mansi-specific claims: ownership, scale, leadership, clients, technologies, certifications, or outcomes.
+- If the notes do not contain the answer, say so explicitly and stop. Do not fill the gap with inference.
 `.trim();
     }
     if (grounding === "mixed") {
       return `
 Question grounding: MIXED (Ask Mansi)
 - Answer the technical question clearly first.
-- Add first-person portfolio context only when retrieved documents support it and it helps.
+Add first-person portfolio context only when retrieved documents explicitly support it. Never infer undocumented personal claims.
 `.trim();
     }
     return `

@@ -26,15 +26,12 @@ const ComputeWeatherMap = dynamic(() => import("./ComputeWeatherMap"), {
   loading: () => <div className="wd-compute wd-compute--loading" aria-hidden />,
 });
 
-const SelectedWork = dynamic(() => import("./SelectedWork"), { ssr: false });
+const SelectedWork = dynamic(() => import("./SelectedSystems"), { ssr: false });
 const AskMansi = dynamic(() => import("./AskMansi"), { ssr: false });
 const AboutMe = dynamic(() => import("./AboutMe"), { ssr: false });
 const FieldSpirals = dynamic(() => import("./FieldSpirals"), { ssr: false });
 const SystemCursor = dynamic(() => import("./SystemCursor"), { ssr: false });
 const AiModeSurface = dynamic(() => import("./AiModeSurface"), { ssr: false });
-const ImpactBand = dynamic(() => import("./HomeBands").then((m) => ({ default: m.ImpactBand })), {
-  ssr: false,
-});
 const ContactRouteBoard = dynamic(
   () => import("./IconBoards").then((m) => ({ default: m.ContactRouteBoard })),
   { ssr: false }
@@ -410,11 +407,6 @@ export default function WorldApp({ skipWelcome = false }) {
         <section id="ask" className="wd-scroll-section wd-scroll-section--ask wd-panel" data-world-layer="ai">
           <PanelCard>
             <AskMansi />
-          </PanelCard>
-        </section>
-        <section id="world-impact" className="wd-scroll-section wd-scroll-section--impact wd-panel" data-world-layer="about">
-          <PanelCard>
-            <ImpactBand />
           </PanelCard>
         </section>
         <section id="world-about" className="wd-scroll-section wd-scroll-section--about wd-scroll-section--voices wd-panel" data-world-layer="about">

@@ -1,19 +1,17 @@
 "use client";
 
 import { useRef } from "react";
-import { Cloud, Code2, Layers, Timer } from "lucide-react";
+import { Layers, Timer } from "lucide-react";
 import {
   ABOUT_ME,
-  getAtAGlance,
 } from "@/lib/data/career";
 import { getExperienceYearsLabel } from "@/lib/career/experience";
 import { HOW_I_THINK, IDENTITY, PORTRAIT } from "@/lib/data/identity";
-import { useGsapRise } from "./useGsapRise";
+import { useGsapRise } from "./riseText";
 
 export default function AboutMe() {
   const rootRef = useRef(null);
   useGsapRise(rootRef);
-  const glance = getAtAGlance();
   const years = getExperienceYearsLabel();
 
   return (
@@ -31,6 +29,9 @@ export default function AboutMe() {
         </h2>
         <p className="wd-about-card__lede" data-rise-text>{IDENTITY.statement}</p>
         <p className="wd-about-card__body" data-rise-text>{ABOUT_ME[1]}</p>
+        <p className="wd-about-card__tech" data-rise-text>
+          Python · SQL · PySpark · AWS · Databricks · Redshift · Terraform
+        </p>
       </div>
       <ul className="wd-about-card__chips">
         <li>
@@ -45,21 +46,7 @@ export default function AboutMe() {
             <Layers size={18} strokeWidth={1.7} />
           </span>
           <strong>Data Platforms</strong>
-          <em>{glance.domains.replace("Data Platforms · ", "")}</em>
-        </li>
-        <li>
-          <span className="wd-about-card__icon" aria-hidden>
-            <Cloud size={18} strokeWidth={1.7} />
-          </span>
-          <strong>{glance.cloud}</strong>
-          <em>Cloud</em>
-        </li>
-        <li>
-          <span className="wd-about-card__icon" aria-hidden>
-            <Code2 size={18} strokeWidth={1.7} />
-          </span>
-          <strong>Python · Scala</strong>
-          <em>SQL · Spark</em>
+          <em>Cloud · MLOps</em>
         </li>
       </ul>
       <p className="wd-about-card__quote" data-rise-text>“{HOW_I_THINK[0]}”</p>

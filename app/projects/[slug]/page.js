@@ -9,7 +9,7 @@ const ProjectDetails = dynamic(() => import("./ProjectDetails"), {
 
 const CASE_META = {
   "project-amc-datalake-solution": {
-    title: "Legacy Data Modernization & ETL | Case Study",
+    title: "Legacy Data Modernization | Case Study",
     description:
       "Engineering case study: AWS data lake, Glue ETL, Redshift, and analytics modernization for a confidential asset-management client — architecture, decisions, and outcomes.",
   },

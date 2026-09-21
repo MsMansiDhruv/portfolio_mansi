@@ -42,7 +42,7 @@ Lead Data Engineer
   },
   {
     id: "project/amc-datalake",
-    title: "Legacy Data Modernization & ETL",
+    title: "Legacy Data Modernization",
     category: "project",
     tags: ["project", "datalake", "lakehouse"],
     technologies: ["s3", "iceberg", "pyspark", "terraform", "redshift"],
@@ -51,7 +51,7 @@ Lead Data Engineer
     topics: ["enterprise", "analytics"],
     difficulty: ["advanced"],
     relatedDocuments: ["technologies/databricks.md", "stories/optimization-wins.md"],
-    source: `# Legacy Data Modernization & ETL
+    source: `# Legacy Data Modernization
 
 Business Context
 - Built a reusable, cost-efficient cloud-native analytics foundation for a confidential asset-management client.

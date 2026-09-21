@@ -5,7 +5,7 @@ const NAV = [
   { href: "/", label: "HOME" },
   { href: "/projects", label: "WORK" },
   { href: "/#ask", label: "ASK" },
-  { href: "/credentials", label: "ABOUT" },
+  { href: "/#world-about", label: "ABOUT" },
   { href: "/contact", label: "CONTACT" },
 ];
 
@@ -34,7 +34,8 @@ export default function HomeFallback() {
             <div className="wd-compute__copy">
               <h1>
                 {IDENTITY.name}
-                <span>{IDENTITY.headline}</span>
+                <span className="wd-compute__role">{IDENTITY.role}</span>
+                <span className="wd-compute__domains">{IDENTITY.domains}</span>
               </h1>
               <p className="wd-compute__lead">{IDENTITY.statement}</p>
               <p className="wd-compute__map-note">{IDENTITY.mapSupport}</p>

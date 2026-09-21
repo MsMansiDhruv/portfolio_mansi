@@ -1,10 +1,22 @@
+import { globSync } from "node:fs";
+
+const LOCKED_CONTENT = new Set([
+  "components/LenisProvider.jsx",
+  "components/world/SelectedWork.jsx",
+  "components/world/useGsapRise.js",
+  "lib/data/work-art.js",
+]);
+
+function contentFiles() {
+  return globSync("{app,components,lib}/**/*.{js,jsx,ts,tsx}", { nodir: true }).filter((file) => {
+    const normalized = file.replaceAll("\\", "/");
+    return !LOCKED_CONTENT.has(normalized);
+  });
+}
+
 export default {
   darkMode: "class",
-  content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}",
-    "./lib/**/*.{js,jsx,ts,tsx}",
-  ],
+  content: contentFiles(),
   theme: {
     extend: {
       colors: {
