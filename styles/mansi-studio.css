@@ -283,12 +283,51 @@
   background: transparent;
   color: inherit;
   font: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .wd-contact-form input:focus,
 .wd-contact-form textarea:focus {
   outline: 2px solid var(--wd-orange, #f97316);
   border-color: transparent;
+}
+
+.wd-studio-hero--plain {
+  display: block;
+  max-width: 36rem;
+  margin-bottom: 2.6rem;
+}
+
+.wd-page--contact .wd-studio-main {
+  width: min(70rem, calc(100% - clamp(1.5rem, 5vw, 4.5rem)));
+  padding: calc(var(--wd-bar-h, 4.5rem) + 2.6rem) 0 max(6.5rem, calc(4.5rem + env(safe-area-inset-bottom, 0px)));
+}
+
+.wd-page--contact .wd-studio-hero h1 {
+  max-width: 16ch;
+  font-size: clamp(2.4rem, 5.4vw, 4.2rem);
+}
+
+.wd-page--contact .wd-studio-hero p {
+  max-width: 42ch;
+}
+
+.wd-page--contact .wd-contact-split {
+  grid-template-columns: minmax(16rem, 0.92fr) minmax(0, 1.18fr);
+  gap: clamp(1.8rem, 4.5vw, 3.6rem);
+  align-items: start;
+}
+
+.wd-page--contact .wd-route__mail {
+  display: inline-block;
+  margin: 0.85rem 0 0;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  letter-spacing: -0.03em;
+  word-break: break-word;
+}
+
+.wd-page--contact .wd-studio-links {
+  margin-top: 1.5rem;
 }
 
 .wd-contact-submit {
@@ -303,6 +342,12 @@
   color: #fff;
   font-weight: 700;
   cursor: pointer;
+  transition: transform 0.25s var(--wd-ease, ease), filter 0.25s ease;
+}
+
+.wd-contact-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
 }
 
 a.wd-studio-card {
