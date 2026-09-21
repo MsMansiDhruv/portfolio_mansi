@@ -10,7 +10,7 @@ function AiLabAlias() {
 
   useEffect(() => {
     const mode = params.get("mode");
-    router.replace(mode ? `/?mode=${encodeURIComponent(mode)}#world-ai` : "/#world-ai");
+    router.replace(mode ? `/?mode=${encodeURIComponent(mode)}#ask` : "/#ask");
   }, [router, params]);
 
   return (

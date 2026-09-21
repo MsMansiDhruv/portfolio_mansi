@@ -3,12 +3,11 @@ import Link from "next/link";
 const NAV = [
   { href: "/", label: "HOME" },
   { href: "/projects", label: "WORK" },
-  { href: "/#world-ai", label: "AI LAB" },
-  { href: "/credentials", label: "ABOUT" },
+  { href: "/#ask", label: "ASK" },
+  { href: "/#world-about", label: "ABOUT" },
   { href: "/contact", label: "CONTACT" },
 ];
 
-/** Instant first paint while the homepage client bundle loads. */
 export default function HomeFallback() {
   return (
     <div className="wd-root is-ready" data-theme="night">
@@ -28,14 +27,21 @@ export default function HomeFallback() {
           ))}
         </nav>
       </header>
-      <div className="wd-stage" aria-hidden />
       <main className="wd-scroll-story">
         <section className="wd-scroll-section wd-scroll-section--hero">
-          <div className="wd-scroll-copy wd-scroll-copy--hero">
-            <p className="wd-scroll-kicker">DATA SYSTEMS, MADE LEGIBLE.</p>
-            <h1>MANSI</h1>
-            <p className="wd-scroll-role">DATA ENGINEER</p>
-            <p>I build reliable data platforms—from raw inputs to decisions teams can trust.</p>
+          <div className="wd-compute">
+            <div className="wd-compute__copy">
+              <p className="wd-scroll-kicker">Compute weather</p>
+              <h1>
+                The AI power map
+                <span>
+                  Where intelligence is physically
+                  <br />
+                  consuming power.
+                </span>
+              </h1>
+            </div>
+            <div className="wd-compute__stage wd-compute--loading" aria-hidden />
           </div>
         </section>
       </main>

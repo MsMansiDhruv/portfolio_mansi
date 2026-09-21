@@ -111,6 +111,7 @@ export default function AiModeSurface({ modeId, onClose, onModeChange, onBusyCha
       <button type="button" className="wd-ai-scrim" aria-label="Close Ask Mansi" onClick={requestClose} />
       <aside
         className="wd-ai-surface"
+        data-lenis-prevent
         aria-label={`${chamber.label} reasoning console`}
         role="dialog"
         aria-modal="true"

@@ -1,20 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import dynamic from "next/dynamic";
 import WorldPageNav from "@/components/world/WorldPageNav";
 import InstallationGlyph from "./InstallationGlyph";
+import FlowingArchitectureGraph from "@/components/projects/FlowingArchitectureGraph";
+import { useGsapLenis } from "@/components/world/useGsapLenis";
+import { bindCaseMotion } from "@/components/world/bindWorkMotion";
+import { EXHIBITION_ORDER } from "@/lib/data/exhibition-order";
 import { getInstallation, getInstallationNav } from "@/lib/data/work-exhibition";
+import { getProjectFlowGraph } from "@/lib/data/project-flow-graphs";
 import { useWorldTheme } from "@/lib/use-world-theme";
+import {
+  AlertTriangle,
+  ArrowLeftRight,
+  BarChart3,
+  Boxes,
+  CheckCircle2,
+  Cloud,
+  Cpu,
+  Database,
+  Filter,
+  GitBranch,
+  Compass,
+  LayoutGrid,
+  Layers,
+  ArrowRight,
+  Lightbulb,
+  ListTodo,
+  Scale,
+  Server,
+  Sparkles,
+  Workflow,
+} from "lucide-react";
 import "@/styles/mansi-world-of-data.css";
 import "@/styles/mansi-work.css";
 
-const ProjectPipelineCanvas = dynamic(
-  () => import("@/components/world/ProjectPipelineCanvas"),
-  { ssr: false, loading: () => <div className="wd-pipeline-stage" aria-hidden /> }
-);
+const LAYER_ICONS = [Database, Filter, Layers, BarChart3, Cloud, Workflow, Server, Sparkles];
+const FLOW_ICONS = [GitBranch, Cpu, Boxes, BarChart3, Cloud];
+
+function techIcon(name = "") {
+  const n = String(name).toLowerCase();
+  if (n.includes("s3") || n.includes("redshift") || n.includes("postgres") || n.includes("sql") || n.includes("delta")) return Database;
+  if (n.includes("glue") || n.includes("spark") || n.includes("databricks")) return Cpu;
+  if (n.includes("lambda") || n.includes("cloud") || n.includes("aws") || n.includes("ec2")) return Cloud;
+  if (n.includes("bi") || n.includes("quick") || n.includes("athena")) return BarChart3;
+  if (n.includes("ml") || n.includes("flow") || n.includes("model")) return Sparkles;
+  return Boxes;
+}
+
+function SectionHead({ kicker, children }) {
+  const parts = String(kicker).split(" — ");
+  const indexed = parts.length > 1 && /^\d{2}/.test(parts[0]);
+  return (
+    <header className="wd-case__head">
+      <p className="wd-scroll-kicker">
+        {indexed ? <b className="wd-orange">{parts[0]}</b> : null}
+        {indexed ? ` — ${parts.slice(1).join(" — ")}` : kicker}
+      </p>
+      {children || null}
+    </header>
+  );
+}
 
 function ProjectSchematic({ schematic }) {
   if (!schematic) return null;
@@ -22,21 +69,19 @@ function ProjectSchematic({ schematic }) {
 
   if (schematic.type === "split") {
     return (
-      <figure className="wk-schematic wk-schematic--split">
-        <div className="wk-schematic-split">
+      <figure className="wd-case__schematic wd-case__schematic--split">
+        <div className="wd-case__split">
           <div>
-            <p className="mx-mono">{schematic.left?.title}</p>
+            <p>{schematic.left?.title}</p>
             <ul>
               {(schematic.left?.items || []).map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
           </div>
-          <span className="wk-schematic-fork" aria-hidden>
-            →
-          </span>
+          <span aria-hidden>→</span>
           <div>
-            <p className="mx-mono">{schematic.right?.title}</p>
+            <p>{schematic.right?.title}</p>
             <ul>
               {(schematic.right?.items || []).map((item) => (
                 <li key={item}>{item}</li>
@@ -44,7 +89,7 @@ function ProjectSchematic({ schematic }) {
             </ul>
           </div>
         </div>
-        {schematic.caption ? <figcaption className="mx-whisper">{schematic.caption}</figcaption> : null}
+        {schematic.caption ? <figcaption>{schematic.caption}</figcaption> : null}
       </figure>
     );
   }
@@ -52,21 +97,32 @@ function ProjectSchematic({ schematic }) {
   if (!stages.length) return null;
 
   return (
-    <figure className="wk-schematic">
-      <ol className={schematic.type === "pipeline" ? "wk-schematic-rail" : "wk-schematic-layers"}>
+    <figure className="wd-case__schematic">
+      <ol>
         {stages.map((stage, i) => {
           const title = typeof stage === "string" ? stage : stage.title;
           const detail = typeof stage === "string" ? null : stage.detail;
           return (
             <li key={`${title}-${i}`}>
-              <span className="mx-mono">{String(i + 1).padStart(2, "0")}</span>
+              <em>{String(i + 1).padStart(2, "0")}</em>
               <strong>{title}</strong>
-              {detail ? <em>{detail}</em> : null}
+              {detail ? <span>{detail}</span> : null}
             </li>
           );
         })}
       </ol>
-      {schematic.caption ? <figcaption className="mx-whisper">{schematic.caption}</figcaption> : null}
+      {schematic.caption ? <figcaption>{schematic.caption}</figcaption> : null}
+    </figure>
+  );
+}
+
+function ThemeEvidence({ evidence, title }) {
+  const src = evidence.src;
+  if (!src) return null;
+  return (
+    <figure className="wd-case__evidence">
+      <img className="wd-case__evidence-img" src={src} alt={evidence.caption || title} />
+      {evidence.caption ? <figcaption>{evidence.caption}</figcaption> : null}
     </figure>
   );
 }
@@ -74,51 +130,48 @@ function ProjectSchematic({ schematic }) {
 function DecisionCard({ d }) {
   const decision = d.decision || d.title;
   const why = d.why || d.reasoning;
-  const tradeoff = d.tradeoff;
-  const alternative = d.alternative;
   if (!decision && !why) return null;
   return (
-    <article className="wk-decision">
-      <p className="mx-mono text-[var(--mx-amber)]">DECISION</p>
-      <h3 className="wk-decision-title">{decision}</h3>
+    <article className="wd-case__decision">
+      <em className="wd-orange">Decision</em>
+      <h3>{decision}</h3>
       {why ? (
         <>
-          <p className="mx-mono mt-4 opacity-70">WHY</p>
-          <p className="wk-decision-body">{why}</p>
+          <b>Why</b>
+          <p>{why}</p>
         </>
       ) : null}
-      {alternative ? (
+      {d.alternative ? (
         <>
-          <p className="mx-mono mt-4 opacity-70">ALTERNATIVE</p>
-          <p className="wk-decision-body">{alternative}</p>
+          <b>Alternative</b>
+          <p>{d.alternative}</p>
         </>
       ) : null}
-      {tradeoff ? (
+      {d.tradeoff ? (
         <>
-          <p className="mx-mono mt-4 opacity-70">TRADE-OFF</p>
-          <p className="wk-decision-body">{tradeoff}</p>
+          <b>Trade-off</b>
+          <p>{d.tradeoff}</p>
         </>
       ) : null}
       {d.problem ? (
         <>
-          <p className="mx-mono mt-4 opacity-70">CONTEXT</p>
-          <p className="wk-decision-body">{d.problem}</p>
+          <b>Context</b>
+          <p>{d.problem}</p>
         </>
       ) : null}
     </article>
   );
 }
 
-/**
- * Cinematic installation room for a documented project.
- * Layers: impression → interaction → engineering → evidence.
- */
 export default function InstallationRoom({ slug }) {
   const [theme] = useWorldTheme();
   const [activeLayer, setActiveLayer] = useState(0);
+  const rootRef = useRef(null);
+  const setup = useCallback(bindCaseMotion, []);
+  useGsapLenis(rootRef, setup);
+
   const install = getInstallation(slug);
   const nav = getInstallationNav(slug);
-
   if (!install) return null;
 
   const decisions = (install.caseDecisions?.length ? install.caseDecisions : install.decisions) || [];
@@ -136,58 +189,83 @@ export default function InstallationRoom({ slug }) {
       install.schematic?.type === "split" ||
       install.schematic?.stages?.length
   );
+  const flowGraph = getProjectFlowGraph(install.slug);
+  const code =
+    install.number && install.number !== "—"
+      ? install.number
+      : String(Math.max(1, EXHIBITION_ORDER.indexOf(install.slug) + 1)).padStart(2, "0");
 
   return (
-    <div className="wd-root wd-page wk-root wk-room is-ready" data-theme={theme} data-metaphor={install.metaphor} suppressHydrationWarning>
+    <div
+      ref={rootRef}
+      className="wd-root wd-page wk-root wd-case is-ready"
+      data-theme={theme}
+      data-metaphor={install.metaphor}
+      suppressHydrationWarning
+    >
       <WorldPageNav active="work" />
+      <div className="wd-case__progress" aria-hidden>
+        <span />
+      </div>
 
-      <header className="wk-system">
-        <ProjectPipelineCanvas slug={install.slug} themeId={theme} stages={layers} />
-        <div className="wk-system__copy">
-          <p className="wk-crumbs">
-            <Link href="/">Home</Link>
-            <span aria-hidden>/</span>
-            <Link href="/projects">Work</Link>
-          </p>
-          <p className="wd-float__kicker">
-            <InstallationGlyph type={install.glyph} className="wk-glyph inline" /> Project {install.number}
-          </p>
-          <h1 className="wk-room-title">{install.title}</h1>
-          <p className="wd-float__stack">{install.category}</p>
-          <p className="wd-float__body">{install.tagline || install.subtitle || install.purpose}</p>
+      <header className="wd-case__hero">
+        <div className="wd-case__intro">
+          <div>
+            <p className="wd-case__crumbs">
+              <Link href="/">Home</Link>
+              <span>/</span>
+              <Link href="/projects">Work</Link>
+            </p>
+            <p className="wd-scroll-kicker">
+              <InstallationGlyph type={install.glyph} className="wk-glyph inline" />
+              <b className="wd-orange">Project {code}</b>
+            </p>
+            <h1 className="wd-page-title">{install.title}</h1>
+          </div>
+          <div className="wd-case__intro-side">
+            <p className="wd-page-lead">{install.tagline || install.subtitle || install.purpose}</p>
+            <p className="wd-case__meta">
+              <span className="wd-orange">{install.role}</span>
+              {install.timeline ? <span>{install.timeline}</span> : null}
+              <span>{install.category}</span>
+            </p>
+            <div className="wd-tile__tags wd-case__tags">
+              {(install.tech || []).slice(0, 6).map((tech) => (
+                <i key={tech}>{tech}</i>
+              ))}
+            </div>
+          </div>
         </div>
-        {layers.length ? (
-          <ol className="wd-pipeline-labels" aria-label="System stages">
-            {layers.map((stage, index) => (
-              <li key={`${stage}-${index}`}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{stage}</strong>
-              </li>
-            ))}
-          </ol>
+        {flowGraph ? (
+          <div className="wd-case__graph">
+            <div className="wd-case__graph-face">
+              <FlowingArchitectureGraph graph={flowGraph} />
+            </div>
+          </div>
         ) : null}
       </header>
 
-      <div className="wk-room-body">
-        <section className="wk-section">
-          <p className="mx-coord">01 — THE PROBLEM</p>
-          <p className="wk-section-lead">{install.problem}</p>
+      <div className="wd-case__body">
+        <section className="wd-case__chapter">
+          <SectionHead kicker="01 — The problem" />
+          <p className="wd-case__lead">{install.problem}</p>
         </section>
 
         {layers.length ? (
-          <section className="wk-section">
-            <p className="mx-coord">02 — THE SYSTEM</p>
-            <p className="mx-whisper mb-8 wk-arch-hint">Select a layer to see its role.</p>
-            <div className="wk-arch">
+          <section className="wd-case__chapter">
+            <SectionHead kicker="02 — The system" />
+            <p className="wd-case__hint">Select a layer to see its role.</p>
+            <div className="wd-case__layers">
               {layers.map((layer, i) => {
                 const label = typeof layer === "string" ? layer : layer;
                 const note = install.architectureNotes?.[i] || null;
                 const flow = install.flow?.[i] || null;
+                const LayerIcon = LAYER_ICONS[i % LAYER_ICONS.length];
                 return (
                   <button
                     key={label}
                     type="button"
-                    className={`wk-arch-node ${activeLayer === i ? "is-active" : ""}`}
+                    className={`wd-case__layer${activeLayer === i ? " is-active" : ""}`}
                     onPointerEnter={(event) => {
                       if (event.pointerType === "touch") return;
                       setActiveLayer(i);
@@ -195,11 +273,12 @@ export default function InstallationRoom({ slug }) {
                     onFocus={() => setActiveLayer(i)}
                     onClick={() => setActiveLayer(i)}
                   >
-                    <span className="mx-mono">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="wk-arch-label">{label}</span>
-                    <span className="wk-arch-detail">
-                      {flow?.body || note || "Part of the documented architecture."}
+                    <span>
+                      <LayerIcon strokeWidth={1.75} />
+                      {String(i + 1).padStart(2, "0")}
                     </span>
+                    <strong>{label}</strong>
+                    <em>{flow?.body || note || "Part of the documented architecture."}</em>
                   </button>
                 );
               })}
@@ -208,24 +287,28 @@ export default function InstallationRoom({ slug }) {
         ) : null}
 
         {detailedFlow.length ? (
-          <section className="wk-section wk-section--span">
-            <p className="mx-coord">DATA FLOW</p>
-            <ol className="wk-flow-list">
-              {detailedFlow.map((f) => (
-                <li key={f.n + f.title}>
-                  <span className="mx-mono text-[var(--mx-amber)]">{f.n}</span>
-                  <span className="wk-flow-title">{f.title}</span>
-                  <span className="wk-flow-body">{f.body}</span>
-                </li>
-              ))}
+          <section className="wd-case__chapter wd-case__chapter--wide">
+            <SectionHead kicker="Data flow" />
+            <ol className="wd-case__flow">
+              {detailedFlow.map((f, i) => {
+                const FlowIcon = FLOW_ICONS[i % FLOW_ICONS.length];
+                return (
+                  <li key={f.n + f.title}>
+                    <FlowIcon strokeWidth={1.75} />
+                    <em>{f.n}</em>
+                    <strong>{f.title}</strong>
+                    <span>{f.body}</span>
+                  </li>
+                );
+              })}
             </ol>
           </section>
         ) : null}
 
         {decisions.length ? (
-          <section className="wk-section wk-section--span">
-            <p className="mx-coord">03 — THE DECISION</p>
-            <div className="wk-decision-grid">
+          <section className="wd-case__chapter wd-case__chapter--wide">
+            <SectionHead kicker="03 — The decision" />
+            <div className="wd-case__decisions">
               {decisions.map((d, i) => (
                 <DecisionCard key={d.n || d.decision || i} d={d} />
               ))}
@@ -234,12 +317,14 @@ export default function InstallationRoom({ slug }) {
         ) : null}
 
         {install.tradeoffs ? (
-          <section className="wk-section wk-section--span">
-            <p className="mx-coord">04 — THE TRADE-OFF</p>
-            <div className="wk-tradeoffs">
+          <section className="wd-case__chapter wd-case__chapter--wide">
+            <SectionHead kicker="04 — The trade-off" />
+            <div className="wd-case__trade">
               {install.tradeoffs.optimizedFor?.length ? (
                 <div>
-                  <p className="mx-mono text-[var(--mx-signal)]">OPTIMIZED FOR</p>
+                  <p>
+                    <CheckCircle2 strokeWidth={1.75} /> Optimized for
+                  </p>
                   <ul>
                     {install.tradeoffs.optimizedFor.map((t) => (
                       <li key={t}>{t}</li>
@@ -248,8 +333,10 @@ export default function InstallationRoom({ slug }) {
                 </div>
               ) : null}
               {install.tradeoffs.sacrificed?.length ? (
-                <div>
-                  <p className="mx-mono text-[var(--mx-amber)]">SACRIFICED</p>
+                <div className="is-risk">
+                  <p>
+                    <AlertTriangle strokeWidth={1.75} /> Sacrificed
+                  </p>
                   <ul>
                     {install.tradeoffs.sacrificed.map((t) => (
                       <li key={t}>{t}</li>
@@ -262,93 +349,113 @@ export default function InstallationRoom({ slug }) {
         ) : null}
 
         {stack.length ? (
-          <section className="wk-section wk-section--span">
-            <p className="mx-coord">TECHNOLOGY — WHY IT WAS USED</p>
-            <div className="wk-stack">
-              {stack.map((t) => (
-                <div key={t.name} className="wk-stack-item">
-                  <p className="wk-stack-name">{t.name}</p>
-                  {t.why ? <p className="wk-stack-why">{t.why}</p> : null}
-                </div>
-              ))}
+          <section className="wd-case__chapter wd-case__chapter--wide">
+            <SectionHead kicker="Technology — why it was used" />
+            <div className="wd-case__stack">
+              {stack.map((t) => {
+                const TechIcon = techIcon(t.name);
+                return (
+                  <div key={t.name}>
+                    <p>
+                      <TechIcon strokeWidth={1.75} />
+                      {t.name}
+                    </p>
+                    {t.why ? <span>{t.why}</span> : null}
+                  </div>
+                );
+              })}
             </div>
           </section>
         ) : null}
 
         {hasEvidence ? (
-          <section className="wk-section wk-section--span">
-            <p className="mx-coord">05 — EVIDENCE</p>
+          <section className="wd-case__chapter wd-case__chapter--wide">
+            <SectionHead kicker="05 — Evidence" />
             {install.evidence?.src ? (
-              <figure className="wk-evidence">
-                <Image
-                  src={install.evidence.src}
-                  alt={install.evidence.caption || install.title}
-                  width={1200}
-                  height={720}
-                  className="wk-evidence-img"
-                />
-                {install.evidence.caption ? (
-                  <figcaption className="mx-whisper">{install.evidence.caption}</figcaption>
-                ) : null}
-              </figure>
+              <ThemeEvidence evidence={install.evidence} title={install.title} />
             ) : (
               <ProjectSchematic schematic={install.schematic} />
             )}
           </section>
         ) : null}
 
-        <section className="wk-takeaway wk-section--span">
-          <article className="wk-takeaway-card">
-            <p className="mx-coord">TAKEAWAY</p>
-            <p className="wk-takeaway-thesis">{thesis}</p>
-            {takeawayPoints.length ? (
-              <ul className="wk-takeaway-points">
-                {takeawayPoints.map((note) => (
-                  <li key={note}>{note}</li>
+        <section className="wd-case__chapter wd-case__chapter--wide wd-case__take">
+          <SectionHead kicker="Takeaway" />
+          <p className="wd-case__thesis">
+            <Lightbulb strokeWidth={1.75} />
+            {thesis}
+          </p>
+          {takeawayPoints.length ? (
+            <ul>
+              {takeawayPoints.map((note) => (
+                <li key={note}>{note}</li>
+              ))}
+            </ul>
+          ) : null}
+          {install.outcomes?.length ? (
+            <div>
+              <p>
+                <CheckCircle2 strokeWidth={1.75} /> What landed
+              </p>
+              <ul>
+                {install.outcomes.map((item) => (
+                  <li key={item}>{item}</li>
                 ))}
               </ul>
-            ) : null}
-            {install.outcomes?.length ? (
-              <div className="wk-takeaway-block">
-                <p className="mx-mono">WHAT LANDED</p>
-                <ul>
-                  {install.outcomes.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-            {install.learnings?.length ? (
-              <div className="wk-takeaway-block">
-                <p className="mx-mono">WHAT I WOULD DO NEXT</p>
-                <ul>
-                  {install.learnings.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-          </article>
+            </div>
+          ) : null}
+          {install.learnings?.length ? (
+            <div>
+              <p>
+                <ListTodo strokeWidth={1.75} /> What I would do next
+              </p>
+              <ul>
+                {install.learnings.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </section>
 
-        <nav className="wk-room-nav wk-section--span" aria-label="Project navigation">
-          <Link href="/" className="wk-room-nav-link">
-            <span className="mx-mono">Home</span>
-            <span className="wk-room-nav-title">Back to homepage</span>
+        <nav className="wd-case__nav" aria-label="Project navigation">
+          <Link href="/" className="wd-case__nav-link">
+            <span className="wd-case__nav-ico" aria-hidden>
+              <Compass strokeWidth={1.7} />
+            </span>
+            <span>
+              <em>Home</em>
+              <strong>Back to the map</strong>
+            </span>
           </Link>
-          <Link href="/projects" className="wk-room-nav-link">
-            <span className="mx-mono">Work</span>
-            <span className="wk-room-nav-title">All projects</span>
+          <Link href="/projects" className="wd-case__nav-link">
+            <span className="wd-case__nav-ico" aria-hidden>
+              <LayoutGrid strokeWidth={1.7} />
+            </span>
+            <span>
+              <em>Work</em>
+              <strong>All systems</strong>
+            </span>
           </Link>
           {nav.next ? (
-            <Link href={`/projects/${nav.next.slug}`} className="wk-room-nav-link wk-room-nav-link--next">
-              <span className="mx-mono">NEXT SYSTEM →</span>
-              <span className="wk-room-nav-title">{nav.next.cardTitle || nav.next.title}</span>
+            <Link href={`/projects/${nav.next.slug}`} className="wd-case__nav-link is-next">
+              <span className="wd-case__nav-ico" aria-hidden>
+                <ArrowRight strokeWidth={1.7} />
+              </span>
+              <span>
+                <em>Next system</em>
+                <strong>{nav.next.cardTitle || nav.next.title}</strong>
+              </span>
             </Link>
           ) : nav.prev ? (
-            <Link href={`/projects/${nav.prev.slug}`} className="wk-room-nav-link wk-room-nav-link--next">
-              <span className="mx-mono">PREVIOUS SYSTEM</span>
-              <span className="wk-room-nav-title">{nav.prev.cardTitle || nav.prev.title}</span>
+            <Link href={`/projects/${nav.prev.slug}`} className="wd-case__nav-link is-next">
+              <span className="wd-case__nav-ico" aria-hidden>
+                <ArrowRight strokeWidth={1.7} />
+              </span>
+              <span>
+                <em>Previous system</em>
+                <strong>{nav.prev.cardTitle || nav.prev.title}</strong>
+              </span>
             </Link>
           ) : null}
         </nav>

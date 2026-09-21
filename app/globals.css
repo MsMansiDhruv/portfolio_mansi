@@ -132,16 +132,14 @@
   --color-text-code: #e2e8f0;
 }
 
-html, body {
+html,
+body {
   font-family: var(--font-family);
   max-width: 100%;
   overflow-x: hidden;
-  scroll-behavior: smooth;
 }
 
-/* Smooth scrolling and selection colors */
 html {
-  scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: rgb(51, 65, 85) rgb(226, 232, 240);
 }

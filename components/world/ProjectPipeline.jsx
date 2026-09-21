@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { getPointMap } from "./pointMap";
 import { THEME, semanticColor } from "@/lib/data/data-world";
 import { getProjectMeta } from "@/lib/data/project-meta";
+import { isWorldCompact } from "@/lib/world-device";
 
 const PipelineStageLabels = lazy(() => import("./PipelineStageLabels"));
 
@@ -163,7 +164,7 @@ function buildPipeline(topology, seed = 1, stageLabels = []) {
 }
 
 /**
- * Immersive project pipeline — POINT + LINE field when a work cluster is entered.
+ * Immersive project pipeline - POINT + LINE field when a work cluster is entered.
  */
 export default function ProjectPipeline({
   themeId,
@@ -180,7 +181,21 @@ export default function ProjectPipeline({
   const fade = useRef(0);
   const resolve = useRef(0);
   const readySent = useRef(false);
+  const pageCompact = useRef(false);
   const t = THEME[themeId] || THEME.night;
+
+  useEffect(() => {
+    const apply = () => {
+      pageCompact.current = isWorldCompact();
+    };
+    apply();
+    window.addEventListener("resize", apply);
+    window.addEventListener("orientationchange", apply);
+    return () => {
+      window.removeEventListener("resize", apply);
+      window.removeEventListener("orientationchange", apply);
+    };
+  }, []);
 
   const meta = useMemo(
     () => (cluster?.slug ? getProjectMeta(cluster.slug) : null),
@@ -265,8 +280,9 @@ export default function ProjectPipeline({
 
     root.current.visible = fade.current > 0.015;
     if (layout === "page") {
-      root.current.scale.setScalar(2.35 * (0.7 + fade.current * 0.3));
-      root.current.position.x = 0.35;
+      const pageScale = pageCompact.current ? 1.45 : 2.35;
+      root.current.scale.setScalar(pageScale * (0.7 + fade.current * 0.3));
+      root.current.position.x = pageCompact.current ? 0.12 : 0.35;
       root.current.position.y = 0.02;
       root.current.position.z = 0;
     } else {
@@ -332,7 +348,7 @@ export default function ProjectPipeline({
             let px = pt.x;
             let py = pt.y;
             let pz = pt.z;
-            // Local field — cursor gently displaces nearby travelling data
+            // Local field - cursor gently displaces nearby travelling data
             if (cursor?.active) {
               const dx = px * 0.15 - cursor.nx * 0.4;
               const dy = py * 0.15 - cursor.ny * 0.4;

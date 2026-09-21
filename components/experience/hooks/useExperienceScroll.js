@@ -1,29 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Lenis from "lenis";
+import { useLenis } from "lenis/react";
 import { useScrollProgress } from "@/components/cinema/scroll/useScrollProgress";
 
 export function useExperienceScroll(trackRef, reducedMotion, lenisRef) {
+  const lenis = useLenis();
   const nativeProgress = useScrollProgress(trackRef);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (reducedMotion) return;
-
-    const lenis = new Lenis({
-      lerp: 0.085,
-      smoothWheel: true,
-      wheelMultiplier: 0.9,
-    });
+    if (reducedMotion || !lenis) return undefined;
     if (lenisRef) lenisRef.current = lenis;
-
-    let frame;
-    const raf = (time) => {
-      lenis.raf(time);
-      frame = requestAnimationFrame(raf);
-    };
-    frame = requestAnimationFrame(raf);
 
     const measure = () => {
       const track = trackRef.current;
@@ -42,11 +30,10 @@ export function useExperienceScroll(trackRef, reducedMotion, lenisRef) {
     measure();
 
     return () => {
-      cancelAnimationFrame(frame);
-      lenis.destroy();
+      lenis.off("scroll", measure);
       if (lenisRef) lenisRef.current = null;
     };
-  }, [trackRef, reducedMotion, lenisRef]);
+  }, [trackRef, reducedMotion, lenisRef, lenis]);
 
-  return reducedMotion ? nativeProgress : progress;
+  return reducedMotion || !lenis ? nativeProgress : progress;
 }

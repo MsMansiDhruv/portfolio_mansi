@@ -1,16 +1,19 @@
 "use client";
 
+import { useRef, useState } from "react";
 import Link from "next/link";
-import { useState } from "react";
-import FieldBackdropLazy from "@/components/world/FieldBackdropLazy";
+import { ArrowUpRight, Github, Linkedin, Mail, Send } from "lucide-react";
 import WorldPageNav from "@/components/world/WorldPageNav";
-import { IDENTITY_HERO } from "@/lib/data/identity";
+import { useStudioMotion } from "@/components/world/useStudioMotion";
 import { SOCIAL_LINKS } from "@/lib/data/social-links";
 import { useWorldTheme } from "@/lib/use-world-theme";
 import "@/styles/mansi-world-of-data.css";
+import "@/styles/mansi-studio.css";
 
 export default function Contact() {
   const [theme] = useWorldTheme();
+  const rootRef = useRef(null);
+  useStudioMotion(rootRef);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
@@ -48,30 +51,52 @@ export default function Contact() {
   }
 
   return (
-    <div className="wd-root wd-page wd-page--field wd-page--contact wd-page--copy is-ready" data-theme={theme} suppressHydrationWarning>
-      <FieldBackdropLazy themeId={theme} layer="contact" className="wd-field-backdrop--copy" />
+    <div ref={rootRef} className="wd-studio-shell" data-theme={theme} suppressHydrationWarning>
       <WorldPageNav active="contact" />
-      <main className="wd-page-main">
-        <header className="wd-page-hero">
-          <p className="wd-scroll-kicker">Contact</p>
-          <h1 className="wd-page-title">Get in touch.</h1>
-          <p className="wd-page-lead">{IDENTITY_HERO.headline}</p>
-          <p className="wd-page-body">
-            For roles, collaboration, or a technical conversation. I usually reply within a few business days.
-          </p>
-          <p className="wd-page-body">
-            Prefer email?{" "}
-            <a className="wd-inline-link" href={`mailto:${SOCIAL_LINKS.email}`}>
-              {SOCIAL_LINKS.email}
-            </a>
-          </p>
+      <main className="wd-studio-main">
+        <header className="wd-studio-hero">
+          <div data-rise>
+            <p className="wd-studio-kicker">Contact</p>
+            <h1>If the work holds, write.</h1>
+            <p>
+              Hiring, a collaboration, or a design review. Send the constraint. I will answer like an engineer.
+            </p>
+          </div>
+          <div className="wd-studio-draw" aria-hidden data-rise>
+            <svg viewBox="0 0 420 180">
+              <path d="M 20 90 C 90 20, 160 160, 240 70 S 340 20, 400 110" />
+              <circle cx="240" cy="70" r="5" />
+              <circle cx="400" cy="110" r="6" />
+            </svg>
+          </div>
         </header>
 
-        <section className="wd-page-section wd-contact-main">
+        <div className="wd-contact-split">
+          <div data-rise>
+            <p className="wd-studio-kicker">Direct</p>
+            <a className="wd-route__mail" href={`mailto:${SOCIAL_LINKS.email}`}>
+              {SOCIAL_LINKS.email}
+            </a>
+            <nav className="wd-studio-links" aria-label="Elsewhere">
+              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer">
+                <Linkedin size={16} /> LinkedIn
+              </a>
+              <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer">
+                <Github size={16} /> GitHub
+              </a>
+              <a href="/resume.pdf" target="_blank" rel="noreferrer">
+                Resume <ArrowUpRight size={14} />
+              </a>
+              <Link href="/credentials">Credentials</Link>
+            </nav>
+          </div>
+
           {done ? (
-            <p className="wd-page-body">Thanks — your message was sent. I will reply when I can.</p>
+            <p className="wd-page-body" data-rise>
+              Thanks — your message was sent. I will reply when I can.
+            </p>
           ) : (
-            <form onSubmit={submit} className="wd-contact-form">
+            <form onSubmit={submit} className="wd-contact-form" data-rise>
               <label>
                 <span>Name</span>
                 <input value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
@@ -91,23 +116,10 @@ export default function Contact() {
                 </div>
               ) : null}
               <button type="submit" disabled={submitting} className="wd-contact-submit">
-                {submitting ? "Sending…" : "Send message"}
+                <Send size={16} /> {submitting ? "Sending…" : "Send message"}
               </button>
             </form>
           )}
-        </section>
-
-        <div className="wd-scroll-links">
-          <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer">
-            LinkedIn
-          </a>
-          <a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer">
-            GitHub
-          </a>
-          <a href="/resume.pdf" target="_blank" rel="noreferrer">
-            Resume
-          </a>
-          <Link href="/credentials">About</Link>
         </div>
       </main>
     </div>

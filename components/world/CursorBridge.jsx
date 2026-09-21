@@ -9,7 +9,6 @@ import * as THREE from "three";
 export default function CursorBridge({ cursorRef }) {
   const { camera, gl } = useThree();
   const ndc = useRef(new THREE.Vector2());
-  const prev = useRef({ x: 0, y: 0 });
   const over = useRef(false);
   const dragging = useRef(false);
   const pointerId = useRef(null);
@@ -77,15 +76,6 @@ export default function CursorBridge({ cursorRef }) {
     if (!cursorRef?.current) return;
     const cur = cursorRef.current;
     if (!over.current) return;
-    const dt = Math.max(0.001, Math.min(delta, 0.05));
-    const nx = ndc.current.x;
-    const ny = ndc.current.y;
-    cur.vx = (nx - prev.current.x) / dt;
-    cur.vy = (ny - prev.current.y) / dt;
-    prev.current = { x: nx, y: ny };
-    cur.nx = nx;
-    cur.ny = ny;
-    cur.active = true;
 
     plane.current.constant = 0;
     ray.current.setFromCamera(ndc.current, camera);

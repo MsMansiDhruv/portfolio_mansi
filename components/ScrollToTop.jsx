@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLenis } from "lenis/react";
 import { cn } from "@/lib/cn";
 
 export default function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false);
+  const lenis = useLenis();
 
   useEffect(() => {
     const toggleVisibility = () => {
@@ -18,7 +20,8 @@ export default function ScrollToTop() {
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (lenis) lenis.scrollTo(0, { lerp: 0.18 });
+    else window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Mansi Dhruv — Resume</title>
+  <style>
+    @page { size: A4; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #fff;
+      color: #1b2330;
+      font-family: Calibri, "Segoe UI", Arial, sans-serif;
+      font-size: 10.15pt;
+      line-height: 1.28;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 11.5mm 13mm 10mm;
+    }
+    header { text-align: center; }
+    h1 {
+      font-family: Calibri, "Segoe UI", Arial, sans-serif;
+      font-size: 20.5pt;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1.05;
+      color: #152033;
+    }
+    .title {
+      margin-top: 3px;
+      font-size: 10.4pt;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #2b4c6f;
+    }
+    .contact {
+      margin-top: 4px;
+      font-size: 9.1pt;
+      color: #3d4a5c;
+    }
+    .contact a { color: #3d4a5c; text-decoration: none; }
+    h2 {
+      margin: 9px 0 4px;
+      padding-bottom: 1.5px;
+      border-bottom: 1.15pt solid #1b2a40;
+      font-size: 9.4pt;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #152033;
+    }
+    .summary { text-align: justify; }
+    .skills {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .skills th {
+      width: 24mm;
+      padding: 1px 7px 1px 0;
+      font-size: 9.2pt;
+      font-weight: 700;
+      text-align: left;
+      vertical-align: top;
+      color: #152033;
+      white-space: nowrap;
+    }
+    .skills td {
+      padding: 1px 0;
+      font-size: 9.35pt;
+      color: #243041;
+    }
+    .job { margin-top: 6px; }
+    .job-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .job-head h3 {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #152033;
+    }
+    .dates {
+      font-size: 9.3pt;
+      font-weight: 600;
+      white-space: nowrap;
+      color: #2b4c6f;
+    }
+    .org {
+      font-size: 9.6pt;
+      font-style: italic;
+      color: #3a4658;
+    }
+    .progression {
+      margin: 1px 0 3px;
+      font-size: 9pt;
+      color: #4a5568;
+    }
+    ul {
+      margin: 0 0 0 14px;
+      padding: 0;
+    }
+    li {
+      margin: 0 0 2.4px;
+      text-align: justify;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+    }
+    .edu-title, .award-title { font-weight: 700; }
+    .muted { color: #4a5568; }
+    .tight { margin-top: 3px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>MANSI DHRUV</h1>
+      <p class="title">Lead Data Engineer &nbsp;·&nbsp; Solution Architect</p>
+      <p class="contact">
+        Maharashtra, India
+        &nbsp;·&nbsp; <a href="mailto:mansi.p.dhruv@gmail.com">mansi.p.dhruv@gmail.com</a>
+        &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/mansidhruv/">linkedin.com/in/mansidhruv</a>
+        &nbsp;·&nbsp; <a href="https://github.com/MsMansiDhruv">github.com/MsMansiDhruv</a>
+        &nbsp;·&nbsp; <a href="https://portfolio-mansi-eight.vercel.app">portfolio-mansi-eight.vercel.app</a>
+      </p>
+    </header>
+
+    <h2>Summary</h2>
+    <p class="summary">
+      Lead Data Engineer with 7+ years building production data platforms, ETL/ELT, and cloud architectures on AWS and Databricks.
+      Most of my work starts as a migration or cost problem and becomes an architecture problem: layered lakehouses, workload-specific serving, and ML paths that data scientists can trust in production.
+      I lead delivery, make trade-offs explicit, and mentor engineers so the system stays operable after it ships.
+    </p>
+
+    <h2>Skills</h2>
+    <table class="skills">
+      <tr><th>Data platforms</th><td>Spark · PySpark · Scala · SQL · Databricks · Delta Live Tables · Airflow · Kafka · Kinesis</td></tr>
+      <tr><th>AWS</th><td>S3 · Glue · Redshift · Lambda · DynamoDB · ECS · EC2 · API Gateway · DMS · Athena</td></tr>
+      <tr><th>Engineering</th><td>Python · Terraform · CloudFormation · Docker · CI/CD · FastAPI · GraphQL · Bitbucket Pipelines</td></tr>
+      <tr><th>Analytics / ML</th><td>Power BI · Tableau · MLflow · production ML pipeline integration · web extraction (Scrapy, Selenium)</td></tr>
+    </table>
+
+    <h2>Experience</h2>
+
+    <article class="job">
+      <div class="job-head">
+        <h3>Lead Data Engineer</h3>
+        <span class="dates">Oct 2021 – Present</span>
+      </div>
+      <p class="org">SG Analytics &nbsp;·&nbsp; Maharashtra, India</p>
+      <p class="progression">Progressed Data Engineer → Senior Data Engineer → Lead Data Engineer (2025). Own architecture, delivery, and mentoring across confidential enterprise engagements.</p>
+      <ul>
+        <li>Lead a cross-functional data team: architecture decisions, delivery standards, and mentoring of engineers and interns in Python, production practices, and automation.</li>
+        <li>Modernized legacy shell ETL into a layered AWS lakehouse (S3 Bronze/Silver/Gold, Glue/PySpark, Redshift, Power BI) for a confidential asset-management client — centralized analytics and self-service reporting.</li>
+        <li>Separated high-frequency application serving from warehouse analytics after a Redshift cost signal; benchmarked Redshift, Aurora, DynamoDB, and S3 Tables and chose engines by workload instead of one universal store.</li>
+        <li>Productionized an ML-driven allocation path (Databricks, Delta, MLflow, ECR, GraphQL) for a confidential fintech engagement — engineering the serving pipeline around Data Science–owned models.</li>
+        <li>Built batch and streaming pipelines (Kafka, Kinesis, Delta Live Tables, Spark/Scala) on AWS; documented ~40% end-to-end pipeline-time reduction and ~30% infrastructure-cost reduction versus the prior Databricks setup.</li>
+        <li>Automated a web-intelligence pipeline (Scrapy, Selenium, Lambda, Terraform, CI/CD) from discovery through deduplication, classification, and reporting; reduced manual monitoring workload by ~50%.</li>
+        <li>Delivered Glue/Redshift ETL and AWS infrastructure for an enterprise life-sciences client, including dashboard-facing transforms and ML-model data prep; automated processing and cut data-processing time by ~45%.</li>
+        <li>Diagnosed slow SQL inserts with structured RCA and query redesign, improving time efficiency by ~85% on the affected paths.</li>
+      </ul>
+    </article>
+
+    <article class="job">
+      <div class="job-head">
+        <h3>Software Engineer</h3>
+        <span class="dates">Aug 2019 – Oct 2021</span>
+      </div>
+      <p class="org">CypherTree Technologies &nbsp;·&nbsp; Maharashtra, India</p>
+      <ul>
+        <li>Built backend systems for a self-service social-analytics platform (Django, React, Redshift, Celery); shipped REST APIs and reduced API load time by 25–30%.</li>
+        <li>Implemented payment-gateway integrations and GraphQL/JWT services for an e-commerce platform (Python, Django, Elasticsearch, Docker).</li>
+      </ul>
+    </article>
+
+    <article class="job">
+      <div class="job-head">
+        <h3>Software Engineering Intern</h3>
+        <span class="dates">Dec 2018 – Jul 2019</span>
+      </div>
+      <p class="org">Bemrr &nbsp;·&nbsp; Gujarat Police &nbsp;·&nbsp; Gujarat, India</p>
+      <ul>
+        <li>Built production iOS and web applications (Django, Python, JavaScript, Ionic).</li>
+      </ul>
+    </article>
+
+    <h2>Education</h2>
+    <div class="meta-row">
+      <p><span class="edu-title">(Integrated) Master of Computer Applications</span> <span class="muted">· Ahmedabad University</span></p>
+      <span class="dates">2014 – 2019</span>
+    </div>
+    <p class="tight muted">Score: 3.94 / 4.33</p>
+
+    <h2>Certifications &amp; Awards</h2>
+    <p><span class="award-title">Certifications:</span> AWS Certified Cloud Practitioner (Aug 2022) · Building Your First ETL Pipeline Using Azure Databricks (2022) · Big Data Analytics using Spark (2021)</p>
+    <p class="tight"><span class="award-title">Awards:</span> Value-able Award, SG Analytics (2024) — foundational delivery that led to new client business · GEM Award, SG Analytics (2023) — exceptional business value</p>
+  </div>
+</body>
+</html>

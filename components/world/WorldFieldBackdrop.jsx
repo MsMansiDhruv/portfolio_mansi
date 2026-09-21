@@ -128,7 +128,12 @@ export default function WorldFieldBackdrop({
         }}
       >
         <ambientLight intensity={t.ambient} color={themeId === "day" ? "#fbfaf8" : "#ece8f4"} />
-        <directionalLight position={[5, 8, 6]} intensity={t.key} color="#f6f4f2" />
+        <hemisphereLight
+          intensity={themeId === "day" ? 0.42 : 0.28}
+          color={themeId === "day" ? "#fbfaf8" : "#b9aef4"}
+          groundColor={themeId === "day" ? "#d8dee6" : "#1a1a1f"}
+        />
+        <directionalLight position={[5, 8, 6]} intensity={t.key} color={themeId === "day" ? "#fbfaf8" : "#f6f4f2"} />
         <group position={compact ? [0.2, 0.06, 0] : layer === "world" ? [0.85, 0.02, 0] : [0, 0.04, 0]} scale={compact ? 0.62 : 1}>
           <Suspense fallback={null}>
             <DataGlobe

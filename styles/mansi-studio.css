@@ -1,0 +1,327 @@
+.wd-studio-shell {
+  --wd-bar-h: 4.5rem;
+  position: relative;
+  inset: auto;
+  min-height: 100svh;
+  overflow: visible;
+  height: auto;
+  background: var(--wd-bg);
+  color: var(--wd-ink);
+  font-family: var(--wd-font-body, var(--font-manrope), ui-sans-serif, system-ui, sans-serif);
+}
+
+.wd-studio-shell,
+.wd-studio-shell *,
+.wd-studio-shell *::before,
+.wd-studio-shell *::after {
+  box-sizing: border-box;
+}
+
+.wd-studio-main {
+  width: min(88rem, calc(100% - 2.4rem));
+  margin: 0 auto;
+  padding: calc(var(--wd-bar-h, 4.5rem) + 2.2rem) 0 5rem;
+}
+
+.wd-studio-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(14rem, 0.85fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: end;
+  margin-bottom: 3.2rem;
+}
+
+.wd-studio-hero h1 {
+  margin: 0.35rem 0 0;
+  max-width: 14ch;
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  letter-spacing: -0.05em;
+  line-height: 0.92;
+}
+
+.wd-studio-hero p {
+  margin: 1rem 0 0;
+  max-width: 38ch;
+  color: var(--wd-muted);
+  font-size: 1.15rem;
+  line-height: 1.55;
+}
+
+.wd-studio-draw svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.wd-studio-draw path {
+  fill: none;
+  stroke: var(--wd-accent);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.wd-studio-draw circle {
+  fill: var(--wd-accent);
+}
+
+.wd-studio-draw circle:last-child {
+  fill: var(--wd-orange, #f97316);
+}
+
+.wd-studio-kicker {
+  margin: 0;
+  color: var(--wd-accent);
+  font-family: var(--wd-font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.wd-studio-block {
+  margin: 3.2rem 0 0;
+}
+
+.wd-studio-block h2 {
+  margin: 0.4rem 0 1.4rem;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  letter-spacing: -0.04em;
+}
+
+.wd-studio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+.wd-studio-card {
+  padding: 1.3rem 1.25rem 1.35rem;
+  border: 1px solid var(--wd-line);
+  border-radius: 1.15rem;
+  background: var(--wd-surface);
+  transition: transform 0.28s var(--wd-ease, ease), border-color 0.28s ease;
+}
+
+.wd-studio-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--wd-orange, #f97316);
+}
+
+.wd-studio-card span,
+.wd-studio-card em {
+  display: block;
+  color: var(--wd-accent);
+  font-family: var(--wd-font-mono);
+  font-size: 0.72rem;
+  font-style: normal;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.wd-studio-card strong {
+  display: block;
+  margin: 0.45rem 0 0.4rem;
+  font-size: 1.15rem;
+  letter-spacing: -0.03em;
+}
+
+.wd-studio-card p {
+  margin: 0;
+  color: var(--wd-muted);
+  line-height: 1.5;
+}
+
+.wd-studio-line {
+  display: grid;
+  gap: 0;
+}
+
+.wd-studio-line article {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 1.2rem;
+  padding: 1.15rem 0;
+  border-top: 1px solid var(--wd-line);
+  transition: border-color 0.25s ease;
+}
+
+.wd-studio-line article:hover {
+  border-top-color: var(--wd-orange, #f97316);
+}
+
+.wd-studio-line b {
+  color: var(--wd-accent);
+  font-family: var(--wd-font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.wd-studio-line strong {
+  display: block;
+  font-size: 1.12rem;
+}
+
+.wd-studio-line p {
+  margin: 0.35rem 0 0;
+  color: var(--wd-muted);
+  line-height: 1.5;
+}
+
+.wd-studio-quotes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1rem;
+}
+
+.wd-studio-quotes article {
+  padding: 1.3rem 1.3rem 1.2rem;
+  border: 1px solid var(--wd-line);
+  border-radius: 1.15rem;
+  background: var(--wd-surface);
+}
+
+.wd-studio-quotes header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.7rem;
+  color: var(--wd-accent);
+  font-family: var(--wd-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.wd-studio-quotes blockquote {
+  margin: 0;
+}
+
+.wd-studio-quotes p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.wd-studio-quotes button {
+  margin-top: 0.8rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--wd-accent);
+  font-family: var(--wd-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.wd-studio-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 2.4rem;
+}
+
+.wd-studio-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid var(--wd-line);
+  border-radius: 999px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.wd-studio-links a:hover {
+  transform: translateY(-3px);
+  border-color: var(--wd-orange, #f97316);
+  color: var(--wd-orange, #f97316);
+}
+
+.wd-contact-split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(1.6rem, 4vw, 3.2rem);
+  align-items: start;
+}
+
+.wd-contact-form {
+  display: grid;
+  gap: 0.95rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 1.4rem 1.35rem 1.5rem;
+  border: 1px solid var(--wd-line);
+  border-radius: 1.25rem;
+  background: var(--wd-surface);
+}
+
+.wd-contact-form label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.wd-contact-form span {
+  color: var(--wd-accent);
+  font-family: var(--wd-font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.wd-contact-form input,
+.wd-contact-form textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--wd-line);
+  border-radius: 0.85rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.wd-contact-form input:focus,
+.wd-contact-form textarea:focus {
+  outline: 2px solid var(--wd-orange, #f97316);
+  border-color: transparent;
+}
+
+.wd-contact-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  justify-self: start;
+  padding: 0.85rem 1.35rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--wd-accent);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+a.wd-studio-card {
+  color: inherit;
+  text-decoration: none;
+}
+
+.wd-contact-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wd-contact-error {
+  color: var(--wd-orange, #f97316);
+}
+
+@media (max-width: 860px) {
+  .wd-studio-hero,
+  .wd-studio-grid,
+  .wd-studio-quotes,
+  .wd-contact-split {
+    grid-template-columns: 1fr;
+  }
+}

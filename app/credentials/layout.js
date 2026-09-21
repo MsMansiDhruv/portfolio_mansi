@@ -1,8 +1,8 @@
 export const metadata = {
-  title: "About & experience | Mansi Dhruv",
-  description: "Profile, experience, recognition, certifications, and toolkit.",
+  title: "Credentials | Mansi Dhruv",
+  description: "Career sequence, recognition, certifications, and recommendations.",
 };
 
-export default function AboutLayout({ children }) {
+export default function CredentialsLayout({ children }) {
   return children;
 }

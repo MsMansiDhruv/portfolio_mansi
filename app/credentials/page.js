@@ -1,22 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
+import { ArrowUpRight, Award, FileText, Mail } from "lucide-react";
 import WorldPageNav from "@/components/world/WorldPageNav";
-import FieldBackdropLazy from "@/components/world/FieldBackdropLazy";
+import { useStudioMotion } from "@/components/world/useStudioMotion";
 import {
-  ABOUT_ME,
   AWARDS,
   CAREER_TIMELINE,
   CERTIFICATIONS,
   getAboutHeroLine,
 } from "@/lib/data/career";
-import { HOW_I_THINK, IDENTITY_HERO } from "@/lib/data/identity";
+import { HOW_I_THINK } from "@/lib/data/identity";
 import { RECOMMENDATIONS, getRecommendationText } from "@/lib/data/recommendations";
 import { useWorldTheme } from "@/lib/use-world-theme";
 import "@/styles/mansi-world-of-data.css";
-
-const SIGNAL_LIMIT = 118;
+import "@/styles/mansi-studio.css";
 
 function publicLabel(item) {
   if (item.showIdentity) return item.name;
@@ -28,41 +27,43 @@ function publicLabel(item) {
   return "COLLEAGUE";
 }
 
-function excerpt(text, limit = SIGNAL_LIMIT) {
+function excerpt(text, limit = 140) {
   const compact = String(text || "").replace(/\s+/g, " ").trim();
   if (compact.length <= limit) return { short: compact, more: false };
-  return {
-    short: compact.slice(0, limit).replace(/\s+\S*$/, ""),
-    more: true,
-  };
+  return { short: compact.slice(0, limit).replace(/\s+\S*$/, ""), more: true };
 }
 
 export default function CredentialsPage() {
   const [theme] = useWorldTheme();
   const [openSignals, setOpenSignals] = useState({});
+  const rootRef = useRef(null);
+  useStudioMotion(rootRef);
 
   return (
-    <div className="wd-root wd-page wd-page--field wd-page--copy is-ready" data-theme={theme} suppressHydrationWarning>
-      <FieldBackdropLazy themeId={theme} layer="experience" className="wd-field-backdrop--copy" />
-      <WorldPageNav active="about" />
-      <main id="about" className="wd-page-main">
-        <header className="wd-page-hero">
-          <p className="wd-scroll-kicker">ABOUT</p>
-          <h1 className="wd-page-title">How the work got harder — and clearer.</h1>
-          <p className="wd-page-lead">{getAboutHeroLine()}</p>
-          <p className="wd-page-body">{ABOUT_ME[0]}</p>
-          <p className="wd-page-body">{ABOUT_ME[1]}</p>
+    <div ref={rootRef} className="wd-studio-shell" data-theme={theme} suppressHydrationWarning>
+      <WorldPageNav />
+      <main id="about" className="wd-studio-main">
+        <header className="wd-studio-hero">
+          <div data-rise>
+            <p className="wd-studio-kicker">Credentials</p>
+            <h1>How the work got harder — and clearer.</h1>
+            <p>{getAboutHeroLine()}</p>
+          </div>
+          <div className="wd-studio-draw" aria-hidden data-rise>
+            <svg viewBox="0 0 420 180">
+              <path d="M 12 140 C 80 40, 150 40, 210 110 S 310 180, 400 52" />
+              <circle cx="210" cy="110" r="5" />
+              <circle cx="400" cy="52" r="6" />
+            </svg>
+          </div>
         </header>
 
-        <section className="wd-page-section wd-persona">
-          <div className="wd-persona__intro">
-            <p className="wd-scroll-kicker">How I work</p>
-            <h2 className="wd-page-title wd-page-title--sub">Engineer by profession. Builder by obsession.</h2>
-            <p className="wd-page-body">{IDENTITY_HERO.humanLine}</p>
-          </div>
-          <div className="wd-persona__grid">
+        <section className="wd-studio-block">
+          <p className="wd-studio-kicker">How I work</p>
+          <h2>Three operating notes.</h2>
+          <div className="wd-studio-grid">
             {HOW_I_THINK.slice(0, 3).map((thought, index) => (
-              <article key={thought} className="wd-persona__card">
+              <article key={thought} className="wd-studio-card" data-rise>
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <p>{thought}</p>
               </article>
@@ -70,12 +71,13 @@ export default function CredentialsPage() {
           </div>
         </section>
 
-        <section className="wd-page-section">
-          <p className="wd-scroll-kicker">Experience</p>
-          <div className="wd-scroll-timeline">
+        <section className="wd-studio-block">
+          <p className="wd-studio-kicker">Experience</p>
+          <h2>Roles, in sequence.</h2>
+          <div className="wd-studio-line">
             {CAREER_TIMELINE.map((entry) => (
-              <article key={entry.id}>
-                <span>{entry.year}</span>
+              <article key={entry.id} data-rise>
+                <b>{entry.year}</b>
                 <div>
                   <strong>{entry.title}</strong>
                   <p>{entry.desc}</p>
@@ -85,12 +87,13 @@ export default function CredentialsPage() {
           </div>
         </section>
 
-        <section id="achievements" className="wd-page-section">
-          <p className="wd-scroll-kicker">Achievements</p>
-          <div className="wd-awards">
+        <section id="achievements" className="wd-studio-block">
+          <p className="wd-studio-kicker">Achievements</p>
+          <h2>Proof, not decoration.</h2>
+          <div className="wd-studio-grid">
             {AWARDS.map((award) => (
-              <article key={award.id} className="wd-award">
-                <span>{award.year}</span>
+              <article key={award.id} className="wd-studio-card" data-rise>
+                <em>{award.year}</em>
                 <strong>{award.title}</strong>
                 <p>
                   {award.org}. {award.summary}
@@ -100,16 +103,17 @@ export default function CredentialsPage() {
           </div>
         </section>
 
-        <section id="certifications" className="wd-page-section">
-          <p className="wd-scroll-kicker">Certifications</p>
-          <div className="wd-certs">
+        <section id="certifications" className="wd-studio-block">
+          <p className="wd-studio-kicker">Certifications</p>
+          <h2>Kept current.</h2>
+          <div className="wd-studio-grid">
             {CERTIFICATIONS.map((cert) => {
               const inner = (
                 <>
-                  <strong>{cert.title}</strong>
-                  <span>
+                  <em>
                     {cert.org} · {cert.issued}
-                  </span>
+                  </em>
+                  <strong>{cert.title}</strong>
                 </>
               );
               return cert.link ? (
@@ -118,15 +122,13 @@ export default function CredentialsPage() {
                   href={cert.link}
                   target="_blank"
                   rel="noreferrer"
-                  className={`wd-cert${cert.tier === "primary" ? " is-primary" : ""}`}
+                  className="wd-studio-card"
+                  data-rise
                 >
                   {inner}
                 </a>
               ) : (
-                <div
-                  key={cert.id}
-                  className={`wd-cert${cert.tier === "primary" ? " is-primary" : ""}`}
-                >
+                <div key={cert.id} className="wd-studio-card" data-rise>
                   {inner}
                 </div>
               );
@@ -134,25 +136,18 @@ export default function CredentialsPage() {
           </div>
         </section>
 
-        <section id="recommendations" className="wd-page-section">
-          <p className="wd-scroll-kicker">Recommendations</p>
-          <h2 className="wd-page-title wd-page-title--sub">What it was like to work with.</h2>
-          <p className="wd-page-body">
-            Notes from people I have worked with — clients, managers, and teammates.
-          </p>
-          <div className="wd-signals">
+        <section id="recommendations" className="wd-studio-block">
+          <p className="wd-studio-kicker">Recommendations</p>
+          <h2>What it was like to work with.</h2>
+          <div className="wd-studio-quotes">
             {RECOMMENDATIONS.map((item, index) => {
               const full = getRecommendationText(item);
               const { short, more } = excerpt(full);
               const open = !!openSignals[item.id];
               return (
-                <article
-                  key={item.id}
-                  className={`wd-signal${item.featured ? " is-featured" : ""}${open ? " is-open" : ""}`}
-                >
+                <article key={item.id} data-rise>
                   <header>
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <strong>{publicLabel(item)}</strong>
+                    <span>{String(index + 1).padStart(2, "0")} · {publicLabel(item)}</span>
                     {item.featured ? <i>Featured</i> : null}
                   </header>
                   <blockquote>
@@ -161,10 +156,7 @@ export default function CredentialsPage() {
                   {more ? (
                     <button
                       type="button"
-                      className="wd-signal__more"
-                      onClick={() =>
-                        setOpenSignals((prev) => ({ ...prev, [item.id]: !prev[item.id] }))
-                      }
+                      onClick={() => setOpenSignals((prev) => ({ ...prev, [item.id]: !prev[item.id] }))}
                     >
                       {open ? "Show less" : "Read more"}
                     </button>
@@ -175,13 +167,17 @@ export default function CredentialsPage() {
           </div>
         </section>
 
-        <div className="wd-scroll-links">
+        <nav className="wd-studio-links" aria-label="Next">
           <a href="/resume.pdf" target="_blank" rel="noreferrer">
-            Resume
+            <FileText size={16} /> Resume
           </a>
-          <Link href="/contact">Contact</Link>
-          <Link href="/projects">Work</Link>
-        </div>
+          <Link href="/contact">
+            <Mail size={16} /> Contact
+          </Link>
+          <Link href="/projects">
+            <Award size={16} /> Work
+          </Link>
+        </nav>
       </main>
     </div>
   );

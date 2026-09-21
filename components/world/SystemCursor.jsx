@@ -2,52 +2,60 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/**
- * Minimal precision instrument — small point, subtle state ring.
- */
-export default function SystemCursor({ mode = "idle", enabled = true }) {
-  const ref = useRef(null);
-  const pos = useRef({ x: -40, y: -40 });
-  const smooth = useRef({ x: -40, y: -40 });
-  const [visible, setVisible] = useState(false);
-  const [pressed, setPressed] = useState(false);
+const TRAIL = 16;
+
+export default function SystemCursor({ enabled = true }) {
+  const headRef = useRef(null);
+  const trailRef = useRef(null);
+  const pos = useRef({ x: -80, y: -80 });
+  const points = useRef(Array.from({ length: TRAIL }, () => ({ x: -80, y: -80 })));
+  const [on, setOn] = useState(false);
 
   useEffect(() => {
     if (!enabled) return undefined;
+    if (window.matchMedia("(pointer: coarse)").matches) return undefined;
+
     const root = document.querySelector(".wd-root");
     root?.classList.add("wd-has-cursor");
 
     let raf = 0;
-    const onMove = (e) => {
+    const move = (e) => {
       pos.current.x = e.clientX;
       pos.current.y = e.clientY;
-      setVisible(true);
+      setOn(true);
     };
-    const onLeave = () => setVisible(false);
-    const onDown = () => setPressed(true);
-    const onUp = () => setPressed(false);
+    const leave = () => setOn(false);
 
     const tick = () => {
-      smooth.current.x += (pos.current.x - smooth.current.x) * 0.28;
-      smooth.current.y += (pos.current.y - smooth.current.y) * 0.28;
-      if (ref.current) {
-        const s = pressed ? 0.78 : 1;
-        ref.current.style.transform = `translate3d(${smooth.current.x}px, ${smooth.current.y}px, 0) scale(${s})`;
+      const pts = points.current;
+      pts[0].x += (pos.current.x - pts[0].x) * 0.42;
+      pts[0].y += (pos.current.y - pts[0].y) * 0.42;
+      for (let i = 1; i < TRAIL; i += 1) {
+        pts[i].x += (pts[i - 1].x - pts[i].x) * (0.28 - i * 0.008);
+        pts[i].y += (pts[i - 1].y - pts[i].y) * (0.28 - i * 0.008);
+      }
+      if (headRef.current) {
+        headRef.current.style.transform = `translate3d(${pts[0].x}px, ${pts[0].y}px, 0)`;
+      }
+      const nodes = trailRef.current?.children;
+      if (nodes) {
+        for (let i = 0; i < nodes.length; i += 1) {
+          const p = pts[i + 1];
+          if (!p) break;
+          nodes[i].style.transform = `translate3d(${p.x}px, ${p.y}px, 0) scale(${1 - i / TRAIL})`;
+          nodes[i].style.opacity = String(0.55 * (1 - i / TRAIL));
+        }
       }
       raf = requestAnimationFrame(tick);
     };
 
-    window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("pointerleave", onLeave);
-    window.addEventListener("pointerdown", onDown);
-    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("pointerleave", leave);
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerleave", onLeave);
-      window.removeEventListener("pointerdown", onDown);
-      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerleave", leave);
       root?.classList.remove("wd-has-cursor");
     };
   }, [enabled]);
@@ -55,13 +63,13 @@ export default function SystemCursor({ mode = "idle", enabled = true }) {
   if (!enabled) return null;
 
   return (
-    <div
-      ref={ref}
-      className={`wd-cursor wd-cursor--${mode}${visible ? " is-on" : ""}${pressed ? " is-press" : ""}`}
-      aria-hidden
-    >
-      <span className="wd-cursor__dot" />
-      <span className="wd-cursor__halo" />
+    <div className={`wd-cursor-field${on ? " is-on" : ""}`} aria-hidden>
+      <div ref={headRef} className="wd-cursor-field__head" />
+      <div ref={trailRef} className="wd-cursor-field__trail">
+        {Array.from({ length: TRAIL - 1 }, (_, i) => (
+          <span key={i} />
+        ))}
+      </div>
     </div>
   );
 }

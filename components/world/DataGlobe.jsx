@@ -126,12 +126,12 @@ export default function DataGlobe({
       : 840
     : Math.max(720, Math.round((reducedMotion ? 1000 : 2400) * quality));
 
-  const sizeMul = compactViewport ? 0.78 : 1;
-  const SIZE_MICRO = (day ? 6.2 : 5.2) * sizeMul;
+  const sizeMul = compactViewport ? 0.82 : 1;
+  const SIZE_MICRO = (day ? 7.4 : 5.2) * sizeMul;
 
-  const steel = useMemo(() => new THREE.Color(day ? "#5a6a7c" : "#f6f4f2"), [day]);
-  const silver = useMemo(() => new THREE.Color(day ? "#6d7f93" : "#ddd8eb"), [day]);
-  const mute = useMemo(() => new THREE.Color(day ? "#8a98a8" : "#77718b"), [day]);
+  const steel = useMemo(() => new THREE.Color(day ? "#243648" : "#f6f4f2"), [day]);
+  const silver = useMemo(() => new THREE.Color(day ? "#3a5068" : "#ddd8eb"), [day]);
+  const mute = useMemo(() => new THREE.Color(day ? "#5a6d80" : "#77718b"), [day]);
   const dataBlue = useMemo(
     () => new THREE.Color(day ? "#6d63a9" : t.data),
     [day, t.data]
@@ -249,12 +249,15 @@ export default function DataGlobe({
         microBase[i * 3 + 1] = y;
         microBase[i * 3 + 2] = z;
         microSeeds[i] = hash(i + 61);
-        microRoles[i] = 0;
+        microRoles[i] = i % 5;
         microCluster[i] = Math.floor(((Math.atan2(z, x) + Math.PI) / (Math.PI * 2)) * 4) % 4;
         microOpac[i] = 0.62 + hash(i + 50) * 0.32;
-        microCol[i * 3] = steel.r;
-        microCol[i * 3 + 1] = steel.g;
-        microCol[i * 3 + 2] = steel.b;
+        const role = microRoles[i];
+        const pick =
+          role === 1 ? dataBlue : role === 2 ? teal : role === 3 ? accent : role === 4 ? silver : steel;
+        microCol[i * 3] = pick.r;
+        microCol[i * 3 + 1] = pick.g;
+        microCol[i * 3 + 2] = pick.b;
         mi++;
       }
     } else {
@@ -297,7 +300,7 @@ export default function DataGlobe({
         cIdx = i % 4;
         opa = 0.75;
       } else if (h < 0.3) {
-        // Quiet voids — interior emptiness, not broken silhouette
+        // Quiet voids - interior emptiness, not broken silhouette
         if (hash(i + 29) < 0.82) continue;
         const lat = (hash(i + 33) - 0.5) * 160;
         const lon = hash(i + 37) * 360 - 180;
@@ -308,7 +311,7 @@ export default function DataGlobe({
         role = 3;
         opa = 0.25 + hash(i + 45) * 0.25;
       } else {
-        // Complete spherical silhouette — denser than voids, quieter than islands
+        // Complete spherical silhouette - denser than voids, quieter than islands
         if (hash(i + 29) < 0.1) continue;
         const yy = 1 - (mi / Math.max(1, MICRO - 1)) * 2;
         const rr = Math.sqrt(Math.max(0, 1 - yy * yy));
@@ -467,7 +470,7 @@ export default function DataGlobe({
     );
     const dec = decompose.current;
 
-    // Same material — different world states
+    // Same material - different world states
     const densTarget = forming
       ? 0.92
       : inPipeline
@@ -506,13 +509,23 @@ export default function DataGlobe({
 
     // Globe rotation follows cursor directly, with damping on the object itself
     if (compactViewport) {
-      if (!reducedMotion) orient.current.y += dt * 0.24;
-      orient.current.x = THREE.MathUtils.damp(
-        orient.current.x,
-        0.1 + Math.sin(time * 0.18) * 0.05,
-        1.1,
-        dt
-      );
+      if (cursor?.active && !reducedMotion) {
+        orient.current.y = THREE.MathUtils.damp(orient.current.y, cursor.nx * 0.58, 3.4, dt);
+        orient.current.x = THREE.MathUtils.damp(
+          orient.current.x,
+          0.1 + cursor.ny * 0.2,
+          3.4,
+          dt
+        );
+      } else {
+        if (!reducedMotion) orient.current.y += dt * 0.16;
+        orient.current.x = THREE.MathUtils.damp(
+          orient.current.x,
+          0.1 + Math.sin(time * 0.18) * 0.05,
+          1.1,
+          dt
+        );
+      }
     } else {
       vel.current.x += (target.current.x - orient.current.x) * 3.8 * dt;
       vel.current.y += (target.current.y - orient.current.y) * 3.2 * dt;
@@ -558,23 +571,17 @@ export default function DataGlobe({
         let y = THREE.MathUtils.lerp(from[i3 + 1], next[i3 + 1], alignment);
         let z = THREE.MathUtils.lerp(from[i3 + 2], next[i3 + 2], alignment);
         if (!reducedMotion) {
-          const amp = 0.01;
+          const amp = 0.008;
           x += Math.cos(time * 0.22 + seed * 9) * amp;
           y += Math.sin(time * 0.18 + seed * 7) * amp;
           z += Math.sin(time * 0.16 + seed * 5) * amp;
         }
-        if (cursor?.active) {
-          const cx = cursor.nx * 1.6;
-          const cy = cursor.ny * 1.15;
-          const dx = x - cx;
-          const dy = y - cy;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < 2.4) {
-            const fall = 1 - d2 / 2.4;
-            const f = fall * fall * 0.55;
-            x += dx * f * 0.35 - dy * f * 0.85;
-            y += dy * f * 0.35 + dx * f * 0.85;
-          }
+        const span = Math.hypot(x, y, z);
+        if (span > 1.82) {
+          const k = 1.82 / span;
+          x *= k;
+          y *= k;
+          z *= k;
         }
         pos[i3] = x;
         pos[i3 + 1] = y;
@@ -583,7 +590,7 @@ export default function DataGlobe({
       microRef.current.geometry.attributes.position.needsUpdate = true;
       microRef.current.material.opacity = Math.min(
         1,
-        (0.92 + reveal.current * 0.08) * (day ? 1.12 : 1) * (aiConsoleOpen ? 0.62 : 1)
+        (day ? 0.98 : 0.92 + reveal.current * 0.08) * (aiConsoleOpen ? 0.62 : 1)
       );
       microRef.current.material.size = SIZE_MICRO;
       if (stateRef?.current) {
@@ -618,7 +625,7 @@ export default function DataGlobe({
         let currentInfluence = 0;
         let thinkingInfluence = 0;
 
-        // Scroll chapters blend as one continuous field — no burst, no void.
+        // Scroll chapters blend as one continuous field - no burst, no void.
         {
           const from = shapeTargets[fromId] || baseMicro;
           const next = shapeTargets[toId] || baseMicro;
@@ -698,7 +705,7 @@ export default function DataGlobe({
         group.current.localToWorld(worldTmp.current);
         ndcTmp.current.copy(worldTmp.current).project(camera);
 
-        // Antigravity — spring force with inertia, no jitter
+        // Antigravity - spring force with inertia, no jitter
         if (cursor?.active && !inPipeline) {
           const dx = ndcTmp.current.x - cursor.nx;
           const dy = ndcTmp.current.y - cursor.ny;
@@ -765,7 +772,7 @@ export default function DataGlobe({
         pos[i3 + 1] = y;
         pos[i3 + 2] = z;
 
-        // Neutral matter — colour only as system response
+        // Neutral matter - colour only as system response
         const hot = Math.min(
           0.38,
           wake * 0.14 + (role === 2 ? secretWake.current * 0.24 : 0) + e * 0.12
@@ -790,7 +797,7 @@ export default function DataGlobe({
           tmpC.current.lerp(accent, 0.44);
         }
         if (currentInfluence > 0.001) {
-          // A restrained pale highlight — never a neon trail or solid beam.
+          // A restrained pale highlight - never a neon trail or solid beam.
           tmpC.current.lerp(silver, Math.min(0.82, currentInfluence * 1.1));
         }
         if (thinkingInfluence > 0.001) {
@@ -846,7 +853,7 @@ export default function DataGlobe({
           transparent
           opacity={0.96}
           depthWrite={false}
-          alphaTest={day ? 0.18 : 0.28}
+          alphaTest={day ? 0.12 : 0.28}
           toneMapped={false}
         />
       </points>

@@ -1,0 +1,22 @@
+.gradient-waves {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 108%, color-mix(in srgb, var(--wd-accent) 38%, transparent), transparent 62%),
+    radial-gradient(ellipse 55% 40% at 78% 92%, color-mix(in srgb, var(--wd-orange) 26%, transparent), transparent 58%),
+    radial-gradient(ellipse 40% 30% at 18% 88%, color-mix(in srgb, var(--wd-accent) 18%, transparent), transparent 70%);
+}
+
+.gradient-waves[data-gw="gl"] {
+  background: transparent;
+}
+
+.gradient-waves canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

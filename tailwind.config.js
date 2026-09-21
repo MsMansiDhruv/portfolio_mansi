@@ -1,23 +1,9 @@
 export default {
   darkMode: "class",
   content: [
-    "./app/blog/**/*.{js,jsx}",
-    "./app/notebook/**/*.{js,jsx}",
-    "./app/tools/**/*.{js,jsx}",
-    "./app/sister/**/*.{js,jsx}",
-    "./app/lab/**/*.{js,jsx}",
-    "./app/particle-portrait-test/**/*.{js,jsx}",
-    "./components/LegacyShell.jsx",
-    "./components/Header.jsx",
-    "./components/Footer.jsx",
-    "./components/Nav.jsx",
-    "./components/CommandPalette.jsx",
-    "./components/ScrollToTop.jsx",
-    "./components/PageTransition.jsx",
-    "./components/common/**/*.{js,jsx}",
-    "./components/tools/**/*.{js,jsx}",
-    "./components/design-system/**/*.{js,jsx}",
-    "./components/design-system-v2/**/*.{js,jsx}",
+    "./app/**/*.{js,jsx,ts,tsx}",
+    "./components/**/*.{js,jsx,ts,tsx}",
+    "./lib/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {

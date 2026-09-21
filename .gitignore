@@ -49,6 +49,7 @@ Thumbs.db
 # =========================
 .eslintcache
 .cache/
+tmp-map/
 .turbo/
 build.log
 vercel-build-test.log
