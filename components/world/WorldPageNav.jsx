@@ -22,19 +22,22 @@ function navIdFromPath(pathname, hash) {
   return "";
 }
 
-function NavLinks({ current, idPrefix, onNavigate, pathname }) {
+function NavLinks({ current, idPrefix, onNavigate, pathname, onAsk }) {
   return WORLD_NAV.map((item) => {
     const href = WORLD_HREF[item.id] || "/";
-    const stayOnHomeHash = pathname === "/" && item.id === "ai";
     return (
       <Link
         key={`${idPrefix}-${item.id}`}
         href={href}
         prefetch={false}
-        scroll={stayOnHomeHash ? false : undefined}
         className={`wd-nav__item${current === item.id ? " is-active" : ""}`}
         aria-current={current === item.id ? "page" : undefined}
-        onClick={onNavigate}
+        onClick={(event) => {
+          if (item.id === "ai") {
+            onAsk?.(event);
+          }
+          onNavigate?.();
+        }}
       >
         <span className="wd-nav__label">{item.label}</span>
       </Link>
@@ -75,6 +78,15 @@ export default function WorldPageNav({ active }) {
     window.setTimeout(() => setNavOpen(false), 0);
   };
 
+  const goAsk = (event) => {
+    const target = document.getElementById("ask");
+    if (!target || pathname !== "/") return;
+    event.preventDefault();
+    window.history.replaceState(null, "", "/#ask");
+    setHash("ask");
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const toggleTheme = () => {
     setTheme(toggleWorldTheme());
   };
@@ -96,7 +108,7 @@ export default function WorldPageNav({ active }) {
           Mansi
         </Link>
         <nav className="wd-nav" aria-label="System">
-          <NavLinks current={current} idPrefix="bar" onNavigate={closeNavSoon} pathname={pathname} />
+          <NavLinks current={current} idPrefix="bar" onNavigate={closeNavSoon} pathname={pathname} onAsk={goAsk} />
         </nav>
         <div className="wd-bar__end">
           <ThemeToggle theme={theme} onClick={toggleTheme} />
@@ -108,7 +120,7 @@ export default function WorldPageNav({ active }) {
         aria-label="Pages"
         aria-hidden={!navOpen}
       >
-        <NavLinks current={current} idPrefix="sheet" onNavigate={closeNavSoon} pathname={pathname} />
+        <NavLinks current={current} idPrefix="sheet" onNavigate={closeNavSoon} pathname={pathname} onAsk={goAsk} />
       </nav>
       <ResumeDock />
     </>
