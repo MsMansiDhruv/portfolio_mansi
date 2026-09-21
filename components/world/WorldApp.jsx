@@ -6,22 +6,17 @@ import { useLenis } from "lenis/react";
 import dynamic from "next/dynamic";
 import "@/styles/mansi-world-of-data.css";
 import {
-  WORLD_NAV,
-  NAV_PORTAL_MAP,
   LAYER_CAM,
   HOME_CAM,
-  TECH_META,
   getWorkClusters,
   approachNode,
 } from "@/lib/data/data-world";
-import NavToggle from "./NavToggle";
-import ThemeToggle from "./ThemeToggle";
 import { getProjectMeta } from "@/lib/data/project-meta";
-import { toggleWorldTheme } from "@/lib/world-theme";
 import { useWorldTheme } from "@/lib/use-world-theme";
 import { useWorldViewport } from "@/lib/use-world-viewport";
 import { useCursorField } from "@/lib/use-cursor-field";
 import WelcomeGate from "./WelcomeGate";
+import WorldPageNav from "./WorldPageNav";
 import SiteFooter from "./SiteFooter";
 import { bindStackMotion } from "./bindStackMotion";
 import PanelCard from "./PanelCard";
@@ -49,12 +44,10 @@ const ContactRouteBoard = dynamic(
  * One world. Contextual information only - never permanent side boxes.
  */
 export default function WorldApp({ skipWelcome = false }) {
-  const [theme, setTheme] = useWorldTheme();
+  const [theme] = useWorldTheme();
   useWorldViewport();
-  const [themePulse, setThemePulse] = useState(false);
   const [story, setStory] = useState("silence");
   const [layer, setLayer] = useState("world");
-  const [navOpen, setNavOpen] = useState(false);
   const [aiMode, setAiMode] = useState(null);
   const [techHover, setTechHover] = useState(null);
   const [workHover, setWorkHover] = useState(null);
@@ -67,7 +60,6 @@ export default function WorldApp({ skipWelcome = false }) {
   const [welcomeMounted, setWelcomeMounted] = useState(!skipWelcome);
   const storyRef = useRef(null);
   const lenis = useLenis();
-  const [portalHover, setPortalHover] = useState(null);
   const workProjects = useMemo(() => getWorkClusters(), []);
   const selectedProject = workSelected?.slug
     ? getProjectMeta(workSelected.slug)
@@ -289,11 +281,11 @@ export default function WorldApp({ skipWelcome = false }) {
     };
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setThemePulse(true);
-    window.setTimeout(() => setThemePulse(false), 1400);
-    setTheme(toggleWorldTheme());
-  }, []);
+  const closeProject = useCallback(() => {
+    setWorkSelected(null);
+    setPipelineReady(false);
+    setCam(LAYER_CAM.work, "stream");
+  }, [setCam]);
 
   const enterWelcome = useCallback(() => {
     if (welcomeLoading || !welcomeOpen) return;
@@ -306,13 +298,10 @@ export default function WorldApp({ skipWelcome = false }) {
   }, [welcomeLoading, welcomeOpen]);
 
   const onTechSelect = useCallback(
-    (node, pos) => {
+    (node) => {
       if (story !== "explore" && story !== "identity") return;
       if (layer !== "world") return;
-      const meta = TECH_META[node?.id];
-      if (meta?.targetLayer) {
-        setPortalHover(node.id);
-      }
+      void node;
     },
     [story, layer]
   );
@@ -327,53 +316,7 @@ export default function WorldApp({ skipWelcome = false }) {
     [setCam]
   );
 
-  const onHome = useCallback(() => {
-    setTechHover(null);
-    setPortalHover(null);
-    setWorkSelected(null);
-    setWorkHover(null);
-    setPipelineReady(false);
-    setLayer("world");
-    setNavOpen(false);
-    setCam(LAYER_CAM.world, "stream");
-    const el = document.getElementById("world-world");
-    if (!el) return;
-    if (lenis) lenis.scrollTo(el, { offset: -4, lerp: 0.18 });
-    else el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [setCam, lenis]);
-
   const closeAi = useCallback(() => setAiMode(null), []);
-
-  const openAi = useCallback((mode) => {
-    setNavOpen(false);
-    setAiMode(mode || "ask");
-    const el = document.getElementById("ask");
-    if (!el) return;
-    if (lenis) lenis.scrollTo(el, { offset: -4, lerp: 0.18 });
-    else el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [lenis]);
-
-  const goLayer = useCallback((id) => {
-    setNavOpen(false);
-    const sectionId = id === "ai" ? "ask" : `world-${id}`;
-    const jump = () => {
-      const el = document.getElementById(sectionId);
-      if (!el) return false;
-      if (lenis) {
-        lenis.start();
-        lenis.scrollTo(el, { offset: -8, lerp: 0.12, immediate: false });
-      } else {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-      if (sectionId === "ask") {
-        window.history.replaceState(null, "", "/#ask");
-      }
-      return true;
-    };
-    if (jump()) return;
-    window.setTimeout(jump, 80);
-    window.setTimeout(jump, 280);
-  }, [lenis]);
 
   useEffect(() => {
     const root = storyRef.current;
@@ -392,18 +335,12 @@ export default function WorldApp({ skipWelcome = false }) {
   }, []);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("wd-nav-lock", navOpen);
-    return () => document.documentElement.classList.remove("wd-nav-lock");
-  }, [navOpen]);
-
-  useEffect(() => {
     const root = storyRef.current;
     if (!root || welcomeOpen) return undefined;
     const applyLayer = (id) => {
       setLayer((previous) => {
         if (previous === id) return previous;
         setTechHover(null);
-        setPortalHover(null);
         setWorkSelected(null);
         setWorkHover(null);
         setPipelineReady(false);
@@ -443,16 +380,10 @@ export default function WorldApp({ skipWelcome = false }) {
     };
   }, [lenis, setCam, welcomeOpen]);
 
-  const closeProject = useCallback(() => {
-    setWorkSelected(null);
-    setPipelineReady(false);
-    setCam(LAYER_CAM.work, "stream");
-  }, [setCam]);
-
   const explored = story === "explore" || story === "identity";
   return (
     <div
-      className={`wd-root is-ready${themePulse ? " is-theme-shift" : ""}${workSelected ? " wd-project-open" : ""}${aiMode ? " wd-ai-open" : ""}`}
+      className={`wd-root is-ready${workSelected ? " wd-project-open" : ""}${aiMode ? " wd-ai-open" : ""}`}
       data-theme={theme}
       data-story={story}
       data-layer={layer}
@@ -465,52 +396,7 @@ export default function WorldApp({ skipWelcome = false }) {
       ) : null}
       <FieldSpirals revealAfter="#world-work" />
       <SystemCursor />
-      <header className={`wd-bar${navOpen ? " is-nav-open" : ""}`}>
-        <button type="button" className="wd-brand" onClick={onHome}>
-          Mansi
-        </button>
-        <nav className="wd-nav" aria-label="System">
-          {WORLD_NAV.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`wd-nav__item${layer === item.id ? " is-active" : ""}`}
-              onClick={() => goLayer(item.id)}
-              onPointerEnter={(event) => {
-                if (event.pointerType === "touch") return;
-                if (layer === "world") setPortalHover(NAV_PORTAL_MAP[item.id] || null);
-              }}
-              onPointerLeave={(event) => {
-                if (event.pointerType === "touch") return;
-                if (layer === "world") setPortalHover(null);
-              }}
-              aria-current={layer === item.id ? "page" : undefined}
-            >
-              <span className="wd-nav__label">{item.label}</span>
-            </button>
-          ))}
-        </nav>
-        <div className="wd-bar__end">
-          <ThemeToggle theme={theme} onClick={toggleTheme} />
-          <NavToggle open={navOpen} onClick={() => setNavOpen((v) => !v)} />
-        </div>
-      </header>
-      <nav
-        className={`wd-nav-sheet${navOpen ? " is-open" : ""}`}
-        aria-label="Pages"
-      >
-        {WORLD_NAV.map((item) => (
-          <button
-            key={`sheet-${item.id}`}
-            type="button"
-            className={`wd-nav__item${layer === item.id ? " is-active" : ""}`}
-            onClick={() => goLayer(item.id)}
-            aria-current={layer === item.id ? "page" : undefined}
-          >
-            <span className="wd-nav__label">{item.label}</span>
-          </button>
-        ))}
-      </nav>
+      <WorldPageNav active={layer === "ai" ? "ai" : undefined} />
 
       <main className="wd-scroll-story wd-scroll-story--stack" ref={storyRef}>
         <section id="world-world" className="wd-scroll-section wd-scroll-section--hero" data-world-layer="world">

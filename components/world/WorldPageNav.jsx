@@ -11,15 +11,11 @@ import NavToggle from "./NavToggle";
 import ThemeToggle from "./ThemeToggle";
 import ResumeDock from "./ResumeDock";
 
-function navIdFromPath(pathname) {
-  if (pathname === "/") return "world";
+function navIdFromPath(pathname, hash) {
+  if (pathname === "/") return hash === "ask" ? "ai" : "world";
   if (pathname?.startsWith("/projects")) return "work";
   if (pathname?.startsWith("/tools/ai-lab")) return "ai";
-  if (
-    pathname?.startsWith("/credentials") ||
-    pathname?.startsWith("/certification") ||
-    pathname?.startsWith("/#world-about")
-  ) {
+  if (pathname?.startsWith("/credentials") || pathname?.startsWith("/certification")) {
     return "about";
   }
   if (pathname?.startsWith("/contact")) return "contact";
@@ -29,7 +25,7 @@ function navIdFromPath(pathname) {
 function NavLinks({ current, idPrefix, onNavigate, pathname }) {
   return WORLD_NAV.map((item) => {
     const href = WORLD_HREF[item.id] || "/";
-    const stayOnHomeHash = pathname === "/" && (item.id === "ai" || item.id === "about");
+    const stayOnHomeHash = pathname === "/" && item.id === "ai";
     return (
       <Link
         key={`${idPrefix}-${item.id}`}
@@ -48,10 +44,18 @@ function NavLinks({ current, idPrefix, onNavigate, pathname }) {
 
 export default function WorldPageNav({ active }) {
   const pathname = usePathname();
-  const current = active || navIdFromPath(pathname);
+  const [hash, setHash] = useState("");
+  const current = active || navIdFromPath(pathname, hash);
   const [theme, setTheme] = useWorldTheme();
   const [navOpen, setNavOpen] = useState(false);
   useWorldViewport();
+
+  useEffect(() => {
+    const sync = () => setHash(window.location.hash.replace("#", ""));
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
 
   useLayoutEffect(() => {
     const root = document.querySelector(".wd-root, .wd-studio-shell");
@@ -78,7 +82,17 @@ export default function WorldPageNav({ active }) {
   return (
     <>
       <header className={`wd-bar${navOpen ? " is-nav-open" : ""}`} suppressHydrationWarning>
-        <Link href="/" className="wd-brand">
+        <Link
+          href="/"
+          className="wd-brand"
+          onClick={(event) => {
+            if (pathname !== "/") return;
+            event.preventDefault();
+            window.history.replaceState(null, "", "/");
+            setHash("");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        >
           Mansi
         </Link>
         <nav className="wd-nav" aria-label="System">

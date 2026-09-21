@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Projects | Mansi Dhruv",
-  description: "Selected data engineering and platform projects.",
+  title: "Work | Mansi Dhruv",
+  description: "Selected data platforms and cloud architecture.",
 };
 
 export default function ProjectsLayout({ children }) {

@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Credentials | Mansi Dhruv",
-  description: "Career sequence, recognition, certifications, and recommendations.",
+  title: "About | Mansi Dhruv",
+  description: "Lead Data Engineer · Data Platforms · Cloud Architecture. Career sequence, recognition, and recommendations.",
 };
 
 export default function CredentialsLayout({ children }) {

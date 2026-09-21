@@ -47,6 +47,17 @@ const nextConfig = {
   async rewrites() {
     return [{ source: "/favicon.ico", destination: "/icon.svg" }];
   },
+  async redirects() {
+    return [
+      { source: "/blog", destination: "/", permanent: true },
+      { source: "/blog/:slug*", destination: "/", permanent: true },
+      { source: "/notebook", destination: "/", permanent: true },
+      { source: "/tools", destination: "/", permanent: true },
+      { source: "/tools/bill", destination: "/", permanent: true },
+      { source: "/tools/json", destination: "/", permanent: true },
+      { source: "/tools/qr", destination: "/", permanent: true },
+    ];
+  },
 };
 
 module.exports = nextConfig;

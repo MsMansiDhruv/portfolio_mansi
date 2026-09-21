@@ -54,7 +54,7 @@ export async function generateMetadata(props) {
   const project = slug ? getProjectMeta(slug) : null;
   if (project) {
     return {
-      title: `${project.title} | Projects`,
+      title: `${project.title} | Work`,
       description: project.summary || project.desc,
     };
   }

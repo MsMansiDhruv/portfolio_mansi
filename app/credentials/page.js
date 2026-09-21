@@ -40,12 +40,12 @@ export default function CredentialsPage() {
   useStudioMotion(rootRef);
 
   return (
-    <div ref={rootRef} className="wd-studio-shell" data-theme={theme} suppressHydrationWarning>
+    <div ref={rootRef} className="wd-root wd-studio-shell" data-theme={theme} suppressHydrationWarning>
       <WorldPageNav active="about" />
       <main id="about" className="wd-studio-main">
         <header className="wd-studio-hero">
           <div data-rise>
-            <p className="wd-studio-kicker">{IDENTITY.headline}</p>
+            <p className="wd-studio-kicker">About</p>
             <h1>How the work got harder — and clearer.</h1>
             <p>{IDENTITY.statement}</p>
           </div>

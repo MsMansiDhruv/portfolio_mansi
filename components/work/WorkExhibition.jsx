@@ -231,7 +231,7 @@ export default function WorkExhibition({ draftOnly = false }) {
   return (
     <div
       ref={rootRef}
-      className="wd-root wd-page wd-page--work wd-archive is-ready dark"
+      className="wd-root wd-page wd-page--work wd-archive is-ready"
       data-theme={theme}
       suppressHydrationWarning
     >

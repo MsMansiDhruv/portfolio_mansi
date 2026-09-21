@@ -52,7 +52,7 @@ export default function Contact() {
   }
 
   return (
-    <div ref={rootRef} className="wd-studio-shell" data-theme={theme} suppressHydrationWarning>
+    <div ref={rootRef} className="wd-root wd-studio-shell" data-theme={theme} suppressHydrationWarning>
       <WorldPageNav active="contact" />
       <main className="wd-studio-main">
         <header className="wd-studio-hero">
@@ -88,7 +88,7 @@ export default function Contact() {
               <a href="/resume.pdf" target="_blank" rel="noreferrer">
                 Resume <ArrowUpRight size={14} />
               </a>
-              <Link href="/credentials">Credentials</Link>
+              <Link href="/credentials">About</Link>
             </nav>
           </div>
 
