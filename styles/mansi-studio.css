@@ -474,12 +474,272 @@ a.wd-studio-card {
   text-underline-offset: 0.2em;
 }
 
+.wd-about-main {
+  max-width: min(72rem, calc(100% - clamp(1.5rem, 5vw, 4.75rem)));
+}
+
+.wd-about-hero {
+  max-width: 38rem;
+  margin: 0 0 2.4rem;
+}
+
+.wd-about-hero h1 {
+  margin: 0.4rem 0 0;
+  font-family: var(--wd-font-display);
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.94;
+}
+
+.wd-about-hero__role {
+  margin: 0.85rem 0 0;
+  color: var(--wd-accent);
+  font-family: var(--wd-font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+}
+
+.wd-about-hero__lead {
+  margin: 0.85rem 0 0;
+  max-width: 36ch;
+  color: var(--wd-muted);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.wd-about-rail {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wd-about-rail li {
+  position: relative;
+  padding: 1.1rem 1rem 1.15rem;
+  border: 1px solid var(--wd-line);
+  border-radius: 1.15rem;
+  background: color-mix(in srgb, var(--wd-surface) 82%, transparent);
+}
+
+.wd-about-rail b {
+  display: block;
+  color: var(--wd-accent);
+  font-family: var(--wd-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+}
+
+.wd-about-rail strong {
+  display: block;
+  margin: 0.55rem 0 0.35rem;
+  font-size: 1.02rem;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.wd-about-rail em {
+  color: var(--wd-muted);
+  font-size: 0.82rem;
+  font-style: normal;
+  line-height: 1.4;
+}
+
+.wd-about-marks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.wd-about-marks article {
+  padding: 1.1rem 1.15rem;
+  border: 1px solid var(--wd-line);
+  border-radius: 1.15rem;
+  background: color-mix(in srgb, var(--wd-surface) 82%, transparent);
+}
+
+.wd-about-marks em {
+  display: block;
+  color: var(--wd-accent);
+  font-family: var(--wd-font-mono);
+  font-size: 0.72rem;
+  font-style: normal;
+  letter-spacing: 0.12em;
+}
+
+.wd-about-marks strong {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 1.08rem;
+  letter-spacing: -0.03em;
+}
+
+.wd-about-certs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.wd-about-cert {
+  display: grid;
+  gap: 0.2rem;
+  min-width: min(100%, 14rem);
+  padding: 0.75rem 0.95rem;
+  border: 1px solid var(--wd-line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--wd-surface) 78%, transparent);
+  color: inherit;
+  text-decoration: none;
+}
+
+.wd-about-cert strong {
+  font-size: 0.88rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.wd-about-cert span {
+  color: var(--wd-muted);
+  font-family: var(--wd-font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+}
+
+a.wd-about-cert:hover {
+  border-color: var(--wd-orange, #f97316);
+}
+
+.wd-about-quote {
+  position: relative;
+  min-height: 14rem;
+}
+
+.wd-about-quote__card {
+  margin: 0;
+  padding: 1.8rem 1.7rem 1.5rem;
+  border: 1px solid var(--wd-line);
+  border-radius: 1.4rem;
+  background: color-mix(in srgb, var(--wd-surface) 88%, transparent);
+  box-shadow: 0 16px 40px color-mix(in srgb, #1a2a24 8%, transparent);
+  animation: wd-about-quote-in 0.55s ease both;
+}
+
+.wd-about-quote__card::before {
+  content: "“";
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--wd-orange, #f97316);
+  font-family: var(--wd-font-display);
+  font-size: 3.4rem;
+  line-height: 0.7;
+}
+
+.wd-about-quote__card p {
+  margin: 0;
+  max-width: 46rem;
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  letter-spacing: -0.03em;
+  line-height: 1.45;
+}
+
+.wd-about-quote__card footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  margin-top: 1.2rem;
+  color: var(--wd-muted);
+  font-family: var(--wd-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wd-about-quote__card footer strong {
+  color: var(--wd-ink);
+  font-weight: 650;
+}
+
+.wd-about-quote__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.wd-about-quote__nav ol {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wd-about-quote__nav button {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: 1px solid var(--wd-line);
+  border-radius: 999px;
+  background: var(--wd-surface);
+  color: var(--wd-ink);
+  cursor: pointer;
+}
+
+.wd-about-quote__nav ol button {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--wd-ink) 18%, transparent);
+}
+
+.wd-about-quote__nav ol button.is-on {
+  background: var(--wd-accent);
+  width: 1.15rem;
+}
+
+.wd-about-quote__nav button:focus-visible {
+  outline: 2px solid var(--wd-accent);
+  outline-offset: 3px;
+}
+
+@keyframes wd-about-quote-in {
+  from {
+    opacity: 0;
+    transform: translate3d(1.25rem, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wd-about-quote__card {
+    animation: none;
+  }
+}
+
+@media (max-width: 980px) {
+  .wd-about-rail,
+  .wd-about-marks {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 @media (max-width: 860px) {
   .wd-studio-hero,
   .wd-studio-grid,
   .wd-studio-quotes,
   .wd-contact__board,
-  .wd-contact-form__row {
+  .wd-contact-form__row,
+  .wd-about-rail,
+  .wd-about-marks {
     grid-template-columns: 1fr;
   }
 

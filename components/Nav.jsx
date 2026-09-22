@@ -55,7 +55,7 @@ export default function Nav() {
             <NavLink href="/" active={isActive("/")}>Home</NavLink>
             <NavLink href="/projects" active={isActive("/projects")}>Projects</NavLink>
             <NavLink href="/blog" active={isActive("/blog")}>Blog</NavLink>
-            <NavLink href="/credentials" active={isActive("/credentials")}>Credentials</NavLink>
+            <NavLink href="/about" active={isActive("/about") || isActive("/credentials")}>About</NavLink>
 
             {/* TOOLKIT DROPDOWN */}
             <div className="relative group">
@@ -136,7 +136,7 @@ export default function Nav() {
               <MobileLink href="/" onClick={() => setOpen(false)}>Home</MobileLink>
               <MobileLink href="/projects" onClick={() => setOpen(false)}>Projects</MobileLink>
               <MobileLink href="/blog" onClick={() => setOpen(false)}>Blog</MobileLink>
-              <MobileLink href="/credentials" onClick={() => setOpen(false)}>Credentials</MobileLink>
+              <MobileLink href="/about" onClick={() => setOpen(false)}>About</MobileLink>
               <MobileLink href="/tools" onClick={() => setOpen(false)}>Tools</MobileLink>
               <a href="/resume.pdf" className="nav-link">Resume</a>
             </div>

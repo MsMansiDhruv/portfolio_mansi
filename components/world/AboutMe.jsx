@@ -1,10 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import { Layers, Timer } from "lucide-react";
-import {
-  ABOUT_ME,
-} from "@/lib/data/career";
+import Link from "next/link";
+import { ArrowRight, Layers, Timer } from "lucide-react";
+import { ABOUT_ME } from "@/lib/data/career";
 import { getExperienceYearsLabel } from "@/lib/career/experience";
 import { HOW_I_THINK, IDENTITY, PORTRAIT } from "@/lib/data/identity";
 import { useGsapRise } from "./riseText";
@@ -32,6 +31,10 @@ export default function AboutMe() {
         <p className="wd-about-card__tech" data-rise-text>
           Python · SQL · PySpark · AWS · Databricks · Redshift · Terraform
         </p>
+        <Link href="/about" className="wd-about-card__more">
+          More details
+          <ArrowRight size={16} aria-hidden />
+        </Link>
       </div>
       <ul className="wd-about-card__chips">
         <li>

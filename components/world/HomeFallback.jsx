@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { IDENTITY } from "@/lib/data/identity";
+import { LANDING_HERO } from "@/lib/data/identity";
 
 const NAV = [
   { href: "/", label: "HOME" },
   { href: "/projects", label: "WORK" },
   { href: "/#ask", label: "ASK" },
-  { href: "/#world-about", label: "ABOUT" },
+  { href: "/about", label: "ABOUT" },
   { href: "/contact", label: "CONTACT" },
 ];
 
@@ -32,13 +32,20 @@ export default function HomeFallback() {
         <section className="wd-scroll-section wd-scroll-section--hero">
           <div className="wd-compute">
             <div className="wd-compute__copy">
+              <p className="wd-compute__kicker">{LANDING_HERO.kicker}</p>
               <h1>
-                {IDENTITY.name}
-                <span className="wd-compute__role">{IDENTITY.role}</span>
-                <span className="wd-compute__domains">{IDENTITY.domains}</span>
+                {LANDING_HERO.titleBefore}
+                <em>{LANDING_HERO.titleMark}</em>
               </h1>
-              <p className="wd-compute__lead">{IDENTITY.statement}</p>
-              <p className="wd-compute__map-note">{IDENTITY.mapSupport}</p>
+              <p className="wd-compute__lead">{LANDING_HERO.support}</p>
+              <div className="wd-compute__actions">
+                <Link href={LANDING_HERO.primaryCta.href} className="wd-compute__cta wd-compute__cta--solid">
+                  {LANDING_HERO.primaryCta.label}
+                </Link>
+                <Link href={LANDING_HERO.secondaryCta.href} className="wd-compute__cta">
+                  {LANDING_HERO.secondaryCta.label}
+                </Link>
+              </div>
             </div>
             <div className="wd-compute__stage wd-compute--loading" aria-hidden />
           </div>

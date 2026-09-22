@@ -9,9 +9,9 @@ import {
 } from "@/lib/data/compute-weather";
 import LAND_PATHS from "@/lib/data/world-land-paths.json";
 import DC_ATLAS from "@/lib/data/dc-atlas.json";
-import { IDENTITY } from "@/lib/data/identity";
-import { getExperienceYearsText } from "@/lib/career/experience";
-import Marked from "./Marked";
+import Link from "next/link";
+import { ArrowRight, MessageCircle } from "lucide-react";
+import { LANDING_HERO } from "@/lib/data/identity";
 import { TechRail } from "./HomeBands";
 
 const ORIGIN = {
@@ -52,35 +52,6 @@ const BEATS = [
 ];
 
 const SITE_BEATS = new Set(["dallas", "nva", "singapore", "sanjose"]);
-
-function parseStat(value) {
-  const text = String(value);
-  const match = text.match(/^([\d,.]+)(.*)$/);
-  if (!match) return { num: 0, suffix: text, decimals: 0 };
-  const raw = match[1].replace(/,/g, "");
-  return {
-    num: Number(raw),
-    suffix: match[2] || "",
-    decimals: raw.includes(".") ? raw.split(".")[1].length : 0,
-  };
-}
-
-function AnimatedStat({ value, label }) {
-  const parsed = useMemo(() => parseStat(value), [value]);
-  const display = parsed.decimals
-    ? parsed.num.toFixed(parsed.decimals)
-    : Math.round(parsed.num).toLocaleString("en-US");
-
-  return (
-    <div>
-      <dd>
-        {display}
-        {parsed.suffix}
-      </dd>
-      <dt>{label}</dt>
-    </div>
-  );
-}
 
 function nodeRadius(site, layer) {
   if (layer === "centres") return 4.1;
@@ -183,7 +154,6 @@ export default function ComputeWeatherMap({ playStats = true, chrome = "full" })
   const [seq, setSeq] = useState(0);
   const byId = useMemo(() => Object.fromEntries(COMPUTE_SITES.map((s) => [s.id, s])), []);
   const cluster = hot ? byId[hot] : null;
-  const layerMeta = COMPUTE_WEATHER.layers.find((item) => item.id === layer);
   const simulating = sim !== "done";
   const showGrid = layer === "grid";
   const showGrowth = layer === "growth";
@@ -319,37 +289,22 @@ export default function ComputeWeatherMap({ playStats = true, chrome = "full" })
     <div ref={rootRef} className={`wd-compute${chrome === "cover" ? " wd-compute--cover" : ""}`}>
       {chrome === "cover" ? null : (
       <div className="wd-compute__copy">
+        <p className="wd-compute__kicker">{LANDING_HERO.kicker}</p>
         <h1>
-          {IDENTITY.name}
-          <span className="wd-compute__role">{IDENTITY.role}</span>
-          <span className="wd-compute__domains">{IDENTITY.domains}</span>
+          {LANDING_HERO.titleBefore}
+          <em>{LANDING_HERO.titleMark}</em>
         </h1>
-        <p className="wd-compute__lead">{IDENTITY.statement}</p>
-        <p className="wd-compute__proof">
-          <span>{getExperienceYearsText()}</span>
-          <span className="wd-compute__proof-sep" aria-hidden="true">
-            ·
-          </span>
-          <span>AWS</span>
-        </p>
-        <p className="wd-compute__map-note">{IDENTITY.mapSupport}</p>
-        <div key={simulating ? caption?.title : layer} className="wd-compute__story">
-          <p className="wd-compute__story-kicker">
-            {simulating ? "Live grid" : layerMeta?.label}
-          </p>
-          <p className="wd-compute__blurb">
-            {simulating ? <Marked text={caption?.line} /> : <Marked text={layerMeta?.headline} />}
-          </p>
+        <p className="wd-compute__lead">{LANDING_HERO.support}</p>
+        <div className="wd-compute__actions">
+          <Link href={LANDING_HERO.primaryCta.href} className="wd-compute__cta wd-compute__cta--solid">
+            {LANDING_HERO.primaryCta.label}
+            <ArrowRight size={16} aria-hidden />
+          </Link>
+          <Link href={LANDING_HERO.secondaryCta.href} className="wd-compute__cta">
+            {LANDING_HERO.secondaryCta.label}
+            <MessageCircle size={16} aria-hidden />
+          </Link>
         </div>
-        <dl className="wd-compute__stats">
-          {COMPUTE_WEATHER.stats.slice(0, 2).map((s) => (
-            <AnimatedStat
-              key={s.label}
-              value={s.value}
-              label={s.label}
-            />
-          ))}
-        </dl>
       </div>
       )}
 

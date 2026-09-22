@@ -21,14 +21,14 @@ function navIdFromPath(pathname, hash) {
   }
   if (pathname?.startsWith("/projects")) return "work";
   if (pathname?.startsWith("/tools/ai-lab")) return "ai";
-  if (pathname?.startsWith("/credentials") || pathname?.startsWith("/certification")) {
+  if (pathname?.startsWith("/about") || pathname?.startsWith("/credentials") || pathname?.startsWith("/certification")) {
     return "about";
   }
   if (pathname?.startsWith("/contact")) return "contact";
   return "";
 }
 
-function NavLinks({ current, idPrefix, onNavigate, pathname, onAsk, onAbout }) {
+function NavLinks({ current, idPrefix, onNavigate, pathname, onAsk }) {
   return WORLD_NAV.map((item) => {
     const href = WORLD_HREF[item.id] || "/";
     return (
@@ -41,9 +41,6 @@ function NavLinks({ current, idPrefix, onNavigate, pathname, onAsk, onAbout }) {
         onClick={(event) => {
           if (item.id === "ai") {
             onAsk?.(event);
-          }
-          if (item.id === "about") {
-            onAbout?.(event);
           }
           onNavigate?.();
         }}
@@ -96,15 +93,6 @@ export default function WorldPageNav({ active }) {
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const goAbout = (event) => {
-    const target = document.getElementById("world-about");
-    if (!target || pathname !== "/") return;
-    event.preventDefault();
-    window.history.replaceState(null, "", "/#world-about");
-    setHash("world-about");
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   const toggleTheme = () => {
     setTheme(toggleWorldTheme());
   };
@@ -126,7 +114,7 @@ export default function WorldPageNav({ active }) {
           Mansi
         </Link>
         <nav className="wd-nav" aria-label="System">
-          <NavLinks current={current} idPrefix="bar" onNavigate={closeNavSoon} pathname={pathname} onAsk={goAsk} onAbout={goAbout} />
+          <NavLinks current={current} idPrefix="bar" onNavigate={closeNavSoon} pathname={pathname} onAsk={goAsk} />
         </nav>
         <div className="wd-bar__end">
           <ThemeToggle theme={theme} onClick={toggleTheme} />
@@ -138,7 +126,7 @@ export default function WorldPageNav({ active }) {
         aria-label="Pages"
         aria-hidden={!navOpen}
       >
-        <NavLinks current={current} idPrefix="sheet" onNavigate={closeNavSoon} pathname={pathname} onAsk={goAsk} onAbout={goAbout} />
+        <NavLinks current={current} idPrefix="sheet" onNavigate={closeNavSoon} pathname={pathname} onAsk={goAsk} />
       </nav>
       <ResumeDock />
     </>
